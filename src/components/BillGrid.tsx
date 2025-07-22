@@ -1,35 +1,7 @@
-import React, { useEffect, useState } from "react";
-import apiClient from "../services/api-client";
-
-interface Bill {
-	id: string;
-	title: string;
-	// introduced: string
-	// status: string
-	// summary: string
-	// sources: string[]
-}
-
-interface FetchBillsResponse {
-	results: Bill[];
-}
+import useBills from "../hooks/useBills";
 
 const BillGrid = () => {
-	const [bills, setBills] = useState<Bill[]>([]);
-	const [error, setError] = useState("");
-
-	useEffect(() => {
-		apiClient
-			.get<FetchBillsResponse>("/bills", {})
-			.then((res) => {
-				console.log(res.data.results);
-
-				setBills(res.data.results);
-			})
-			.catch((err) => {
-				setError(err.message);
-			});
-	}, []);
+	const { bills, error } = useBills();
 
 	return (
 		<>
