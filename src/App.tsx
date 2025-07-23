@@ -1,7 +1,7 @@
 
 
 import FilterBar from './components/FilterBar';
-import BillCard from './components/BillCard';
+
 import Header from './components/Header';
 import StatCard from './components/StatCard';
 import BillGrid from './components/BillGrid';
@@ -36,9 +36,9 @@ const App = () => {
         
         <BillGrid/>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+        {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
           <BillCard
-            id="New York - K 825"
+             id="New York - K 825"
             introduced="May 03, 2022"
             status="Adopted"
             summary="Memorializing governor Kathy Hochul to proclaim May 6, 2022, as mother's equal pay day in New York"
@@ -51,7 +51,7 @@ const App = () => {
             summary="An act relative to the creation of a paid family and medical leave advisory board"
             sources={['1']}
           />
-        </div>
+        </div> */}
       </main>
      
     </div>
