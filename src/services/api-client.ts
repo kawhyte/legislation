@@ -7,7 +7,7 @@ export default axios.create({
 	},
 	params: {
 		// q: "Budget",
-		jurisdiction: "Florida",
+		jurisdiction: "Ohio",
 		// identifier: "",
 		subject:["health care"],
 		sort: "updated_desc",
