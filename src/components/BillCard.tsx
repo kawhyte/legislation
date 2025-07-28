@@ -1,7 +1,5 @@
 import type { Bill } from "../hooks/useBills";
 import usStates from "../data/usStates";
-
-// Import shadcn/ui components
 import {
 	Card,
 	CardContent,
@@ -11,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress"; // Import Progress component
+import { Progress } from "@/components/ui/progress"; 
 
 interface BillCardProps {
 	bill: Bill;
