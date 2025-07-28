@@ -5,6 +5,7 @@ import FilterBar from './components/FilterBar';
 import Header from './components/Header';
 import StatCard from './components/StatCard';
 import BillGrid from './components/BillGrid';
+import StateSelector from './components/StateSelector';
 
 
 const App = () => {
@@ -31,6 +32,8 @@ const App = () => {
         </div>
 
         <FilterBar />
+
+<StateSelector/>
 
         {/* Bill Cards Grid */}
         
