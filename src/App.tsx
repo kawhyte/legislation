@@ -25,10 +25,10 @@ const App = () => {
           <StatCard label="Failed Bills" value={0} note="Last 2 months" color="red" />
       
         </div>
-
-        <p className="text-sm text-center text-gray-500 mb-4">
+        <div className="text-sm text-center text-gray-500 mb-4">
+         
           Information updated Monday, November 14th 2022
-        </p>
+        </div>
 
         <FilterBar />
 

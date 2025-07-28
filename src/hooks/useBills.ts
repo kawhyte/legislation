@@ -17,6 +17,9 @@ export interface Bill {
 	jurisdiction: Jurisdiction;
 	identifier: string;
 	latest_action_date: string;
+	house_passage_date:string // need to update to the correct type
+	senate_passage_date:string // need to update to the correct type
+	enacted_date:string // need to update to the correct type
 }
 
 interface FetchBillsResponse {
