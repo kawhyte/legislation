@@ -6,12 +6,19 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import usStates from "@/data/usStates";
 
+import useGetJurisdictions from "@/hooks/useGetJurisdictions";
+
+
+// interface Props{
+// // onSelectState(state: string): void;
+
+// }
+ 
 const StateSelector = () => {
 	const [selectedValue, setSelectedValue] = useState<string>("Alabama");
 
-	const options = usStates;
+	const {jurisdictions} = useGetJurisdictions();
 
 	return (
 		<div className='w-64 p-4'>
@@ -21,8 +28,8 @@ const StateSelector = () => {
 				</SelectTrigger>
 
 				<SelectContent>
-					{options.map((option) => (
-						<SelectItem key={option.abbreviation} value={option.abbreviation}>
+					{jurisdictions.map((option) => (
+						<SelectItem  key={option.id} value={option.name}>
 							{option.name}
 						</SelectItem>
 					))}
@@ -31,7 +38,7 @@ const StateSelector = () => {
 			<p className='mt-4 text-sm text-gray-600'>
 				Selected:{" "}
 				<span className='font-semibold'>
-					{options.find((opt) => opt.abbreviation === selectedValue)?.name ||
+					{jurisdictions.find((opt) => opt.name === selectedValue)?.name ||
 						"None"}
 				</span>
 			</p>
