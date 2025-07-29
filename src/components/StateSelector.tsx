@@ -10,15 +10,10 @@ import {
 import useGetJurisdictions from "@/hooks/useGetJurisdictions";
 
 
-// interface Props{
-// // onSelectState(state: string): void;
-
-// }
- 
 const StateSelector = () => {
 	const [selectedValue, setSelectedValue] = useState<string>("Alabama");
 
-	const {jurisdictions} = useGetJurisdictions();
+	const { data } = useGetJurisdictions();
 
 	return (
 		<div className='w-64 p-4'>
@@ -28,8 +23,8 @@ const StateSelector = () => {
 				</SelectTrigger>
 
 				<SelectContent>
-					{jurisdictions.map((option) => (
-						<SelectItem  key={option.id} value={option.name}>
+					{data.map((option) => (
+						<SelectItem key={option.id} value={option.name}>
 							{option.name}
 						</SelectItem>
 					))}
@@ -38,8 +33,7 @@ const StateSelector = () => {
 			<p className='mt-4 text-sm text-gray-600'>
 				Selected:{" "}
 				<span className='font-semibold'>
-					{jurisdictions.find((opt) => opt.name === selectedValue)?.name ||
-						"None"}
+					{data.find((opt) => opt.name === selectedValue)?.name || "None"}
 				</span>
 			</p>
 		</div>

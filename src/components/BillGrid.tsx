@@ -3,8 +3,8 @@ import BillCard from "./BillCard";
 import BillCardSkeleton from "./BillCardSkeleton";
 
 const BillGrid = () => {
-	const { bills, error, isLoading } = useBills();
-console.log("bills", bills);
+	const { data, error, isLoading } = useBills();
+console.log("bills", data);
 
 const skeletons = [1,2,3,4,5,6,7,8,9,10]
 
@@ -16,7 +16,7 @@ const skeletons = [1,2,3,4,5,6,7,8,9,10]
 				<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6'>
 
 				{isLoading && skeletons.map(skeleton => <BillCardSkeleton key={skeleton}/>)}
-					{bills?.map((bill) => (
+					{data?.map((bill) => (
 						<BillCard key={bill.id} bill={bill} />
 
 						// <li key={bill.id}>{bill.title}</li>

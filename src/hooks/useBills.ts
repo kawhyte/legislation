@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import apiClient from "../services/api-client";
-import { CanceledError } from "axios";
+import useData from "./useData";
 
 interface Jurisdiction {
 	id: string;
@@ -22,38 +20,11 @@ export interface Bill {
 	enacted_date:string // need to update to the correct type
 }
 
-interface FetchBillsResponse {
-	results: Bill[];
-}
+// interface FetchBillsResponse {
+// 	results: Bill[];
+// }
 
-const useBills = () => {
-	const [bills, setBills] = useState<Bill[]>([]);
-	const [error, setError] = useState("");
-	 const [isLoading, setLoading] = useState(false)
+const useBills = () => useData<Bill>("/bills");
 
-	useEffect(() => {
-		const controller = new AbortController();
-		const signal = controller.signal;
-setLoading(true)
-		apiClient
-			.get<FetchBillsResponse>("/bills", { signal })
-			.then((res) => {
-				console.log(res.data.results);
-
-				setBills(res.data.results);
-				setLoading(false)
-			})
-			.catch((err) => {
-				if (err instanceof CanceledError) return;
-
-				setError(err.message);
-				setLoading(false)
-			});
-
-		return () => controller.abort();
-	}, []);
-
-	return { bills, error, isLoading };
-};
 
 export default useBills;
