@@ -1,4 +1,3 @@
-// src/components/JurisdictionSelector.tsx
 import { useState } from "react";
 import {
 	Select,
@@ -8,41 +7,58 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 
-// import useGetJurisdictions, { type Jurisdiction } from "@/hooks/useGetJurisdictions";
-import usStates from "@/data/usStates"; // This import is already present
+import usStates from "@/data/usStates";
 
-export interface States{
-name:string,
-abbreviation:string,
-flagUrl:string
-
+export interface States {
+	name: string;
+	abbreviation: string;
+	flagUrl: string;
 }
 interface Props {
-	// onSelectJurisdiction: (jurisdiction: Jurisdiction) => void;
-	onSelectJurisdiction: (jurisdiction:States) => void;
+	onSelectJurisdiction: (jurisdiction: States) => void;
 }
 
-
 const JurisdictionSelector = ({ onSelectJurisdiction }: Props) => {
-	// Set the initial selected value to the name of the first state
-	const [selectedValue, setSelectedValue] = useState<string>(usStates[0].name); // <--- Change this line
-
-	// const { data } = useGetJurisdictions();
-	const data = usStates
+	const data = usStates;
+	const [selectedValue, setSelectedValue] = useState<string>(data[0].name);
 
 	return (
 		<div className='w-64 p-4'>
-			<Select value={selectedValue} onValueChange={(value) => { // <--- Modify onValueChange
-				setSelectedValue(value);
-				onSelectJurisdiction(data.find(option => option.name === value) || usStates[0]); // Pass the full state object
-			}}>
+			<Select
+				value={selectedValue}
+				onValueChange={(value) => {
+					setSelectedValue(value);
+					// Find the full state object to pass to the parent component
+					const selectedState = data.find((option) => option.name === value);
+					if (selectedState) {
+						onSelectJurisdiction(selectedState);
+					}
+				}}>
 				<SelectTrigger className='w-full'>
-					<SelectValue placeholder='Select an option' />
+					<SelectValue placeholder='Select an option'>
+						{selectedValue ? (
+							<div className='flex items-center gap-2'>
+								<img
+									src={data.find((opt) => opt.name === selectedValue)?.flagUrl}
+									alt={`${selectedValue} flag`}
+									className='w-5 h-auto rounded-sm' // Smaller flag for trigger
+								/>
+								<span>{selectedValue}</span>
+							</div>
+						) : (
+							"Select an option" // Placeholder when nothing is selected
+						)}
+					</SelectValue>
 				</SelectTrigger>
 
 				<SelectContent>
 					{data.map((option) => (
 						<SelectItem key={option.abbreviation} value={option.name}>
+							<img
+								src={option.flagUrl}
+								alt={`${option.name} flag`}
+								className='w-5 h-auto rounded-sm'
+							/>
 							{option.name}
 						</SelectItem>
 					))}
