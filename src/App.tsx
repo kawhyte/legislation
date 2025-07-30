@@ -3,12 +3,31 @@ import FilterBar from "./components/FilterBar";
 import Header from "./components/Header";
 import StatCard from "./components/StatCard";
 import BillGrid from "./components/BillGrid";
-import StateSelector from "./components/StateSelector";
+import StateSelector, { type States } from "./components/JurisdictionSelector";
 import { useState } from "react";
+import usStates from "./data/usStates";
+// import type { Jurisdiction } from "./hooks/useGetJurisdictions";
 
+
+// const NEW_YORK_JURISDICTION: Jurisdiction = {
+//   id: "new-york-id", // Use the correct ID from your data source
+//   name: "New York",
+//   classification: "state",
+//   url:""
+// };
+ 
+// const NEW_YORK_JURISDICTION: States = {
+
+//   name: "Alabama",
+//   abbreviation: "AL",
+//   flagUrl: "https://placehold.co/32x24/cccccc/333333?text=N/A",
+ 
+// };
+ 
 const App = () => {
-const [selectedState, setSelectedState] = useState<State | null>('null');
-
+const [selectedJurisdiction, setSelectedJurisdiction] = useState<States | null>(usStates[0]);
+  console.log("selectedJurisdiction777", selectedJurisdiction);
+ 
 
 	return (
 		<div className='bg-white min-h-screen'>
@@ -50,11 +69,11 @@ const [selectedState, setSelectedState] = useState<State | null>('null');
 
 				<FilterBar />
 
-				<StateSelector onSelectState={(state) => setSelectedState(state)} />
+				<StateSelector onSelectJurisdiction={(jurisdiction) => setSelectedJurisdiction(jurisdiction)} />
 
 				{/* Bill Cards Grid */}
 
-				<BillGrid />
+				<BillGrid selectedJurisdiction={selectedJurisdiction}  />
 
 				{/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
           <BillCard

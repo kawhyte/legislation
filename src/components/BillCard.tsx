@@ -26,19 +26,17 @@ const BillCard = ({ bill }: BillCardProps) => {
 		? stateInfo.flagUrl
 		: "https://placehold.co/32x24/cccccc/333333?text=N/A"; // Placeholder for missing flag
 
-	// Determine the progress value based on bill status
-	// You might need to adjust these mappings based on actual status strings from your 'Bill' type
-	// const getProgressValue = (status: string | undefined): number => {
-	//     if (!status) return 0;
-	//     const lowerStatus = status.toLowerCase();
-	//     if (lowerStatus.includes("enacted") || lowerStatus.includes("law")) return 100;
-	//     if (lowerStatus.includes("senate")) return 75;
-	//     if (lowerStatus.includes("house")) return 50;
-	//     if (lowerStatus.includes("introduced")) return 25;
-	//     return 0;
-	// };
+	// Determine the progress value based on the bill's dates.
+	// This is more reliable than parsing the status string.
+	const getProgressValue = (bill: Bill): number => {
+		if (bill.enacted_date) return 100;
+		if (bill.senate_passage_date) return 75;
+		if (bill.house_passage_date) return 50;
+		if (bill.introduced) return 25;
+		return 0;
+	};
 
-	// const progressValue = getProgressValue(bill.status);
+	const progressValue = getProgressValue(bill);
 
 	return (
 		<Card className='w-full'>
@@ -67,8 +65,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 						<span className='text-center w-1/4'>Senate</span>
 						<span className='text-center w-1/4'>Became Law</span>
 					</div>
-					<Progress value={25} className='h-2 w-full bg-gray-200 mb-2' />{" "}
-					{/* Progress bar */}
+					<Progress value={progressValue} className='h-2 w-full bg-gray-200 mb-2' />
 					<div className='relative flex justify-between text-xs text-gray-500 mt-1'>
 						<span className='text-center w-1/4'>
 							{bill.introduced || "N/A"}
