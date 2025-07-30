@@ -15,8 +15,15 @@ interface BillCardProps {
 	bill: Bill;
 }
 
+const toSentenceCase = (text: string) => {
+    if (!text) return "";
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+};
+
+
+
 const BillCard = ({ bill }: BillCardProps) => {
-	// Find the state object that matches the bill's jurisdiction name
+	
 	const stateInfo = usStates.find(
 		(state) => state.name.toLowerCase() === bill.jurisdiction.name.toLowerCase()
 	);
@@ -86,7 +93,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 				{/* End New Progress Section */}
 
 				<CardDescription className='text-xs text-gray-700'>
-					{bill.title ? bill.title : "N/A"}
+					{bill.title ? toSentenceCase(bill.title) : "N/A"}
 				</CardDescription>
 				<p className='text-xs text-gray-700'>
 					Last activity posted on{" "}
