@@ -1,101 +1,67 @@
-import FilterBar from "./components/FilterBar";
-
-import Header from "./components/Header";
-import StatCard from "./components/StatCard";
-import BillGrid from "./components/BillGrid";
-import StateSelector, { type States } from "./components/JurisdictionSelector";
 import { useState } from "react";
+import BillGrid from "./components/BillGrid";
+import FilterBar from "./components/FilterBar";
+import Header from "./components/Header";
+import StateSelector, { type States } from "./components/JurisdictionSelector";
+import StatCard from "./components/StatCard";
 import usStates from "./data/usStates";
-// import type { Jurisdiction } from "./hooks/useGetJurisdictions";
 
-
-// const NEW_YORK_JURISDICTION: Jurisdiction = {
-//   id: "new-york-id", // Use the correct ID from your data source
-//   name: "New York",
-//   classification: "state",
-//   url:""
-// };
- 
-// const NEW_YORK_JURISDICTION: States = {
-
-//   name: "Alabama",
-//   abbreviation: "AL",
-//   flagUrl: "https://placehold.co/32x24/cccccc/333333?text=N/A",
- 
-// };
- 
 const App = () => {
-const [selectedJurisdiction, setSelectedJurisdiction] = useState<States | null>(usStates[0]);
-  console.log("selectedJurisdiction777", selectedJurisdiction);
- 
+  const [selectedJurisdiction, setSelectedJurisdiction] = useState<States | null>(
+    usStates[0]
+  );
 
-	return (
-		<div className='bg-white min-h-screen'>
-			<Header />
+  return (
+    <div className="min-h-screen">
+      <Header />
 
-			<main className='max-w-7xl mx-auto px-4 py-6'>
-				<h1 className='text-2xl font-bold mb-4'>Paid Family Leave bills</h1>
+      <main className="max-w-7xl mx-auto px-4 py-6">
+        <h1 className="text-2xl font-bold mb-4">Paid Family Leave bills</h1>
 
-				{/* Stat Cards */}
-				<div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6'>
-					<StatCard
-						label='Total Bills'
-						value={98}
-						note='Last 3 months'
-						color='blue'
-					/>
-					<StatCard
-						label='Major Update'
-						value={11}
-						note='Last 3 months'
-						color='indigo'
-					/>
-					<StatCard
-						label='New Bills'
-						value={0}
-						note='Last 40 days'
-						color='yellow'
-					/>
-					<StatCard
-						label='Failed Bills'
-						value={0}
-						note='Last 2 months'
-						color='red'
-					/>
-				</div>
-				<div className='text-sm text-center text-gray-500 mb-4'>
-					Information updated Monday, November 14th 2022
-				</div>
-
-				<FilterBar />
-
-				
-
-				<StateSelector onSelectJurisdiction={(jurisdiction) => setSelectedJurisdiction(jurisdiction)} />
-
-				{/* Bill Cards Grid */}
-
-				<BillGrid selectedJurisdiction={selectedJurisdiction}  />
-
-				{/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-          <BillCard
-             id="New York - K 825"
-            introduced="May 03, 2022"
-            status="Adopted"
-            summary="Memorializing governor Kathy Hochul to proclaim May 6, 2022, as mother's equal pay day in New York"
-            sources={['1', '2']}
+        {/* Stat Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <StatCard
+            label="Total Bills"
+            value={98}
+            note="Last 3 months"
+            color="blue"
           />
-          <BillCard
-            id="Massachusetts - H 4612"
-            introduced="Apr 03, 2022"
-            status="Reported"
-            summary="An act relative to the creation of a paid family and medical leave advisory board"
-            sources={['1']}
+          <StatCard
+            label="Major Update"
+            value={11}
+            note="Last 3 months"
+            color="indigo"
           />
-        </div> */}
-			</main>
-		</div>
-	);
+          <StatCard
+            label="New Bills"
+            value={0}
+            note="Last 40 days"
+            color="yellow"
+          />
+          <StatCard
+            label="Failed Bills"
+            value={0}
+            note="Last 2 months"
+            color="red"
+          />
+        </div>
+        <div className="text-sm text-center text-gray-500 mb-4">
+          Information updated Monday, November 14th 2022
+        </div>
+
+        <FilterBar />
+
+        <StateSelector
+          onSelectJurisdiction={(jurisdiction) =>
+            setSelectedJurisdiction(jurisdiction)
+          }
+        />
+
+        {/* Bill Cards Grid */}
+        <BillGrid selectedJurisdiction={selectedJurisdiction} />
+      </main>
+    </div>
+  );
 };
 
 export default App;
