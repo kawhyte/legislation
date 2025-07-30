@@ -69,6 +69,8 @@ const [selectedJurisdiction, setSelectedJurisdiction] = useState<States | null>(
 
 				<FilterBar />
 
+				
+
 				<StateSelector onSelectJurisdiction={(jurisdiction) => setSelectedJurisdiction(jurisdiction)} />
 
 				{/* Bill Cards Grid */}

@@ -2,7 +2,9 @@ import { useState } from "react";
 import {
 	Select,
 	SelectContent,
+	SelectGroup,
 	SelectItem,
+	SelectLabel,
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
@@ -20,7 +22,7 @@ interface Props {
 
 const JurisdictionSelector = ({ onSelectJurisdiction }: Props) => {
 	const data = usStates;
-	const [selectedValue, setSelectedValue] = useState<string>(data[0].name);
+	const [selectedValue, setSelectedValue] = useState<string>('');
 
 	return (
 		<div className='w-64 p-4'>
@@ -35,7 +37,7 @@ const JurisdictionSelector = ({ onSelectJurisdiction }: Props) => {
 					}
 				}}>
 				<SelectTrigger className='w-full'>
-					<SelectValue placeholder='Select an option'>
+					<SelectValue placeholder='Select a State'>
 						{selectedValue ? (
 							<div className='flex items-center gap-2'>
 								<img
@@ -52,6 +54,8 @@ const JurisdictionSelector = ({ onSelectJurisdiction }: Props) => {
 				</SelectTrigger>
 
 				<SelectContent>
+					<SelectGroup>
+					<SelectLabel>States</SelectLabel>
 					{data.map((option) => (
 						<SelectItem key={option.abbreviation} value={option.name}>
 							<img
@@ -62,6 +66,7 @@ const JurisdictionSelector = ({ onSelectJurisdiction }: Props) => {
 							{option.name}
 						</SelectItem>
 					))}
+					</SelectGroup>
 				</SelectContent>
 			</Select>
 			<p className='mt-4 text-sm text-gray-600'>

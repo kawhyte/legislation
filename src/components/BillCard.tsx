@@ -92,7 +92,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 				</div>
 				{/* End New Progress Section */}
 
-				<CardDescription className='text-xs text-gray-700'>
+				<CardDescription className='text-xs text-gray-700 line-clamp-5'>
 					{bill.title ? toSentenceCase(bill.title) : "N/A"}
 				</CardDescription>
 				<p className='text-xs text-gray-700'>
