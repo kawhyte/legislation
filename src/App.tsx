@@ -6,6 +6,8 @@ import StateSelector, { type States } from "./components/JurisdictionSelector";
 import StatCard from "./components/StatCard";
 import usStates from "./data/usStates";
 import SectionHeader from "./components/SectionHeader";
+import Hero from "./components/Hero";
+import Hero2 from "./components/Hero2";
 
 const App = () => {
 	const [selectedJurisdiction, setSelectedJurisdiction] =
@@ -15,10 +17,9 @@ const App = () => {
 		<div className='min-h-screen'>
 			<Header />
 
-			<main className='max-w-7xl mx-auto px-4 py-6'>
-				<h1 className='text-2xl font-bold mb-4'>Paid Family Leave bills</h1>
+			<main className='max-w-[100rem] mx-auto px-4 py-6'>
+				<Hero2 />
 
-				{/* Stat Cards */}
 				<div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6'>
 					<StatCard
 						label='Total Bills'
@@ -45,24 +46,38 @@ const App = () => {
 						color='red'
 					/>
 				</div>
-				<div className='text-sm text-center text-gray-500 mb-4'>
-					Information updated Monday, November 14th 2022
-				</div>
 
-				<SectionHeader jurisdiction={selectedJurisdiction} />
-
-				{/* <FilterBar /> */}
-				<div className='flex align-middle items-baseline bg-blue-50 border border-blue-100 rounded-lg px-4 py-3'>
+				<div className='flex align-middle items-baseline  bg-gray-50 border border-blue-100 rounded-2xl px-4 py-3'>
 					<p className='mt-4 text-sm text-gray-600'>Filter:</p>
 					<StateSelector
 						onSelectJurisdiction={(jurisdiction) =>
 							setSelectedJurisdiction(jurisdiction)
 						}
 					/>
+					<StateSelector
+						onSelectJurisdiction={(jurisdiction) =>
+							setSelectedJurisdiction(jurisdiction)
+						}
+					/>
+
+					<input
+						type='text'
+						placeholder='Quick Search (State or Bill ID)'
+						className='ml-4 px-3 py-1 border border-gray-300 rounded text-sm bg-white'
+					/>
 				</div>
 
+				{/* <FilterBar /> */}
+
+				{/* Stat Cards */}
+
+				<div className='text-sm text-center text-gray-500 mb-4'>
+					Information updated Monday, November 14th 2022
+				</div>
+				<SectionHeader jurisdiction={selectedJurisdiction} />
 				{/* Bill Cards Grid */}
 				<BillGrid selectedJurisdiction={selectedJurisdiction} />
+				<Hero jurisdiction={selectedJurisdiction} />
 			</main>
 		</div>
 	);

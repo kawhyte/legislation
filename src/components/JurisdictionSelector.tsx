@@ -15,6 +15,7 @@ export interface States {
 	name: string;
 	abbreviation: string;
 	flagUrl: string;
+	mapUrl: string;
 }
 interface Props {
 	onSelectJurisdiction: (jurisdiction: States) => void;
@@ -22,7 +23,7 @@ interface Props {
 
 const JurisdictionSelector = ({ onSelectJurisdiction }: Props) => {
 	const data = usStates;
-	const [selectedValue, setSelectedValue] = useState<string>('');
+	const [selectedValue, setSelectedValue] = useState<string>(data[0].name);
 
 	return (
 		<div className='w-64 p-4'>
@@ -36,7 +37,7 @@ const JurisdictionSelector = ({ onSelectJurisdiction }: Props) => {
 						onSelectJurisdiction(selectedState);
 					}
 				}}>
-				<SelectTrigger className='w-full'>
+				<SelectTrigger className='w-full bg-white '>
 					<SelectValue placeholder='Select a State'>
 						{selectedValue ? (
 							<div className='flex items-center gap-2'>
@@ -55,17 +56,17 @@ const JurisdictionSelector = ({ onSelectJurisdiction }: Props) => {
 
 				<SelectContent>
 					<SelectGroup>
-					<SelectLabel>States</SelectLabel>
-					{data.map((option) => (
-						<SelectItem key={option.abbreviation} value={option.name}>
-							<img
-								src={option.flagUrl}
-								alt={`${option.name} flag`}
-								className='w-5 h-auto rounded-sm'
-							/>
-							{option.name}
-						</SelectItem>
-					))}
+						<SelectLabel>States</SelectLabel>
+						{data.map((option) => (
+							<SelectItem key={option.abbreviation} value={option.name}>
+								<img
+									src={option.flagUrl}
+									alt={`${option.name} flag`}
+									className='w-5 h-auto rounded-sm'
+								/>
+								{option.name}
+							</SelectItem>
+						))}
 					</SelectGroup>
 				</SelectContent>
 			</Select>
