@@ -14,8 +14,10 @@ import usStates from "@/data/usStates";
 export interface States {
 	name: string;
 	abbreviation: string;
-	flagUrl: string;
-	mapUrl: string;
+	flagUrl?: string;
+	coords?: { lon: number; lat: number };
+	zoom?: number;
+	// mapUrl: string;
 }
 interface Props {
 	onSelectJurisdiction: (jurisdiction: States) => void;

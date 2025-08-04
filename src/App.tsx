@@ -6,8 +6,8 @@ import StateSelector, { type States } from "./components/JurisdictionSelector";
 import StatCard from "./components/StatCard";
 import usStates from "./data/usStates";
 import SectionHeader from "./components/SectionHeader";
+
 import Hero from "./components/Hero";
-import Hero2 from "./components/Hero2";
 
 const App = () => {
 	const [selectedJurisdiction, setSelectedJurisdiction] =
@@ -18,9 +18,9 @@ const App = () => {
 			<Header />
 
 			<main className='max-w-[100rem] mx-auto px-4 py-6'>
-				<Hero2 
-				 selectedJurisdiction={selectedJurisdiction}
-          setSelectedJurisdiction={setSelectedJurisdiction}
+				<Hero
+					selectedJurisdiction={selectedJurisdiction}
+					setSelectedJurisdiction={setSelectedJurisdiction}
 				/>
 
 				<div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6'>
@@ -80,7 +80,7 @@ const App = () => {
 				<SectionHeader jurisdiction={selectedJurisdiction} />
 				{/* Bill Cards Grid */}
 				<BillGrid selectedJurisdiction={selectedJurisdiction} />
-				<Hero jurisdiction={selectedJurisdiction} />
+				{/* <Hero jurisdiction={selectedJurisdiction} /> */}
 			</main>
 		</div>
 	);
