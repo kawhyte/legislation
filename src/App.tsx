@@ -57,11 +57,11 @@ const App = () => {
 							setSelectedJurisdiction(jurisdiction)
 						}
 					/>
-					<StateSelector
+					{/* <StateSelector
 						onSelectJurisdiction={(jurisdiction) =>
 							setSelectedJurisdiction(jurisdiction)
 						}
-					/>
+					/> */}
 
 					<input
 						type='text'

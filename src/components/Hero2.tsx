@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import {
 	Briefcase,
 	Users,
 	Image as ImageIcon,
 	Star,
 	ChevronDown,
+	Building,
 } from "lucide-react";
 import StateSelector, { type States } from "../components/JurisdictionSelector";
 
@@ -66,6 +67,55 @@ const SelectItem = ({ children, value }) => (
 		{children}
 	</div>
 );
+
+const legislatureData = {
+	CA: {
+		name: "California",
+		coords: { lon: -119.4179, lat: 36.7783 },
+		zoom: 5.5,
+		senators: {
+			total: 40,
+			democrats: 32, // Updated data for realism
+			republicans: 8,
+		},
+		assembly: {
+			total: 80,
+			democrats: 62,
+			republicans: 18,
+		},
+	},
+	NV: {
+		name: "Nevada",
+		coords: { lon: -116.4194, lat: 38.8026 },
+		zoom: 5.8,
+		senators: {
+			total: 21,
+			democrats: 13,
+			republicans: 8,
+		},
+		assembly: {
+			total: 42,
+			democrats: 28,
+			republicans: 14,
+		},
+	},
+	TX: {
+		name: "Texas",
+		coords: { lon: -99.9018, lat: 31.9686 },
+		zoom: 5,
+		senators: {
+			total: 31,
+			democrats: 12,
+			republicans: 19,
+		},
+		assembly: {
+			name: "House of Representatives",
+			total: 150,
+			democrats: 64,
+			republicans: 86,
+		},
+	},
+};
 
 interface HeroSectionProps {
 	selectedJurisdiction: string | null;
@@ -133,6 +183,12 @@ const HeroSection = ({ selectedJurisdiction, setSelectedJurisdiction }) => {
 		"Wyoming",
 	];
 
+	const [selectedState, setSelectedState] = useState("CA");
+	const currentData = legislatureData[selectedState];
+
+	const geoapifyApiKey = "bbd7c80a0a3a43549778382e9e794add";
+	const mapUrl = `https://maps.geoapify.com/v1/staticmap?style=osm-bright-grey&width=800&height=600&center=lonlat:${currentData.coords.lon},${currentData.coords.lat}&zoom=${currentData.zoom}&apiKey=${geoapifyApiKey}`;
+
 	return (
 		<div className='bg-white dark:bg-gray-900 font-sans'>
 			<div className='container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24'>
@@ -140,12 +196,11 @@ const HeroSection = ({ selectedJurisdiction, setSelectedJurisdiction }) => {
 					{/* Left Column: Text Content & Search */}
 					<div className='text-center lg:text-left'>
 						<h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white leading-tight tracking-tighter mb-4'>
-							Discover the <br />
-							World's Top Designers
+							US State <br />
+							Legislation Tracker
 						</h1>
 						<p className='max-w-xl mx-auto lg:mx-0 text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-8'>
-							Explore work from the most talented and accomplished designers
-							ready to take on your next project.
+							Tracking the bills that matter, made simple.
 						</p>
 
 						{/* Tabs */}
@@ -211,125 +266,100 @@ const HeroSection = ({ selectedJurisdiction, setSelectedJurisdiction }) => {
 					</div>
 
 					{/* Right Column: Image (Hidden on small screens) */}
-					<div className='hidden lg:flex relative w-full h-full items-center justify-center p-8'>
-						<div className='absolute inset-0 bg-gradient-to-br from-blue-300 via-purple-400 to-pink-400 opacity-20 dark:opacity-30 rounded-3xl blur-3xl'></div>
-						<div className='relative bg-black/50 backdrop-blur-sm rounded-3xl p-4 shadow-2xl w-[280px] h-[560px] md:w-[300px] md:h-[600px]'>
-							<div className='w-full h-full bg-black rounded-2xl flex flex-col justify-between p-4'>
-								{/* Phone UI Mockup */}
-								<div>
-									<div className='flex justify-between items-center text-white mb-8'>
-										<svg
-											width='24'
-											height='24'
-											viewBox='0 0 24 24'
-											fill='none'
-											xmlns='http://www.w3.org/2000/svg'>
-											<path
-												d='M15 18L9 12L15 6'
-												stroke='currentColor'
-												strokeWidth='2'
-												strokeLinecap='round'
-												strokeLinejoin='round'
-											/>
-										</svg>
-										<span className='font-semibold'>Passage</span>
-										<svg
-											width='24'
-											height='24'
-											viewBox='0 0 24 24'
-											fill='none'
-											xmlns='http://www.w3.org/2000/svg'>
-											<path
-												d='M12 5V19M5 12H19'
-												stroke='currentColor'
-												strokeWidth='2'
-												strokeLinecap='round'
-												strokeLinejoin='round'
-											/>
-										</svg>
-									</div>
 
-									<div className='relative w-48 h-48 mx-auto rounded-full bg-gray-800 shadow-lg flex items-center justify-center'>
-										<img
-											src='https://images.unsplash.com/photo-1559268297-c69b75a4d6a3?q=80&w=2574&auto=format&fit=crop'
-											alt='Airplane wing from window'
-											className='w-44 h-44 rounded-full object-cover'
-											onError={(e) => {
-												e.target.onerror = null;
-												e.target.src =
-													"https://placehold.co/200x200/7f9cf5/ffffff?text=Image";
-											}}
-										/>
-										<div className='absolute inset-0 rounded-full border-4 border-gray-700'></div>
-									</div>
-								</div>
+<div className='flex relative w-full h-full items-center justify-center p-4 sm:p-8'>
+  <div className='absolute inset-0 bg-gradient-to-br from-blue-300 via-purple-400 to-pink-400 opacity-20 dark:opacity-30 rounded-3xl blur-3xl'></div>
 
-								<div className='text-white text-center'>
-									<div className='flex items-center justify-center space-x-8 my-8'>
-										<svg
-											width='24'
-											height='24'
-											viewBox='0 0 24 24'
-											fill='none'
-											xmlns='http://www.w3.org/2000/svg'>
-											<path
-												d='M10 4L4 10L10 16'
-												stroke='currentColor'
-												strokeWidth='2'
-												strokeLinecap='round'
-												strokeLinejoin='round'
-											/>
-											<path
-												d='M10 4L4 10L10 16'
-												stroke='currentColor'
-												strokeWidth='2'
-												strokeLinecap='round'
-												strokeLinejoin='round'
-												transform='translate(10, 0)'
-											/>
-										</svg>
-										<div className='w-12 h-12 bg-white text-black rounded-full flex items-center justify-center'>
-											<svg
-												width='24'
-												height='24'
-												viewBox='0 0 24 24'
-												fill='currentColor'
-												xmlns='http://www.w3.org/2000/svg'>
-												<path d='M8 5V19L19 12L8 5Z' />
-											</svg>
-										</div>
-										<svg
-											width='24'
-											height='24'
-											viewBox='0 0 24 24'
-											fill='none'
-											xmlns='http://www.w3.org/2000/svg'>
-											<path
-												d='M14 4L20 10L14 16'
-												stroke='currentColor'
-												strokeWidth='2'
-												strokeLinecap='round'
-												strokeLinejoin='round'
-											/>
-											<path
-												d='M14 4L20 10L14 16'
-												stroke='currentColor'
-												strokeWidth='2'
-												strokeLinecap='round'
-												strokeLinejoin='round'
-												transform='translate(-10, 0)'
-											/>
-										</svg>
-									</div>
-									<p className='text-sm text-gray-400'>Next Songs</p>
-								</div>
-							</div>
-							<div className='absolute bottom-4 right-4 bg-white/80 backdrop-blur-sm text-black text-xs font-bold py-1 px-3 rounded-full flex items-center gap-1'>
-								<Star className='w-3 h-3 text-yellow-500' fill='currentColor' />
-								AmazingUI
-							</div>
-						</div>
-					</div>
+
+  <div className='relative w-full h-auto aspect-[4/3] bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden shadow-2xl'>
+    <img
+      src={mapUrl}
+      alt={`Map of ${selectedJurisdiction.name}`}
+      className='w-full h-full object-cover'
+      onError={(e) => {
+        e.target.onerror = null;
+        e.target.src = `https://placehold.co/800x600/e2e8f0/475569?text=Map+of+${encodeURIComponent(
+          selectedJurisdiction.name
+        )}`;
+      }}
+    />
+
+    {/* KEY CHANGE 2: Gradient Overlay
+      - This sits between the image and the text to ensure text is readable against a busy image.
+      - `absolute inset-0`: Makes it cover the entire parent.
+      - `bg-gradient-to-t from-black/70 to-transparent`: Darker at the bottom, fading to clear at the top.
+    */}
+    <div className='absolute inset-0 bg-gradient-to-t from-indigo-900/70 via-indigo-900/40 to-transparent'></div>
+
+    {/* KEY CHANGE 3: Content Overlay
+      - `absolute inset-0`: Makes it cover the parent, sitting on top of the image and gradient.
+      - `flex flex-col justify-between`: This is a powerful combo. It creates a vertical layout and pushes the
+        jurisdiction name to the top and the stats boxes to the bottom.
+      - `p-4 sm:p-6`: Responsive padding.
+    */}
+    <div className='absolute inset-0 flex flex-col justify-between p-4 sm:p-6 text-white'>
+      {/* Top Content: Jurisdiction Name */}
+      <h2 className='font-bold text-indigo-400 text-2xl md:text-3xl text-shadow'>
+        {selectedJurisdiction.name}
+      </h2>
+
+      {/* Bottom Content: Stats Boxes */}
+      {/* `grid`: Makes the two stat boxes sit side-by-side on small screens and up. */}
+      <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+        {/* Senators */}
+      
+        <div className='flex flex-col items-start p-4 bg-black/30 backdrop-blur-sm rounded-lg border border-white/10'>
+          <div className='flex items-center text-sm font-medium text-gray-300 uppercase tracking-wider mb-2'>
+            <Building className='h-4 w-4 mr-2' />
+            Senators
+          </div>
+          <p className='text-4xl md:text-5xl font-bold text-white'>
+            {currentData.senators.total}
+          </p>
+          <ul className='mt-4 space-y-1 text-gray-200 w-full'>
+            <li className='flex justify-between items-center'>
+              <span>Democrats</span>
+              <span className='font-semibold text-blue-400'>
+                {currentData.senators.democrats}
+              </span>
+            </li>
+            <li className='flex justify-between items-center'>
+              <span>Republicans</span>
+              <span className='font-semibold text-red-400'>
+                {currentData.senators.republicans}
+              </span>
+            </li>
+          </ul>
+        </div>
+        
+        {/* Assemblymembers */}
+        <div className='flex flex-col items-start p-4 bg-black/30 backdrop-blur-sm rounded-lg border border-white/10'>
+          <div className='flex items-center text-sm font-medium text-gray-300 uppercase tracking-wider mb-2'>
+            <Users className='h-4 w-4 mr-2' />
+            {currentData.assembly.name || "Assemblymembers"}
+          </div>
+          <p className='text-4xl md:text-5xl font-bold text-white'>
+            {currentData.assembly.total}
+          </p>
+          <ul className='mt-4 space-y-1 text-gray-200 w-full'>
+            <li className='flex justify-between items-center'>
+              <span>Democrats</span>
+              <span className='font-semibold text-blue-400'>
+                {currentData.assembly.democrats}
+              </span>
+            </li>
+            <li className='flex justify-between items-center'>
+              <span>Republicans</span>
+              <span className='font-semibold text-red-400'>
+                {currentData.assembly.republicans}
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 				</div>
 			</div>
 		</div>
