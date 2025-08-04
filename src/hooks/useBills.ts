@@ -14,6 +14,7 @@ export interface Bill {
 	summary: string;
 	sources: string[];
 	jurisdiction: Jurisdiction;
+	latest_action?: string;
 	identifier: string;
 	latest_action_date: string;
 	house_passage_date: string; // need to update to the correct type

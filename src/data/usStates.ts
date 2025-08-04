@@ -1,5 +1,4 @@
-// This file is generated and contains pre-built static map URLs for each state.
-// Replace `YOUR_GEOAPIFY_API_KEY` with your actual key, or load it from environment variables.
+
 const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY
 
 const usStates = [
