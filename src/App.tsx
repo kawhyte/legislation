@@ -18,7 +18,10 @@ const App = () => {
 			<Header />
 
 			<main className='max-w-[100rem] mx-auto px-4 py-6'>
-				<Hero2 />
+				<Hero2 
+				 selectedJurisdiction={selectedJurisdiction}
+          setSelectedJurisdiction={setSelectedJurisdiction}
+				/>
 
 				<div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6'>
 					<StatCard
