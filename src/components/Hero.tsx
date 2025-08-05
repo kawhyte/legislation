@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, MapPin, Sparkles, TrendingUp, Users, Zap } from "lucide-react";
+import { MapPin, Sparkles, TrendingUp, Users, Zap } from "lucide-react";
 import StateSelector, { type States } from "./JurisdictionSelector";
-import { Button } from "./ui/button";
+
 import usStates from "@/data/usStates";
 
 const geoapifyApiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
@@ -192,7 +192,7 @@ const HeroSection = ({
 					</div>
 
 					{/* Stats section */}
-					<div className={`mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 transition-all duration-1000 delay-1000 ease-out ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+					{/* <div className={`mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 transition-all duration-1000 delay-1000 ease-out ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
 						{[
 							{ number: "50", label: "States Covered", color: "text-violet-400" },
 							{ number: "10K+", label: "Bills Tracked", color: "text-blue-400" },
@@ -207,7 +207,7 @@ const HeroSection = ({
 								</div>
 							</div>
 						))}
-					</div>
+					</div> */}
 				</div>
 			</div>
 

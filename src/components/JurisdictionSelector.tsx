@@ -72,12 +72,12 @@ const JurisdictionSelector = ({ onSelectJurisdiction }: Props) => {
 					</SelectGroup>
 				</SelectContent>
 			</Select>
-			<p className='mt-4 text-sm text-gray-600'>
+			{/* <p className='mt-4 text-sm text-gray-600'>
 				Selected:{" "}
 				<span className='font-semibold'>
 					{data.find((opt) => opt.name === selectedValue)?.name || "None"}
 				</span>
-			</p>
+			</p> */}
 		</div>
 	);
 };

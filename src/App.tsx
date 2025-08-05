@@ -3,7 +3,7 @@ import BillGrid from "./components/BillGrid";
 
 import Header from "./components/Header";
 import  { type States } from "./components/JurisdictionSelector";
-import StatCard from "./components/StatCard";
+// import StatCard from "./components/StatCard";
 import usStates from "./data/usStates";
 import SectionHeader from "./components/SectionHeader";
 
@@ -23,7 +23,7 @@ const App = () => {
 					setSelectedJurisdiction={setSelectedJurisdiction}
 				/>
 
-				<div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6'>
+				{/* <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6'>
 					<StatCard
 						label='Total Bills'
 						value={98}
@@ -48,7 +48,7 @@ const App = () => {
 						note='Last 2 months'
 						color='red'
 					/>
-				</div>
+				</div> */}
 
 				{/* <div className='flex align-middle items-baseline  bg-gray-50 border border-blue-100 rounded-2xl px-4 py-3'>
 					<p className='mt-4 text-sm text-gray-600'>Filter:</p>
