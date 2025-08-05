@@ -1,210 +1,218 @@
-import  { useEffect, useState } from "react";
-import { } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowRight, MapPin, Sparkles, TrendingUp, Users, Zap } from "lucide-react";
 import StateSelector, { type States } from "./JurisdictionSelector";
-// import { Button } from "./ui/button";
+import { Button } from "./ui/button";
 import usStates from "@/data/usStates";
 
 const geoapifyApiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
-// const legislatureData = {
-// 	CA: {
-// 		name: "California",
-// 		coords: { lon: -119.4179, lat: 36.7783 },
-// 		zoom: 5.5,
-// 		senators: {
-// 			total: 40,
-// 			democrats: 32, // Updated data for realism
-// 			republicans: 8,
-// 		},
-// 		assembly: {
-// 			total: 80,
-// 			democrats: 62,
-// 			republicans: 18,
-// 		},
-// 	},
-// 	NV: {
-// 		name: "Nevada",
-// 		coords: { lon: -116.4194, lat: 38.8026 },
-// 		zoom: 5.8,
-// 		senators: {
-// 			total: 21,
-// 			democrats: 13,
-// 			republicans: 8,
-// 		},
-// 		assembly: {
-// 			total: 42,
-// 			democrats: 28,
-// 			republicans: 14,
-// 		},
-// 	},
-// 	AL: {
-// 		name: "Texas-Lie",
-// 		coords: { lon: -99.9018, lat: 31.9686 },
-// 		zoom: 5,
-// 		senators: {
-// 			total: 31,
-// 			democrats: 12,
-// 			republicans: 19,
-// 		},
-// 		assembly: {
-// 			name: "House of Representatives",
-// 			total: 150,
-// 			democrats: 64,
-// 			republicans: 86,
-// 		},
-// 	},
-// };
 
 interface HeroSectionProps {
 	selectedJurisdiction: States | null;
 	setSelectedJurisdiction: (jurisdiction: States) => void;
 }
-// --- Main Hero Component ---
+
 const HeroSection = ({
 	selectedJurisdiction,
 	setSelectedJurisdiction,
 }: HeroSectionProps) => {
 	const [mapLoading, setMapLoading] = useState(true);
+	const [isLoaded, setIsLoaded] = useState(false);
 
 	const currentData =
 		usStates.find(
 			(state) =>
 				state.abbreviation === (selectedJurisdiction?.abbreviation ?? "CA")
-		) ?? usStates.find((state) => state.abbreviation === "CA"); // fallback to CA if not found
+		) ?? usStates.find((state) => state.abbreviation === "CA");
 
-	const mapUrl = `https://maps.geoapify.com/v1/staticmap?style=osm-bright-grey&width=800&height=600&center=lonlat:${currentData?.coords.lon},${currentData?.coords.lat}&zoom=${currentData?.zoom}&apiKey=${geoapifyApiKey}`;
+	const mapUrl = `https://maps.geoapify.com/v1/staticmap?style=osm-bright-grey&width=1200&height=800&center=lonlat:${currentData?.coords.lon},${currentData?.coords.lat}&zoom=${currentData?.zoom}&apiKey=${geoapifyApiKey}`;
 
 	useEffect(() => {
 		setMapLoading(true);
+		// Add entrance animation trigger
+		const timer = setTimeout(() => setIsLoaded(true), 100);
+		return () => clearTimeout(timer);
 	}, [mapUrl]);
 
-	const popularTags = [
-		"app design",
-		"landing page",
-		"web design",
-		"dashboard",
-		"logo design",
+	const features = [
+		{
+			icon: TrendingUp,
+			text: "Real-time bill tracking",
+			color: "text-emerald-400"
+		},
+		{
+			icon: Sparkles,
+			text: "AI-powered summaries",
+			color: "text-violet-400"
+		},
+		{
+			icon: Users,
+			text: "Built for Gen Z & Millennials",
+			color: "text-blue-400"
+		}
 	];
 
-	// console.log("current Data", currentData);
-	console.log("selectedState selectedJurisdiction ", selectedJurisdiction);
-	// console.log(
-	// 	"selectedStateAAANBBB selectedState ",
-	// 	selectedJurisdiction?.abbreviation
-	// );
+	const quickActions = [
+		"Healthcare Reform",
+		"Climate Policy", 
+		"Education Bills",
+		"Tech Regulation",
+		"Housing Policy"
+	];
 
 	return (
-		<div className='bg-white dark:bg-gray-900 font-sans'>
-			<div className='container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24'>
-				<div className='grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>
-					{/* Left Column: Text Content & Search */}
-					<div className='text-center lg:text-left'>
-						<h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white leading-tight tracking-tighter mb-4'>
-							US State <br />
-							Legislation Tracker
+		<div className='relative min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 overflow-hidden'>
+			{/* Animated background elements */}
+			<div className="absolute inset-0">
+				{/* Main gradient overlay */}
+				<div className="absolute inset-0 bg-gradient-to-br from-violet-950/20 via-blue-950/10 to-emerald-950/20" />
+				
+				{/* Animated orbs */}
+				<div className={`absolute top-1/4 left-1/4 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl transition-all duration-[3000ms] ease-out ${isLoaded ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
+				<div className={`absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl transition-all duration-[3000ms] delay-500 ease-out ${isLoaded ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
+				<div className={`absolute top-1/2 right-1/3 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl transition-all duration-[3000ms] delay-1000 ease-out ${isLoaded ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
+				
+				{/* Subtle map background */}
+				{mapUrl && (
+					<div className="absolute inset-0 opacity-5">
+						<img
+							src={mapUrl}
+							alt={`Map of ${selectedJurisdiction?.name}`}
+							className='w-full h-full object-cover'
+							onLoad={() => setMapLoading(false)}
+							onError={() => setMapLoading(false)}
+						/>
+					</div>
+				)}
+			</div>
+
+			{/* Main content */}
+			<div className='relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-32'>
+				<div className='max-w-4xl mx-auto text-center'>
+					{/* Main heading with animation */}
+					<div className={`transition-all duration-1000 ease-out ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+						<div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-sm font-medium mb-8">
+							<Zap className="h-4 w-4" />
+							Making democracy accessible for everyone
+						</div>
+						
+						<h1 className='text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-br from-white via-slate-200 to-slate-400 bg-clip-text text-transparent leading-[0.9] tracking-tight mb-6'>
+							Track US
+							<br />
+							<span className="bg-gradient-to-r from-violet-400 via-blue-400 to-emerald-400 bg-clip-text text-transparent">
+								Legislation
+							</span>
+							<br />
+							That Matters
 						</h1>
-						<p className='max-w-xl mx-auto lg:mx-0 text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-8'>
-							Tracking the bills that matter, made simple.
+						
+						<p className='max-w-2xl mx-auto text-xl text-slate-300 mb-12 leading-relaxed'>
+							Stay informed on the bills shaping your future. Get AI-powered summaries, 
+							real-time updates, and clear explanations of complex legislation.
 						</p>
+					</div>
 
-						{/* Tabs */}
-						{/* <div className='flex justify-center lg:justify-start space-x-2 mb-6'>
-							<Button
-								variant='secondary'
-								className='bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm'>
-								<ImageIcon className='mr-2 h-4 w-4' /> Shots
-							</Button>
-							<Button
-								variant='secondary'
-								className='bg-black text-white dark:bg-white dark:text-black shadow-sm'>
-								<Users className='mr-2 h-4 w-4' /> Designers
-							</Button>
-							<Button
-								variant='secondary'
-								className='bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm'>
-								<Briefcase className='mr-2 h-4 w-4' /> Services
-							</Button>
-						</div> */}
+					{/* Features row */}
+					<div className={`flex flex-wrap justify-center gap-6 mb-16 transition-all duration-1000 delay-300 ease-out ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+						{features.map((feature, index) => (
+							<div key={index} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50">
+								<feature.icon className={`h-4 w-4 ${feature.color}`} />
+								<span className="text-slate-300 text-sm font-medium">{feature.text}</span>
+							</div>
+						))}
+					</div>
 
-						{/* State Filter Dropdown */}
-						<div className='max-w-xl mx-auto lg:mx-0 mb-6'>
-							<div className='relative mb-3'>
-								<div
-									className='flex flex-col items-center gap-2 border-2 rounded-4xl  border-transparent bg-white dark:bg-gray-800 px-4 py-3 shadow-lg text-gray-900 dark:text-white'
-									>
-									{/* <span className='font-bold text-lg'>Start Here!</span> */}
-									<span className='ml-2 text-base font-medium '>
-										Pick your state to see real legislation in action.
-									</span>{" "}
+					{/* Main CTA Section */}
+					<div className={`transition-all duration-1000 delay-500 ease-out ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+						<div className="relative max-w-2xl mx-auto">
+							{/* Animated border effect */}
+							<div className="absolute -inset-1 bg-gradient-to-r from-violet-500 via-blue-500 to-emerald-500 rounded-2xl blur opacity-30 group-hover:opacity-50 transition duration-1000"></div>
+							
+							<div className='relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 shadow-2xl'>
+								<div className="flex items-center justify-center gap-2 mb-4">
+									<MapPin className="h-5 w-5 text-violet-400" />
+									<h3 className='text-2xl font-bold text-white'>
+										Choose Your State to Get Started
+									</h3>
+								</div>
+								
+								<p className='text-slate-400 mb-6 text-lg'>
+									Select your state to see live legislation, AI summaries, and track bills that impact your community.
+								</p>
+								
+								<div className="space-y-4 flex flex-row align-middle justify-center">
 									<StateSelector
 										onSelectJurisdiction={setSelectedJurisdiction}
 									/>
+									
+									{/* {selectedJurisdiction && (
+										<div className="flex items-center justify-center gap-3 p-4 rounded-lg bg-gradient-to-r from-violet-500/10 to-blue-500/10 border border-violet-500/20">
+											<div className="flex items-center gap-2">
+												<div className="w-6 h-6 rounded-full overflow-hidden border border-slate-600">
+													<img 
+														src={currentData?.flagUrl} 
+														alt={`${selectedJurisdiction.name} flag`}
+														className="w-full h-full object-cover"
+													/>
+												</div>
+												<span className="text-slate-200 font-medium">
+													{selectedJurisdiction.name} selected
+												</span>
+											</div>
+											<Button 
+												className="bg-gradient-to-r from-violet-500 to-blue-500 hover:from-violet-600 hover:to-blue-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+												size="lg"
+											>
+												View Bills
+												<ArrowRight className="ml-2 h-4 w-4" />
+											</Button>
+										</div>
+									)} */}
 								</div>
 							</div>
 						</div>
-						{/* Popular Tags */}
-						<div className='flex items-center justify-center lg:justify-start flex-wrap gap-2 text-sm text-gray-600 dark:text-gray-400'>
-							<span className='font-semibold text-gray-800 dark:text-white'>
-								Popular:
+					</div>
+
+					{/* Quick action tags */}
+					<div className={`mt-16 transition-all duration-1000 delay-700 ease-out ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+						<div className='flex items-center justify-center flex-wrap gap-3 text-sm'>
+							<span className='font-medium text-slate-400'>
+								Popular topics:
 							</span>
-							{popularTags.map((tag) => (
+							{quickActions.map((tag, index) => (
 								<button
 									key={tag}
-									className='px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'>
+									className={`px-4 py-2 rounded-full bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:border-violet-500/50 hover:text-violet-300 hover:bg-slate-700/50 transition-all duration-300 hover:scale-105 ${
+										index % 2 === 0 ? 'hover:shadow-violet-500/25' : 'hover:shadow-blue-500/25'
+									} hover:shadow-lg`}
+								>
 									{tag}
 								</button>
 							))}
 						</div>
 					</div>
 
-					{/* Right Column: Image (Hidden on small screens) */}
-
-					<div className='flex relative w-full h-full items-center justify-center p-4 sm:p-8'>
-						<div className='absolute inset-0 bg-gradient-to-br from-blue-300 via-purple-400 to-pink-400 opacity-20 dark:opacity-30 rounded-3xl blur-3xl'></div>
-
-						<div className='relative w-full h-auto aspect-[4/3] bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden shadow-2xl'>
-							{mapLoading && (
-								<div className='absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-100/80 via-gray-200/60 to-gray-300/40 dark:from-gray-800/80 dark:via-gray-900/60 dark:to-gray-900/40 z-10'>
-									<svg
-										className='animate-spin h-12 w-12 text-indigo-500'
-										viewBox='0 0 24 24'>
-										<circle
-											className='opacity-25'
-											cx='12'
-											cy='12'
-											r='10'
-											stroke='currentColor'
-											strokeWidth='4'
-											fill='none'
-										/>
-										<path
-											className='opacity-75'
-											fill='currentColor'
-											d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z'
-										/>
-									</svg>
+					{/* Stats section */}
+					<div className={`mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 transition-all duration-1000 delay-1000 ease-out ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+						{[
+							{ number: "50", label: "States Covered", color: "text-violet-400" },
+							{ number: "10K+", label: "Bills Tracked", color: "text-blue-400" },
+							{ number: "Real-time", label: "Updates", color: "text-emerald-400" }
+						].map((stat, index) => (
+							<div key={index} className="text-center p-6 rounded-xl bg-slate-800/30 border border-slate-700/30">
+								<div className={`text-3xl font-bold ${stat.color} mb-2`}>
+									{stat.number}
 								</div>
-							)}
-							<img
-								src={mapUrl}
-								alt={`Map of ${selectedJurisdiction?.name}`}
-								className='w-full h-full object-cover transition-opacity duration-700'
-								style={{ opacity: mapLoading ? 0 : 1 }}
-								onLoad={() => setMapLoading(false)}
-								onError={() => setMapLoading(false)}
-							/>
-
-							<div className='absolute inset-0 bg-gradient-to-t from-indigo-900/30 via-indigo-900/10 to-transparent'></div>
-
-							<div className='absolute inset-0 flex flex-col items-start  p-4 sm:p-6 text-white'>
-								{/* Top Content: Jurisdiction Name */}
-								<h2 className='font-bold text-white text-2xl p-2 md:text-3xl text-shadow  backdrop-blur-sm rounded-lg   bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500'>
-									{selectedJurisdiction?.name}
-								</h2>
+								<div className="text-slate-400 font-medium">
+									{stat.label}
+								</div>
 							</div>
-						</div>
+						))}
 					</div>
 				</div>
 			</div>
+
+			{/* Bottom fade effect */}
+			<div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-950 to-transparent" />
 		</div>
 	);
 };

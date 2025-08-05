@@ -86,7 +86,7 @@ export class GeminiService {
       console.error('Error generating summary:', error);
       
       // Fallback summary
-      return "This bill introduces new legislation that may impact various areas of public policy and governance.";
+      return "This bill introduces new legislation that may impact various areas of public policy and governance.K";
     }
   }
 
@@ -112,7 +112,7 @@ export class GeminiService {
       
       // Add delay between batches to respect rate limits
       if (i + batchSize < titles.length) {
-        await delay(4000); // 4 second delay between batches
+        await delay(60000); // 60 second delay between batches
       }
     }
     

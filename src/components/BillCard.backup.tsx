@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Sparkles, Clock,Gavel,XCircle, CheckCircle2 } from "lucide-react";
+import { RefreshCw, Sparkles, Gavel, } from "lucide-react";
 
 interface BillCardProps {
 	bill: Bill;
@@ -73,30 +73,30 @@ const BillCard = ({ bill }: BillCardProps) => {
 	const progressValue = getProgressValue(bill);
 	
 	// --- Helper Component for Status Badge ---
-	const StatusBadge = ({ outcome }: { outcome: string }) => {
-		if (outcome === "Passed") {
-			return (
-				<Badge variant='outline' className='gap-1.5 pl-2 bg-green-100 text-green-800 border-green-300'>
-					<CheckCircle2 className='h-3.5 w-3.5' />
-					Passed
-				</Badge>
-			);
-		}
-		if (outcome === "Failed") {
-			return (
-				<Badge variant='destructive' className='gap-1.5 pl-2'>
-					<XCircle className='h-3.5 w-3.5' />
-					Failed
-				</Badge>
-			);
-		}
-		return (
-			<Badge variant='outline' className='gap-1.5 pl-2'>
-				<Clock className='h-3.5 w-3.5' />
-				In Progress
-			</Badge>
-		);
-	};
+	// const StatusBadge = ({ outcome }: { outcome: string }) => {
+	// 	if (outcome === "Passed") {
+	// 		return (
+	// 			<Badge variant='outline' className='gap-1.5 pl-2 bg-green-100 text-green-800 border-green-300'>
+	// 				<CheckCircle2 className='h-3.5 w-3.5' />
+	// 				Passed
+	// 			</Badge>
+	// 		);
+	// 	}
+	// 	if (outcome === "Failed") {
+	// 		return (
+	// 			<Badge variant='destructive' className='gap-1.5 pl-2'>
+	// 				<XCircle className='h-3.5 w-3.5' />
+	// 				Failed
+	// 			</Badge>
+	// 		);
+	// 	}
+	// 	return (
+	// 		<Badge variant='outline' className='gap-1.5 pl-2'>
+	// 			<Clock className='h-3.5 w-3.5' />
+	// 			In Progress
+	// 		</Badge>
+	// 	);
+	// };
 
 	// Summary Display Component
 	const SummarySection = () => {
@@ -149,7 +149,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 		<Card className='flex flex-col transition-shadow duration-300 hover:shadow-xl dark:bg-gray-900/60'>
 			<CardHeader>
 				<div className='flex flex-row-reverse items-start justify-between gap-4 mb-3'>
-					<StatusBadge outcome={bill.finalOutcome} />
+					{/* <StatusBadge outcome={bill.finalOutcome} /> */}
 
 					<CardDescription className='pt-1 font-medium text-purple-600 dark:text-purple-400'>
 						<Badge variant={"secondary"}> {toSentenceCase(bill.subject[0])}</Badge>
