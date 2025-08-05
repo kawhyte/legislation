@@ -172,7 +172,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 						{bill.identifier}
 					</div>
 					<CardTitle className='text-xl leading-tight text-slate-100 group-hover:text-white transition-colors'>
-						{bill.title}
+						{toSentenceCase(bill.title)}
 					</CardTitle>
 				</div>
 			</CardHeader>
