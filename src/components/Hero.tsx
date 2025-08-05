@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { MapPin, Sparkles, TrendingUp, Users, Zap } from "lucide-react";
+import { ArrowRight, MapPin, Sparkles, TrendingUp, Users, Zap } from "lucide-react";
 import StateSelector, { type States } from "./JurisdictionSelector";
-
+import { Button } from "./ui/button";
 import usStates from "@/data/usStates";
 
 const geoapifyApiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
@@ -71,7 +71,7 @@ const HeroSection = ({
 				<div className={`absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl transition-all duration-[3000ms] delay-500 ease-out ${isLoaded ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
 				<div className={`absolute top-1/2 right-1/3 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl transition-all duration-[3000ms] delay-1000 ease-out ${isLoaded ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
 				
-				{/* Subtle map background */}
+				{/* Subtle map background with soft edges */}
 				{mapUrl && (
 					<div className="absolute inset-0 opacity-5">
 						<img
@@ -81,6 +81,10 @@ const HeroSection = ({
 							onLoad={() => setMapLoading(false)}
 							onError={() => setMapLoading(false)}
 						/>
+						{/* Gradient masks for soft edges */}
+						<div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-transparent to-slate-950" />
+						<div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-transparent via-transparent to-slate-950" />
+						<div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/60" />
 					</div>
 				)}
 			</div>
@@ -144,29 +148,7 @@ const HeroSection = ({
 										onSelectJurisdiction={setSelectedJurisdiction}
 									/>
 									
-									{/* {selectedJurisdiction && (
-										<div className="flex items-center justify-center gap-3 p-4 rounded-lg bg-gradient-to-r from-violet-500/10 to-blue-500/10 border border-violet-500/20">
-											<div className="flex items-center gap-2">
-												<div className="w-6 h-6 rounded-full overflow-hidden border border-slate-600">
-													<img 
-														src={currentData?.flagUrl} 
-														alt={`${selectedJurisdiction.name} flag`}
-														className="w-full h-full object-cover"
-													/>
-												</div>
-												<span className="text-slate-200 font-medium">
-													{selectedJurisdiction.name} selected
-												</span>
-											</div>
-											<Button 
-												className="bg-gradient-to-r from-violet-500 to-blue-500 hover:from-violet-600 hover:to-blue-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300"
-												size="lg"
-											>
-												View Bills
-												<ArrowRight className="ml-2 h-4 w-4" />
-											</Button>
-										</div>
-									)} */}
+									
 								</div>
 							</div>
 						</div>
