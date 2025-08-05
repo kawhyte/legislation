@@ -6,124 +6,25 @@ import {
 	CardContent,
 	CardHeader,
 	CardTitle,
-	CardDescription,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Sparkles } from "lucide-react";
+import { RefreshCw, Sparkles, Clock, Gavel, XCircle, CheckCircle2, Calendar, Building2 } from "lucide-react";
 
 interface BillCardProps {
 	bill: Bill;
 }
-
-// --- Lucide Icons (as inline SVGs) ---
-const Scale = (props) => (
-	<svg
-		xmlns='http://www.w3.org/2000/svg'
-		width='24'
-		height='24'
-		viewBox='0 0 24 24'
-		fill='none'
-		stroke='currentColor'
-		strokeWidth='2'
-		strokeLinecap='round'
-		strokeLinejoin='round'
-		{...props}>
-		<path d='m16 16 3-8 3 8c-2 1-4 1-6 0' />
-		<path d='M2 16h3' />
-		<path d='M11 16h3' />
-		<path d='M12 3v18' />
-		<path d='M3 7h2' />
-		<path d='M9 7h2' />
-		<path d='M5 16c-2.2 0-4-1.8-4-4s1.8-4 4-4' />
-		<path d='M19 16c2.2 0 4-1.8 4-4s-1.8-4-4-4' />
-	</svg>
-);
-
-const CheckCircle2 = (props) => (
-	<svg
-		xmlns='http://www.w3.org/2000/svg'
-		width='24'
-		height='24'
-		viewBox='0 0 24 24'
-		fill='none'
-		stroke='currentColor'
-		strokeWidth='2'
-		strokeLinecap='round'
-		strokeLinejoin='round'
-		{...props}>
-		<path d='M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z' />
-		<path d='m9 12 2 2 4-4' />
-	</svg>
-);
-
-const XCircle = (props) => (
-	<svg
-		xmlns='http://www.w3.org/2000/svg'
-		width='24'
-		height='24'
-		viewBox='0 0 24 24'
-		fill='none'
-		stroke='currentColor'
-		strokeWidth='2'
-		strokeLinecap='round'
-		strokeLinejoin='round'
-		{...props}>
-		<circle cx='12' cy='12' r='10' />
-		<path d='m15 9-6 6' />
-		<path d='m9 9 6 6' />
-	</svg>
-);
-
-const Clock = (props) => (
-	<svg
-		xmlns='http://www.w3.org/2000/svg'
-		width='24'
-		height='24'
-		viewBox='0 0 24 24'
-		fill='none'
-		stroke='currentColor'
-		strokeWidth='2'
-		strokeLinecap='round'
-		strokeLinejoin='round'
-		{...props}>
-		<circle cx='12' cy='12' r='10' />
-		<polyline points='12 6 12 12 16 14' />
-	</svg>
-);
-
-const Gavel = (props) => (
-	<svg
-		xmlns='http://www.w3.org/2000/svg'
-		width='24'
-		height='24'
-		fill='none'
-		viewBox='0 0 24 24'
-		stroke='currentColor'
-		strokeWidth={2}
-		{...props}>
-		<path d='M14 4l6 6M3 21l6-6m1.5-1.5l7-7M16.5 7.5l-7 7' />
-		<path d='M3 21h7v-2H3v2z' />
-	</svg>
-);
 
 const toSentenceCase = (text: string) => {
 	if (!text) return "";
 	return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 };
 
-const impact = [
-	"Promotes cleaner energy sources like wind and solar.",
-	"Could lead to more green energy jobs in the state.",
-	"May affect the cost of your electricity bill.",
-];
-
 const BillCard = ({ bill }: BillCardProps) => {
 	console.log("New bill", bill);
 
-	// Use the AI summary hook
 	const { 
 		summary, 
 		isLoading: summaryLoading, 
@@ -139,13 +40,10 @@ const BillCard = ({ bill }: BillCardProps) => {
 		(state) => state.name.toLowerCase() === bill.jurisdiction.name.toLowerCase()
 	);
 
-	// Get the flag URL, or a placeholder if not found
 	const flagUrl = stateInfo
 		? stateInfo.flagUrl
-		: "https://placehold.co/32x24/cccccc/333333?text=N/A"; // Placeholder for missing flag
+		: "https://placehold.co/32x24/cccccc/333333?text=N/A";
 
-	// Determine the progress value based on the bill's dates.
-	// This is more reliable than parsing the status string.
 	const getProgressValue = (bill: Bill): number => {
 		if (bill.enacted_date) return 100;
 		if (bill.senate_passage_date) return 75;
@@ -156,11 +54,11 @@ const BillCard = ({ bill }: BillCardProps) => {
 
 	const progressValue = getProgressValue(bill);
 	
-	// --- Helper Component for Status Badge ---
-	const StatusBadge = ({ outcome }) => {
+	// Enhanced status badge with better visual hierarchy
+	const StatusBadge = ({ outcome }: { outcome: string }) => {
 		if (outcome === "Passed") {
 			return (
-				<Badge variant='success' className='gap-1.5 pl-2'>
+				<Badge className='gap-1.5 pl-2.5 pr-3 py-1.5 bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20 transition-colors'>
 					<CheckCircle2 className='h-3.5 w-3.5' />
 					Passed
 				</Badge>
@@ -168,42 +66,42 @@ const BillCard = ({ bill }: BillCardProps) => {
 		}
 		if (outcome === "Failed") {
 			return (
-				<Badge variant='destructive' className='gap-1.5 pl-2'>
+				<Badge className='gap-1.5 pl-2.5 pr-3 py-1.5 bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20 transition-colors'>
 					<XCircle className='h-3.5 w-3.5' />
 					Failed
 				</Badge>
 			);
 		}
 		return (
-			<Badge variant='info' className='gap-1.5 pl-2'>
+			<Badge className='gap-1.5 pl-2.5 pr-3 py-1.5 bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20 transition-colors'>
 				<Clock className='h-3.5 w-3.5' />
 				In Progress
 			</Badge>
 		);
 	};
 
-	// Summary Display Component
+	// Enhanced summary section with better loading states
 	const SummarySection = () => {
 		if (summaryLoading) {
 			return (
-				<div className="flex items-center space-x-2">
-					<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
-					<span className="text-sm text-gray-500">AI is summarizing...</span>
+				<div className="flex items-center space-x-3 p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
+					<div className="animate-spin rounded-full h-4 w-4 border-2 border-violet-400 border-t-transparent"></div>
+					<span className="text-sm text-slate-400">AI is analyzing this bill...</span>
 				</div>
 			);
 		}
 
 		if (summaryError) {
 			return (
-				<div className="flex items-center justify-between">
-					<span className="text-sm text-red-500">Failed to generate summary</span>
+				<div className="flex items-center justify-between p-4 rounded-lg bg-red-950/20 border border-red-900/30">
+					<span className="text-sm text-red-400">Unable to generate summary</span>
 					<Button 
 						variant="ghost" 
 						size="sm" 
 						onClick={retrySummary}
-						className="h-6 px-2"
+						className="h-8 px-3 text-red-400 hover:text-red-300 hover:bg-red-950/30"
 					>
-						<RefreshCw className="h-3 w-3 mr-1" />
+						<RefreshCw className="h-3 w-3 mr-1.5" />
 						Retry
 					</Button>
 				</div>
@@ -212,117 +110,137 @@ const BillCard = ({ bill }: BillCardProps) => {
 
 		if (summary) {
 			return (
-				<div className="relative">
-					<div className="flex items-center mb-2">
-						<Sparkles className="h-4 w-4 text-purple-500 mr-2" />
-						<span className="text-sm font-medium text-purple-600 dark:text-purple-400">
+				<div className="p-4 rounded-lg bg-gradient-to-br from-violet-950/20 to-blue-950/20 border border-violet-900/30">
+					<div className="flex items-center mb-3">
+						<div className="flex items-center justify-center w-6 h-6 rounded-full bg-violet-500/20 mr-2">
+							<Sparkles className="h-3.5 w-3.5 text-violet-400" />
+						</div>
+						<span className="text-sm font-medium text-violet-300">
 							AI Summary
 						</span>
 					</div>
-					<p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+					<p className="text-sm text-slate-300 leading-relaxed">
 						{summary}
 					</p>
 				</div>
 			);
 		}
 
-		return null;
+		return (
+			<div className="p-4 rounded-lg bg-slate-800/30 border border-slate-700/50 border-dashed">
+				<p className="text-sm text-slate-500 text-center">Summary not available</p>
+			</div>
+		);
 	};
 
 	return (
-		<Card className='flex flex-col transition-shadow duration-300 hover:shadow-xl dark:bg-gray-900/60'>
-			<CardHeader>
-				<div className='flex flex-row-reverse items-start justify-between gap-4 mb-3'>
+		<Card className='group relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-violet-500/10 bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-slate-700/50 hover:border-violet-500/30'>
+			{/* Subtle background gradient */}
+			<div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-transparent to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+			
+			<CardHeader className="relative pb-4">
+				{/* Header with state flag and status */}
+				<div className='flex items-start justify-between gap-4 mb-4'>
+					<div className="flex items-center gap-3">
+						<Avatar className='w-10 h-10 border-2 border-slate-600/50 shadow-lg rounded-xl bg-slate-800 ring-2 ring-violet-500/10'>
+							<AvatarImage
+								src={flagUrl}
+								alt={`${bill.jurisdiction.name} flag`}
+								className='object-cover rounded-lg'
+							/>
+							<AvatarFallback className='bg-slate-700 text-slate-300 text-xs rounded-lg'>
+								{bill.jurisdiction.name.slice(0, 2).toUpperCase()}
+							</AvatarFallback>
+						</Avatar>
+						<div className="flex flex-col gap-1">
+							<Badge variant="secondary" className="w-fit bg-slate-700/50 text-slate-300 border-slate-600/50">
+								<Building2 className="h-3 w-3 mr-1" />
+								{bill.jurisdiction.name}
+							</Badge>
+							<Badge variant="outline" className="w-fit bg-blue-500/10 text-blue-300 border-blue-500/30 text-xs">
+								{toSentenceCase(bill.subject[0])}
+							</Badge>
+						</div>
+					</div>
+					
 					<StatusBadge outcome={bill.finalOutcome} />
-
-					<CardDescription className='pt-1 font-medium text-purple-600 dark:text-purple-400'>
-						<Badge variant={"secondary"}> {bill.subject}</Badge>
-					</CardDescription>
-					<Avatar className='w-9 h-9 border-2 border-gray-50 dark:border-gray-700 shadow-sm rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center'>
-						<AvatarImage
-							src={flagUrl}
-							alt={`${bill.jurisdiction.name} flag`}
-							className='object-cover rounded-md'
-						/>
-						<AvatarFallback className='bg-gray-50 dark:bg-gray-600 text-gray-100 text-xs rounded-md'>
-							N/A
-						</AvatarFallback>
-					</Avatar>
 				</div>
-				<div className='flex-1 line-clamp-3'>
-					<CardTitle className='text-xl text-gray-800 dark:text-gray-100'>
-						{bill.identifier}: {bill.title}
+
+				{/* Bill title and identifier */}
+				<div className='space-y-2'>
+					<div className="text-sm font-mono text-slate-400 bg-slate-800/50 px-2 py-1 rounded w-fit">
+						{bill.identifier}
+					</div>
+					<CardTitle className='text-xl leading-tight text-slate-100 group-hover:text-white transition-colors'>
+						{bill.title}
 					</CardTitle>
 				</div>
 			</CardHeader>
-			<CardContent className='flex flex-col flex-grow gap-6'>
+
+			<CardContent className='relative space-y-6'>
 				{/* AI Summary Section */}
 				<div>
-					<h3 className='text-base font-semibold text-gray-700 dark:text-gray-300 mb-3'>
-						What this bill does:
+					<h3 className='text-base font-semibold text-slate-200 mb-3 flex items-center'>
+						<span className="w-1 h-4 bg-gradient-to-b from-violet-400 to-blue-400 rounded-full mr-3"></span>
+						What this bill does
 					</h3>
 					<SummarySection />
 				</div>
 
-				{/* Progress Section */}
-				<div className='space-y-2'>
-					<div className='relative flex justify-between text-[10px] font-medium text-gray-600'>
+				{/* Progress Section - Minimal changes as requested */}
+				<div className='space-y-3 p-4 rounded-lg bg-slate-800/30 border border-slate-700/30'>
+					<h3 className='text-sm font-medium text-slate-300 flex items-center'>
+						<Gavel className='mr-2 h-4 w-4 text-slate-400' />
+						Legislative Progress
+					</h3>
+					
+					<div className='relative flex justify-between text-[10px] font-medium text-slate-500 mb-2'>
 						<span className='text-center w-1/4'>Introduced</span>
 						<span className='text-center w-1/4'>House</span>
 						<span className='text-center w-1/4'>Senate</span>
-						<span className='text-center w-1/4'>Became Law</span>
+						<span className='text-center w-1/4'>Enacted</span>
 					</div>
+					
 					<Progress
 						value={progressValue}
-						className='h-2 w-full bg-gray-200 mb-2'
+						className='h-2.5 w-full bg-slate-700/50 [&>div]:bg-gradient-to-r [&>div]:from-violet-500 [&>div]:to-blue-500'
 					/>
-					<div className='relative flex justify-between text-xs text-gray-500 mt-1'>
+					
+					<div className='relative flex justify-between text-xs text-slate-400 mt-2'>
 						<span className='text-center w-1/4'>
-							{bill.first_action_date || "N/A"}
+							{bill.first_action_date || "—"}
 						</span>
 						<span className='text-center w-1/4'>
-							{bill.house_passage_date || "N/A"}
+							{bill.house_passage_date || "—"}
 						</span>
 						<span className='text-center w-1/4'>
-							{bill.senate_passage_date || "N/A"}
+							{bill.senate_passage_date || "—"}
 						</span>
 						<span className='text-center w-1/4'>
-							{bill.enacted_date || "N/A"}
+							{bill.enacted_date || "—"}
 						</span>
 					</div>
 				</div>
 
-				{/* Impact Section */}
-				<div>
-					<h3 className='mb-2 flex items-center text-base font-semibold text-gray-700 dark:text-gray-300'>
-						<Gavel className='mr-2 h-5 w-5 text-gray-500' />
-						<span>If this becomes law...</span>
-					</h3>
-					<ul className='list-disc list-inside space-y-1 text-sm text-gray-600 dark:text-gray-400'>
-						{impact.map((point) => (
-							<li key={point}>{point}</li>
-						))}
-					</ul>
-				</div>
+				{/* Footer information */}
+				<div className="flex flex-col gap-3 pt-2 border-t border-slate-700/30">
+					<div className='flex items-center text-xs text-slate-400'>
+						<Calendar className="h-3 w-3 mr-1.5" />
+						Last updated {bill.latest_action_date || "Unknown"}
+					</div>
 
-				<p className='text-xs text-gray-700'>
-					Last activity posted on{" "}
-					{bill.latest_action_date ? bill.latest_action_date : "N/A"}
-				</p>
-
-				<div className='text-xs text-gray-500 flex flex-wrap gap-2 items-center'>
-					Bill Source(s):
-					{bill.sources && bill.sources.length > 0 ? (
-						bill.sources.map((src, idx) => (
-							<Badge
-								key={idx}
-								variant='secondary'
-								className='bg-blue-100 text-blue-800 font-medium'>
-								{src}
-							</Badge>
-						))
-					) : (
-						<span>N/A</span>
+					{bill.sources && bill.sources.length > 0 && (
+						<div className='flex flex-wrap gap-2 items-center'>
+							<span className="text-xs text-slate-500">Sources:</span>
+							{bill.sources.map((src, idx) => (
+								<Badge
+									key={idx}
+									variant='outline'
+									className='text-xs bg-slate-800/50 text-slate-400 border-slate-600/50 hover:border-slate-500/50 transition-colors'>
+									{src}
+								</Badge>
+							))}
+						</div>
 					)}
 				</div>
 			</CardContent>
