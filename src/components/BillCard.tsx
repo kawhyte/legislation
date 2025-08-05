@@ -13,15 +13,12 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Sparkles, Clock, Gavel, XCircle, CheckCircle2, Calendar, Building2 } from "lucide-react";
 
-import {formatDate}  from '../lib/utils'
+import {formatDate, toSentenceCase}  from '../lib/utils'
+
 interface BillCardProps {
 	bill: Bill;
 }
 
-const toSentenceCase = (text: string) => {
-	if (!text) return "";
-	return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-};
 
 const BillCard = ({ bill }: BillCardProps) => {
 	console.log("New bill", bill);
@@ -227,7 +224,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 				<div className="flex flex-col gap-3 pt-2 border-t border-slate-700/30">
 					<div className='flex items-center text-xs text-slate-400'>
 						<Calendar className="h-3 w-3 mr-1.5" />
-						Last updated {bill.latest_action_date || "Unknown"}
+						Last updated {formatDate(bill.latest_action_date) || "Unknown"}
 					</div>
 
 					{bill.sources && bill.sources.length > 0 && (

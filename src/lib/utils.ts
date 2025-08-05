@@ -26,3 +26,10 @@ export const formatDate = (dateString: string | null | undefined): string => {
     return "—";
   }
 };
+
+// HELPER FUNCTION FOR CONVERTING TO SENTENCE CASE
+
+export const toSentenceCase = (text: string) => {
+	if (!text) return "";
+	return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+};
