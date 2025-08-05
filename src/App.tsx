@@ -2,7 +2,7 @@ import { useState } from "react";
 import BillGrid from "./components/BillGrid";
 
 import Header from "./components/Header";
-import StateSelector, { type States } from "./components/JurisdictionSelector";
+import  { type States } from "./components/JurisdictionSelector";
 import StatCard from "./components/StatCard";
 import usStates from "./data/usStates";
 import SectionHeader from "./components/SectionHeader";
@@ -50,33 +50,28 @@ const App = () => {
 					/>
 				</div>
 
-				<div className='flex align-middle items-baseline  bg-gray-50 border border-blue-100 rounded-2xl px-4 py-3'>
+				{/* <div className='flex align-middle items-baseline  bg-gray-50 border border-blue-100 rounded-2xl px-4 py-3'>
 					<p className='mt-4 text-sm text-gray-600'>Filter:</p>
 					<StateSelector
 						onSelectJurisdiction={(jurisdiction) =>
 							setSelectedJurisdiction(jurisdiction)
 						}
 					/>
-					{/* <StateSelector
-						onSelectJurisdiction={(jurisdiction) =>
-							setSelectedJurisdiction(jurisdiction)
-						}
-					/> */}
-
+				
 					<input
 						type='text'
 						placeholder='Quick Search (State or Bill ID)'
 						className='ml-4 px-3 py-1 border border-gray-300 rounded text-sm bg-white'
 					/>
-				</div>
+				</div> */}
 
 				{/* <FilterBar /> */}
 
 				{/* Stat Cards */}
 
-				<div className='text-sm text-center text-gray-500 mb-4'>
+				{/* <div className='text-sm text-center text-gray-500 mb-4'>
 					Information updated Monday, November 14th 2022
-				</div>
+				</div> */}
 				<SectionHeader jurisdiction={selectedJurisdiction} />
 				{/* Bill Cards Grid */}
 				<BillGrid selectedJurisdiction={selectedJurisdiction} />

@@ -1,5 +1,6 @@
 import type { Bill } from "../hooks/useBills";
 import usStates from "../data/usStates";
+import { useBillSummary } from "../hooks/useBillSummary";
 import {
 	Card,
 	CardContent,
@@ -10,6 +11,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { RefreshCw, Sparkles } from "lucide-react";
 
 interface BillCardProps {
 	bill: Bill;
@@ -38,6 +41,7 @@ const Scale = (props) => (
 		<path d='M19 16c2.2 0 4-1.8 4-4s-1.8-4-4-4' />
 	</svg>
 );
+
 const CheckCircle2 = (props) => (
 	<svg
 		xmlns='http://www.w3.org/2000/svg'
@@ -54,6 +58,7 @@ const CheckCircle2 = (props) => (
 		<path d='m9 12 2 2 4-4' />
 	</svg>
 );
+
 const XCircle = (props) => (
 	<svg
 		xmlns='http://www.w3.org/2000/svg'
@@ -71,6 +76,7 @@ const XCircle = (props) => (
 		<path d='m9 9 6 6' />
 	</svg>
 );
+
 const Clock = (props) => (
 	<svg
 		xmlns='http://www.w3.org/2000/svg'
@@ -87,6 +93,7 @@ const Clock = (props) => (
 		<polyline points='12 6 12 12 16 14' />
 	</svg>
 );
+
 const Gavel = (props) => (
 	<svg
 		xmlns='http://www.w3.org/2000/svg'
@@ -116,6 +123,18 @@ const impact = [
 const BillCard = ({ bill }: BillCardProps) => {
 	console.log("New bill", bill);
 
+	// Use the AI summary hook
+	const { 
+		summary, 
+		isLoading: summaryLoading, 
+		error: summaryError, 
+		retry: retrySummary 
+	} = useBillSummary(bill.title, {
+		enabled: true,
+		maxLength: 150,
+		targetAge: "18-40"
+	});
+
 	const stateInfo = usStates.find(
 		(state) => state.name.toLowerCase() === bill.jurisdiction.name.toLowerCase()
 	);
@@ -136,6 +155,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 	};
 
 	const progressValue = getProgressValue(bill);
+	
 	// --- Helper Component for Status Badge ---
 	const StatusBadge = ({ outcome }) => {
 		if (outcome === "Passed") {
@@ -162,10 +182,53 @@ const BillCard = ({ bill }: BillCardProps) => {
 		);
 	};
 
-	<Avatar className='w-8 h-8'>
-		<AvatarImage src={flagUrl} alt={`${bill.jurisdiction.name} flag`} />
-		<AvatarFallback>N/A</AvatarFallback>
-	</Avatar>;
+	// Summary Display Component
+	const SummarySection = () => {
+		if (summaryLoading) {
+			return (
+				<div className="flex items-center space-x-2">
+					<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+					<span className="text-sm text-gray-500">AI is summarizing...</span>
+				</div>
+			);
+		}
+
+		if (summaryError) {
+			return (
+				<div className="flex items-center justify-between">
+					<span className="text-sm text-red-500">Failed to generate summary</span>
+					<Button 
+						variant="ghost" 
+						size="sm" 
+						onClick={retrySummary}
+						className="h-6 px-2"
+					>
+						<RefreshCw className="h-3 w-3 mr-1" />
+						Retry
+					</Button>
+				</div>
+			);
+		}
+
+		if (summary) {
+			return (
+				<div className="relative">
+					<div className="flex items-center mb-2">
+						<Sparkles className="h-4 w-4 text-purple-500 mr-2" />
+						<span className="text-sm font-medium text-purple-600 dark:text-purple-400">
+							AI Summary
+						</span>
+					</div>
+					<p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+						{summary}
+					</p>
+				</div>
+			);
+		}
+
+		return null;
+	};
+
 	return (
 		<Card className='flex flex-col transition-shadow duration-300 hover:shadow-xl dark:bg-gray-900/60'>
 			<CardHeader>
@@ -190,23 +253,19 @@ const BillCard = ({ bill }: BillCardProps) => {
 					<CardTitle className='text-xl text-gray-800 dark:text-gray-100'>
 						{bill.identifier}: {bill.title}
 					</CardTitle>
-					{/* <CardDescription className='pt-1 font-medium text-purple-600 dark:text-purple-400'>
-							{bill.subject}
-						</CardDescription> */}
 				</div>
 			</CardHeader>
-			<CardContent className='flex flex-col flex-grow gap-8'>
+			<CardContent className='flex flex-col flex-grow gap-6'>
+				{/* AI Summary Section */}
 				<div>
-					<h3 className='text-base font-semibold text-gray-700 dark:text-gray-300 mb-2'>
-						The simple version:
+					<h3 className='text-base font-semibold text-gray-700 dark:text-gray-300 mb-3'>
+						What this bill does:
 					</h3>
-					<p className='text-sm text-gray-600 dark:text-gray-400'>
-						{" "}
-						{bill.title ? toSentenceCase(bill.title) : "N/A"}
-					</p>
+					<SummarySection />
 				</div>
-				{/* New Progress Section */}
-				<div className='mt-4 space-y-2'>
+
+				{/* Progress Section */}
+				<div className='space-y-2'>
 					<div className='relative flex justify-between text-[10px] font-medium text-gray-600'>
 						<span className='text-center w-1/4'>Introduced</span>
 						<span className='text-center w-1/4'>House</span>
@@ -221,8 +280,6 @@ const BillCard = ({ bill }: BillCardProps) => {
 						<span className='text-center w-1/4'>
 							{bill.first_action_date || "N/A"}
 						</span>
-						{/* Assuming you have a 'house_passage_date' and 'senate_passage_date' in your Bill type */}
-						{/* For now, using placeholder or N/A if not available */}
 						<span className='text-center w-1/4'>
 							{bill.house_passage_date || "N/A"}
 						</span>
@@ -234,24 +291,18 @@ const BillCard = ({ bill }: BillCardProps) => {
 						</span>
 					</div>
 				</div>
-				{/* End New Progress Section */}
 
-				{/* <CardDescription className='text-xs text-gray-700 line-clamp-5'>
-					{bill.title ? toSentenceCase(bill.title) : "N/A"}
-				</CardDescription> */}
-
+				{/* Impact Section */}
 				<div>
-					<div>
-						<h3 className='mb-2 flex items-center text-base font-semibold text-gray-700 dark:text-gray-300'>
-							<Gavel className='mr-2 h-5 w-5 text-gray-500' />
-							<span>If this becomes law...</span>
-						</h3>
-						<ul className='list-disc list-inside space-y-1 text-sm text-gray-600 dark:text-gray-400'>
-							{impact.map((point) => (
-								<li key={point}>{point}</li>
-							))}
-						</ul>
-					</div>
+					<h3 className='mb-2 flex items-center text-base font-semibold text-gray-700 dark:text-gray-300'>
+						<Gavel className='mr-2 h-5 w-5 text-gray-500' />
+						<span>If this becomes law...</span>
+					</h3>
+					<ul className='list-disc list-inside space-y-1 text-sm text-gray-600 dark:text-gray-400'>
+						{impact.map((point) => (
+							<li key={point}>{point}</li>
+						))}
+					</ul>
 				</div>
 
 				<p className='text-xs text-gray-700'>

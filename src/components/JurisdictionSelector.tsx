@@ -28,7 +28,7 @@ const JurisdictionSelector = ({ onSelectJurisdiction }: Props) => {
 	const [selectedValue, setSelectedValue] = useState<string>(data[0].name);
 
 	return (
-		<div className='w-64 p-4'>
+		<div className='w-sm p-4'>
 			<Select
 				value={selectedValue}
 				onValueChange={(value) => {
