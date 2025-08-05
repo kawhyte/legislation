@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Sparkles, Clock, Gavel, XCircle, CheckCircle2, Calendar, Building2 } from "lucide-react";
 
+import {formatDate}  from '../lib/utils'
 interface BillCardProps {
 	bill: Bill;
 }
@@ -208,16 +209,16 @@ const BillCard = ({ bill }: BillCardProps) => {
 					
 					<div className='relative flex justify-between text-xs text-slate-400 mt-2'>
 						<span className='text-center w-1/4'>
-							{bill.first_action_date || "—"}
+							{formatDate(bill.first_action_date) || "—"}
 						</span>
 						<span className='text-center w-1/4'>
-							{bill.house_passage_date || "—"}
+							{formatDate(bill.house_passage_date) || "—"}
 						</span>
 						<span className='text-center w-1/4'>
-							{bill.senate_passage_date || "—"}
+							{formatDate(bill.senate_passage_date) || "—"}
 						</span>
 						<span className='text-center w-1/4'>
-							{bill.enacted_date || "—"}
+							{formatDate(bill.enacted_date) || "—"}
 						</span>
 					</div>
 				</div>
