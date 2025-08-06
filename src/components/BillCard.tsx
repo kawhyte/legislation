@@ -10,7 +10,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Sparkles, Clock, Gavel, XCircle, CheckCircle2, Calendar, Building2, Brain, ChevronRight } from "lucide-react";
+import { RefreshCw, Sparkles,  Gavel, XCircle, Calendar, Building2, Brain, ChevronRight } from "lucide-react";
 import { useEffect } from "react";
 import BillProgressBar from "./BillProgressBar"; 
 
@@ -66,30 +66,30 @@ const BillCard = ({ bill }: BillCardProps) => {
 	// const progressValue = getProgressValue(bill);
 	
 	// Enhanced status badge with better visual hierarchy
-	const StatusBadge = ({ outcome }: { outcome: string }) => {
-		if (outcome === "Passed") {
-			return (
-				<Badge className='gap-1.5 pl-2.5 pr-3 py-1.5 bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20 transition-colors'>
-					<CheckCircle2 className='h-3.5 w-3.5' />
-					Passed
-				</Badge>
-			);
-		}
-		if (outcome === "Failed") {
-			return (
-				<Badge className='gap-1.5 pl-2.5 pr-3 py-1.5 bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20 transition-colors'>
-					<XCircle className='h-3.5 w-3.5' />
-					Failed
-				</Badge>
-			);
-		}
-		return (
-			<Badge className='gap-1.5 pl-2.5 pr-3 py-1.5 bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20 transition-colors'>
-				<Clock className='h-3.5 w-3.5' />
-				In Progress
-			</Badge>
-		);
-	};
+	// const StatusBadge = ({ outcome }: { outcome: string }) => {
+	// 	if (outcome === "Passed") {
+	// 		return (
+	// 			<Badge className='gap-1.5 pl-2.5 pr-3 py-1.5 bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20 transition-colors'>
+	// 				<CheckCircle2 className='h-3.5 w-3.5' />
+	// 				Passed
+	// 			</Badge>
+	// 		);
+	// 	}
+	// 	if (outcome === "Failed") {
+	// 		return (
+	// 			<Badge className='gap-1.5 pl-2.5 pr-3 py-1.5 bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20 transition-colors'>
+	// 				<XCircle className='h-3.5 w-3.5' />
+	// 				Failed
+	// 			</Badge>
+	// 		);
+	// 	}
+	// 	return (
+	// 		<Badge className='gap-1.5 pl-2.5 pr-3 py-1.5 bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20 transition-colors'>
+	// 			<Clock className='h-3.5 w-3.5' />
+	// 			In Progress
+	// 		</Badge>
+	// 	);
+	// };
 
 	// Loading animation component
 	const LoadingDots = () => (
@@ -277,13 +277,13 @@ const BillCard = ({ bill }: BillCardProps) => {
 								<Building2 className="h-3 w-3 mr-1" />
 								{bill.jurisdiction.name}
 							</Badge>
-							<Badge variant="outline" className="w-fit bg-blue-500/10 text-blue-300 border-blue-500/30 text-xs">
+						{ bill?.subject.length > 0  ? 	<Badge variant="outline" className="w-fit bg-blue-500/10 text-blue-300 border-blue-500/30 text-xs">
 								{toSentenceCase(bill.subject[0])}
-							</Badge>
+							</Badge>: ""}
 						</div>
 					</div>
 					
-					<StatusBadge outcome={bill.finalOutcome} />
+					{/* <StatusBadge outcome={bill.finalOutcome} /> */}
 				</div>
 
 				{/* Bill title and identifier */}

@@ -158,7 +158,7 @@ const HeroSection = ({
 					<div className={`mt-16 transition-all duration-1000 delay-700 ease-out ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
 						<div className='flex items-center justify-center flex-wrap gap-3 text-sm'>
 							<span className='font-medium text-slate-400'>
-								Popular topics:
+								Popular bill topics:
 							</span>
 							{quickActions.map((tag, index) => (
 								<button
