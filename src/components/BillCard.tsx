@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Sparkles, Clock, Gavel, XCircle, CheckCircle2, Calendar, Building2, Brain, ChevronRight } from "lucide-react";
 import { useEffect } from "react";
+import BillProgressBar from "./BillProgressBar"; 
 
 import {formatDate, toSentenceCase}  from '../lib/utils'
 
@@ -307,8 +308,14 @@ const BillCard = ({ bill }: BillCardProps) => {
 					<SummarySection />
 				</div>
 
+
+	{/* Enhanced Progress Section */}
+	
+					<BillProgressBar bill={bill} />
+
+
 				{/* Progress Section */}
-				<div className='space-y-3 p-4 rounded-lg bg-slate-800/30 border border-slate-700/30'>
+				{/* <div className='space-y-3 p-4 rounded-lg bg-slate-800/30 border border-slate-700/30'>
 					<h3 className='text-sm font-medium text-slate-300 flex items-center'>
 						<Gavel className='mr-2 h-4 w-4 text-slate-400' />
 						Legislative Progress
@@ -340,7 +347,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 							{formatDate(bill.enacted_date) || "—"}
 						</span>
 					</div>
-				</div>
+				</div> */}
 
 				{/* Footer information */}
 				<div className="flex flex-col gap-3 pt-2 border-t border-slate-700/30">
