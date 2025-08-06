@@ -11,7 +11,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Sparkles, Clock, Gavel, XCircle, CheckCircle2, Calendar, Building2 } from "lucide-react";
+import { RefreshCw, Sparkles, Clock, Gavel, XCircle, CheckCircle2, Calendar, Building2, Brain, ChevronRight } from "lucide-react";
+import { useEffect } from "react";
 
 import {formatDate, toSentenceCase}  from '../lib/utils'
 
@@ -19,20 +20,32 @@ interface BillCardProps {
 	bill: Bill;
 }
 
-
 const BillCard = ({ bill }: BillCardProps) => {
-	console.log("New bill", bill);
-
 	const { 
 		summary, 
+		impacts,
 		isLoading: summaryLoading, 
 		error: summaryError, 
-		retry: retrySummary 
+		generateSummary,
+		cleanup
 	} = useBillSummary(bill.title, {
-		enabled: true,
 		maxLength: 150,
 		targetAge: "18-40"
 	});
+
+	// Debug logging
+	console.log('[BillCard] Component render - Bill:', bill.title);
+	console.log('[BillCard] Summary state:', summary);
+	console.log('[BillCard] Impacts state:', impacts);
+	console.log('[BillCard] Loading state:', summaryLoading);
+	console.log('[BillCard] Error state:', summaryError);
+
+	// Cleanup on unmount
+	useEffect(() => {
+		return () => {
+			cleanup?.();
+		};
+	}, [cleanup]);
 
 	const stateInfo = usStates.find(
 		(state) => state.name.toLowerCase() === bill.jurisdiction.name.toLowerCase()
@@ -78,57 +91,166 @@ const BillCard = ({ bill }: BillCardProps) => {
 		);
 	};
 
-	// Enhanced summary section with better loading states
+	// Loading animation component
+	const LoadingDots = () => (
+		<div className="flex items-center space-x-1">
+			<div className="w-2 h-2 bg-violet-400 rounded-full animate-pulse"></div>
+			<div className="w-2 h-2 bg-violet-400 rounded-full animate-pulse delay-75"></div>
+			<div className="w-2 h-2 bg-violet-400 rounded-full animate-pulse delay-150"></div>
+		</div>
+	);
+
+	// Enhanced summary section with on-demand loading
 	const SummarySection = () => {
-		if (summaryLoading) {
+		console.log('[SummarySection] Render - summary:', summary, 'loading:', summaryLoading, 'error:', summaryError);
+		
+		if (!summary && !summaryLoading && !summaryError) {
+			console.log('[SummarySection] Showing initial button state');
 			return (
-				<div className="flex items-center space-x-3 p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
-					<div className="animate-spin rounded-full h-4 w-4 border-2 border-violet-400 border-t-transparent"></div>
-					<span className="text-sm text-slate-400">AI is analyzing this bill...</span>
+				<div className="p-6 rounded-xl  border border-violet-200/30 bg-gradient-to-br from-slate-800/80 to-slate-900/80 text-center">
+					<div className="flex flex-col items-center space-y-4">
+						<div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-violet-500/20 to-blue-500/20 backdrop-blur-xl border">
+							<Brain className="h-6 w-6 text-white" />
+						</div>
+						<div className="space-y-2">
+							<p className="text-sm font-medium text-white">
+								Skip the Political Jargons
+							</p>
+							<p className="text-xs text-white max-w-xs">
+								Click below to find out what this bill actually does — no law degree needed
+							</p>
+						</div>
+						<Button 
+							onClick={() => {
+								console.log('[SummarySection] Button clicked, calling generateSummary');
+								generateSummary();
+							}}
+							className="bg-gradient-to-r from-violet-500 to-blue-500 hover:from-violet-600 hover:to-blue-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200 group"
+							size="sm"
+						>
+							<Sparkles className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+							Decode the Bill
+							<ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
+						</Button>
+					</div>
+				</div>
+			);
+		}
+
+		if (summaryLoading) {
+			console.log('[SummarySection] Showing loading state');
+			return (
+				<div className="p-6 rounded-xl bg-gradient-to-br from-violet-50/50 to-blue-50/50 border border-violet-200/30">
+					<div className="flex flex-col items-center space-y-4">
+						<div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-violet-500/20 to-blue-500/20">
+							<div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
+						</div>
+						<div className="space-y-3 text-center">
+							<div className="flex items-center justify-center space-x-2">
+								<span className="text-sm font-medium text-violet-700">
+									AI is analyzing this bill
+								</span>
+								<LoadingDots />
+							</div>
+							<div className="w-full bg-violet-200/30 rounded-full h-1.5 overflow-hidden">
+								<div className="h-full bg-gradient-to-r from-violet-500 to-blue-500 rounded-full animate-pulse"></div>
+							</div>
+						</div>
+					</div>
 				</div>
 			);
 		}
 
 		if (summaryError) {
+			console.log('[SummarySection] Showing error state:', summaryError);
 			return (
-				<div className="flex items-center justify-between p-4 rounded-lg bg-red-950/20 border border-red-900/30">
-					<span className="text-sm text-red-400">Unable to generate summary</span>
-					<Button 
-						variant="ghost" 
-						size="sm" 
-						onClick={retrySummary}
-						className="h-8 px-3 text-red-400 hover:text-red-300 hover:bg-red-950/30"
-					>
-						<RefreshCw className="h-3 w-3 mr-1.5" />
-						Retry
-					</Button>
+				<div className="p-6 rounded-xl bg-gradient-to-br from-red-50/50 to-pink-50/50 border border-red-200/30">
+					<div className="flex items-center justify-between">
+						<div className="flex items-center space-x-3">
+							<div className="flex items-center justify-center w-8 h-8 rounded-full bg-red-500/20">
+								<XCircle className="h-4 w-4 text-red-600" />
+							</div>
+							<span className="text-sm text-red-700">Unable to generate summary</span>
+						</div>
+						<Button 
+							variant="outline" 
+							size="sm" 
+							onClick={() => {
+								console.log('[SummarySection] Retry button clicked');
+								generateSummary();
+							}}
+							className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
+						>
+							<RefreshCw className="h-3 w-3 mr-1.5" />
+							Retry
+						</Button>
+					</div>
 				</div>
 			);
 		}
 
 		if (summary) {
+			console.log('[SummarySection] Showing success state with summary:', summary, 'and impacts:', impacts);
 			return (
-				<div className="p-4 rounded-lg bg-gradient-to-br from-violet-950/20 to-blue-950/20 border border-violet-900/30">
-					<div className="flex items-center mb-3">
-						<div className="flex items-center justify-center w-6 h-6 rounded-full bg-violet-500/20 mr-2">
-							<Sparkles className="h-3.5 w-3.5 text-violet-400" />
+				<div className="space-y-4">
+					{/* AI Summary */}
+					<div className="p-5 rounded-xl bg-gradient-to-br from-violet-50/50 to-blue-50/50 border border-violet-200/30">
+						<div className="flex items-center mb-3">
+							<div className="flex items-center justify-center w-6 h-6 rounded-full bg-violet-500/20 mr-2">
+								<Sparkles className="h-3.5 w-3.5 text-violet-600" />
+							</div>
+							<span className="text-sm font-semibold text-violet-700">
+								AI Summary
+							</span>
 						</div>
-						<span className="text-sm font-medium text-violet-300">
-							AI Summary
-						</span>
+						<p className="text-sm text-slate-700 leading-relaxed">
+							{summary}
+						</p>
 					</div>
-					<p className="text-sm text-slate-300 leading-relaxed">
-						{summary}
-					</p>
+
+					{/* Impact Analysis */}
+					{impacts && impacts.length > 0 && (
+						<div className="p-5 rounded-xl bg-gradient-to-br from-blue-50/50 to-cyan-50/50 border border-blue-200/30">
+							<div className="flex items-center mb-3">
+								<div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 mr-2">
+									<Gavel className="h-3.5 w-3.5 text-blue-600" />
+								</div>
+								<span className="text-sm font-semibold text-blue-700">
+									Impact if passed
+								</span>
+							</div>
+							<ul className="space-y-2">
+								{impacts.map((impact, index) => (
+									<li key={index} className="flex items-start space-x-2 text-sm text-slate-700">
+										<span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+										<span className="leading-relaxed">{impact}</span>
+									</li>
+								))}
+							</ul>
+						</div>
+					)}
+
+					{/* Regenerate button */}
+					<div className="flex justify-center pt-2">
+						<Button 
+							variant="ghost" 
+							size="sm" 
+							onClick={() => {
+								console.log('[SummarySection] Regenerate button clicked');
+								generateSummary();
+							}}
+							className="text-white hover:text-violet-500 hover:bg-violet-50 text-xs"
+						>
+							<RefreshCw className="h-3 w-3 mr-1.5" />
+							Regenerate Analysis
+						</Button>
+					</div>
 				</div>
 			);
 		}
 
-		return (
-			<div className="p-4 rounded-lg bg-slate-800/30 border border-slate-700/50 border-dashed">
-				<p className="text-sm text-slate-500 text-center">Summary not available</p>
-			</div>
-		);
+		console.log('[SummarySection] No matching condition, returning null');
+		return null;
 	};
 
 	return (
@@ -169,7 +291,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 					<div className="text-sm font-mono text-slate-400 bg-slate-800/50 px-2 py-1 rounded w-fit">
 						{bill.identifier}
 					</div>
-					<CardTitle className='text-xl leading-tight text-slate-100 group-hover:text-white transition-colors'>
+					<CardTitle className='text-xl line-clamp-3 leading-tight text-slate-100 group-hover:text-white transition-colors'>
 						{toSentenceCase(bill.title)}
 					</CardTitle>
 				</div>
@@ -180,12 +302,12 @@ const BillCard = ({ bill }: BillCardProps) => {
 				<div>
 					<h3 className='text-base font-semibold text-slate-200 mb-3 flex items-center'>
 						<span className="w-1 h-4 bg-gradient-to-b from-violet-400 to-blue-400 rounded-full mr-3"></span>
-						What this bill does
+						AI-Powered  Analysis
 					</h3>
 					<SummarySection />
 				</div>
 
-				{/* Progress Section - Minimal changes as requested */}
+				{/* Progress Section */}
 				<div className='space-y-3 p-4 rounded-lg bg-slate-800/30 border border-slate-700/30'>
 					<h3 className='text-sm font-medium text-slate-300 flex items-center'>
 						<Gavel className='mr-2 h-4 w-4 text-slate-400' />

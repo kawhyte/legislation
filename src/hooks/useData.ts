@@ -1,5 +1,4 @@
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import apiClient from "../services/api-client";
 import { CanceledError, type AxiosRequestConfig } from "axios";
 
@@ -15,36 +14,77 @@ const useData = <T>(
 	const [data, setData] = useState<T[]>([]);
 	const [error, setError] = useState("");
 	const [isLoading, setLoading] = useState(false);
-	console.log("Inital data", data);
-	console.log("Inital requestConfig", requestConfig);
+	
+	// Use ref to avoid unnecessary re-renders from requestConfig changes
+	const requestConfigRef = useRef(requestConfig);
+	requestConfigRef.current = requestConfig;
+
+	// Create stable dependency strings to prevent unnecessary effect triggers
+	const stableDeps = useMemo(() => JSON.stringify(deps), [deps]);
+	const stableParams = useMemo(() => 
+		JSON.stringify(requestConfig?.params || {}), 
+		[requestConfig?.params]
+	);
+
 	useEffect(() => {
-console.log("[useData] Running effect. Endpoint:", endpoint);
-		if (!endpoint) return;
+		console.log("[useData] Running effect. Endpoint:", endpoint);
+		
+		// Early return if no endpoint
+		if (!endpoint) {
+			setData([]);
+			setLoading(false);
+			setError("");
+			return;
+		}
 
 		const controller = new AbortController();
 		const signal = controller.signal;
+		
 		setLoading(true);
+		setError("");
+
 		apiClient
-			.get<FetchResponse<T>>(endpoint, { signal, ...requestConfig })
+			.get<FetchResponse<T>>(endpoint, { 
+				signal, 
+				...requestConfigRef.current 
+			})
 			.then((res) => {
-							console.log("[useData] Got response:", res.data.results); // ✅ Add this
-
-				console.log("USE data", res.data.results);
-
-				setData(res.data.results);
-				setLoading(false);
+				console.log("[useData] Got response:", res.data.results);
+				
+				// Only update state if request wasn't aborted
+				if (!signal.aborted) {
+					setData(res.data.results);
+					setLoading(false);
+				}
 			})
 			.catch((err) => {
-							console.error("[useData] Fetch error:", err.message); // ✅ Add this
+				console.error("[useData] Fetch error:", err.message);
 
+				// Don't handle canceled requests
 				if (err instanceof CanceledError) return;
 
-				setError(err.message);
-				setLoading(false);
+				// Only update state if request wasn't aborted
+				if (!signal.aborted) {
+					setError(err.message);
+					setLoading(false);
+				}
 			});
 
-		return () => controller.abort();
-	}, [endpoint, requestConfig?.params?.jurisdiction, ...deps]);
+		// Cleanup function to abort request on unmount or dependency change
+		return () => {
+			console.log("[useData] Aborting request for:", endpoint);
+			controller.abort();
+		};
+	}, [endpoint, stableDeps, stableParams]);
+
+	// Reset data when endpoint changes to null
+	useEffect(() => {
+		if (!endpoint) {
+			setData([]);
+			setError("");
+			setLoading(false);
+		}
+	}, [endpoint]);
 
 	return { data, error, isLoading };
 };

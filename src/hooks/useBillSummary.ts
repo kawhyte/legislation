@@ -1,17 +1,17 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { GeminiService } from '../services/geminiServices';
 
 interface UseBillSummaryOptions {
-  enabled?: boolean;
   maxLength?: number;
   targetAge?: string;
 }
 
 interface UseBillSummaryReturn {
   summary: string | null;
+  impacts: string[] | null;
   isLoading: boolean;
   error: string | null;
-  retry: () => void;
+  generateSummary: () => void;
 }
 
 export const useBillSummary = (
@@ -19,15 +19,27 @@ export const useBillSummary = (
   options: UseBillSummaryOptions = {}
 ): UseBillSummaryReturn => {
   const [summary, setSummary] = useState<string | null>(null);
+  const [impacts, setImpacts] = useState<string[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const { enabled = true, maxLength = 150, targetAge = "18-40" } = options;
+  const { maxLength = 150, targetAge = "18-40" } = options;
   const geminiService = useRef(new GeminiService());
   const abortController = useRef<AbortController | null>(null);
 
   const generateSummary = async () => {
-    if (!billTitle || !enabled) return;
+    if (!billTitle) {
+      console.log('[useBillSummary] No bill title provided');
+      return;
+    }
+
+    // Prevent multiple simultaneous requests for the same bill
+    if (isLoading) {
+      console.log('[useBillSummary] Request already in progress, skipping');
+      return;
+    }
+
+    console.log('[useBillSummary] Starting summary generation for:', billTitle);
 
     // Cancel any existing request
     if (abortController.current) {
@@ -39,15 +51,22 @@ export const useBillSummary = (
     setError(null);
 
     try {
-      const summaryResult = await geminiService.current.summarizeBillTitle(
+      console.log('[useBillSummary] Calling geminiService.summarizeBillWithImpacts');
+      const result = await geminiService.current.summarizeBillWithImpacts(
         billTitle,
         { maxLength, targetAge, useCache: true }
       );
       
-      if (!abortController.current.signal.aborted) {
-        setSummary(summaryResult);
-      }
+      console.log('[useBillSummary] Received result:', result);
+      
+      //if (!abortController.current.signal.aborted) {
+        console.log('[useBillSummary] Setting summary and impacts:', result.summary, result.impacts);
+        setSummary(result.summary);
+        setImpacts(result.impacts);
+        setIsLoading(false);
+      //}
     } catch (err) {
+      console.error('[useBillSummary] Error in generateSummary:', err);
       if (!abortController.current.signal.aborted) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to generate summary';
         setError(errorMessage);
@@ -55,32 +74,29 @@ export const useBillSummary = (
       }
     } finally {
       if (!abortController.current.signal.aborted) {
+        console.log('[useBillSummary] Setting loading to false');
         setIsLoading(false);
       }
     }
   };
 
-  const retry = () => {
-    setError(null);
-    setSummary(null);
-    generateSummary();
+  // Cleanup function to cancel requests
+  const cleanup = () => {
+    if (abortController.current) {
+      abortController.current.abort();
+    }
   };
-
-  useEffect(() => {
-    generateSummary();
-
-    // Cleanup function
-    return () => {
-      if (abortController.current) {
-        abortController.current.abort();
-      }
-    };
-  }, [billTitle, enabled, maxLength, targetAge]);
 
   return {
     summary,
+    impacts,
     isLoading,
     error,
-    retry
+    generateSummary,
+    cleanup: () => {
+      if (abortController.current) {
+        abortController.current.abort();
+      }
+    }
   };
 };
