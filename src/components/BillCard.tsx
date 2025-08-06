@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Sparkles, Clock, Gavel, XCircle, CheckCircle2, Calendar, Building2, Brain, ChevronRight } from "lucide-react";
 import { useEffect } from "react";
@@ -35,11 +34,11 @@ const BillCard = ({ bill }: BillCardProps) => {
 	});
 
 	// Debug logging
-	console.log('[BillCard] Component render - Bill:', bill.title);
-	console.log('[BillCard] Summary state:', summary);
-	console.log('[BillCard] Impacts state:', impacts);
-	console.log('[BillCard] Loading state:', summaryLoading);
-	console.log('[BillCard] Error state:', summaryError);
+	// console.log('[BillCard] Component render - Bill:', bill.title);
+	// console.log('[BillCard] Summary state:', summary);
+	// console.log('[BillCard] Impacts state:', impacts);
+	// console.log('[BillCard] Loading state:', summaryLoading);
+	// console.log('[BillCard] Error state:', summaryError);
 
 	// Cleanup on unmount
 	useEffect(() => {
@@ -56,15 +55,15 @@ const BillCard = ({ bill }: BillCardProps) => {
 		? stateInfo.flagUrl
 		: "https://placehold.co/32x24/cccccc/333333?text=N/A";
 
-	const getProgressValue = (bill: Bill): number => {
-		if (bill.enacted_date) return 100;
-		if (bill.senate_passage_date) return 75;
-		if (bill.house_passage_date) return 50;
-		if (bill.introduced) return 25;
-		return 0;
-	};
+	// const getProgressValue = (bill: Bill): number => {
+	// 	if (bill.enacted_date) return 100;
+	// 	if (bill.senate_passage_date) return 75;
+	// 	if (bill.house_passage_date) return 50;
+	// 	if (bill.introduced) return 25;
+	// 	return 0;
+	// };
 
-	const progressValue = getProgressValue(bill);
+	// const progressValue = getProgressValue(bill);
 	
 	// Enhanced status badge with better visual hierarchy
 	const StatusBadge = ({ outcome }: { outcome: string }) => {
@@ -108,7 +107,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 		if (!summary && !summaryLoading && !summaryError) {
 			console.log('[SummarySection] Showing initial button state');
 			return (
-				<div className="p-6 rounded-xl  border border-violet-200/30 bg-gradient-to-br from-slate-800/80 to-slate-900/80 text-center">
+				<div className="p-6 rounded-xl   border border-violet-200/30 bg-gradient-to-br from-slate-800/80 to-slate-900/80 text-center">
 					<div className="flex flex-col items-center space-y-4">
 						<div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-violet-500/20 to-blue-500/20 backdrop-blur-xl border">
 							<Brain className="h-6 w-6 text-white" />
@@ -130,7 +129,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 							size="sm"
 						>
 							<Sparkles className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-							Decode the Bill
+							Decode this Bill
 							<ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
 						</Button>
 					</div>
@@ -255,7 +254,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 	};
 
 	return (
-		<Card className='group relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-violet-500/10 bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-slate-700/50 hover:border-violet-500/30'>
+		<Card className='group  relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-violet-500/10 bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-slate-700/50 hover:border-violet-500/30'>
 			{/* Subtle background gradient */}
 			<div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-transparent to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 			
@@ -298,7 +297,11 @@ const BillCard = ({ bill }: BillCardProps) => {
 				</div>
 			</CardHeader>
 
-			<CardContent className='relative space-y-6'>
+			<CardContent className='relative space-y-6'>	
+				
+				{/* Enhanced Progress Section */}
+	
+					<BillProgressBar bill={bill} />
 				{/* AI Summary Section */}
 				<div>
 					<h3 className='text-base font-semibold text-slate-200 mb-3 flex items-center'>
@@ -307,47 +310,6 @@ const BillCard = ({ bill }: BillCardProps) => {
 					</h3>
 					<SummarySection />
 				</div>
-
-
-	{/* Enhanced Progress Section */}
-	
-					<BillProgressBar bill={bill} />
-
-
-				{/* Progress Section */}
-				{/* <div className='space-y-3 p-4 rounded-lg bg-slate-800/30 border border-slate-700/30'>
-					<h3 className='text-sm font-medium text-slate-300 flex items-center'>
-						<Gavel className='mr-2 h-4 w-4 text-slate-400' />
-						Legislative Progress
-					</h3>
-					
-					<div className='relative flex justify-between text-[10px] font-medium text-slate-500 mb-2'>
-						<span className='text-center w-1/4'>Introduced</span>
-						<span className='text-center w-1/4'>House</span>
-						<span className='text-center w-1/4'>Senate</span>
-						<span className='text-center w-1/4'>Enacted</span>
-					</div>
-					
-					<Progress
-						value={progressValue}
-						className='h-2.5 w-full bg-slate-700/50 [&>div]:bg-gradient-to-r [&>div]:from-violet-500 [&>div]:to-blue-500'
-					/>
-					
-					<div className='relative flex justify-between text-xs text-slate-400 mt-2'>
-						<span className='text-center w-1/4'>
-							{formatDate(bill.first_action_date) || "—"}
-						</span>
-						<span className='text-center w-1/4'>
-							{formatDate(bill.house_passage_date) || "—"}
-						</span>
-						<span className='text-center w-1/4'>
-							{formatDate(bill.senate_passage_date) || "—"}
-						</span>
-						<span className='text-center w-1/4'>
-							{formatDate(bill.enacted_date) || "—"}
-						</span>
-					</div>
-				</div> */}
 
 				{/* Footer information */}
 				<div className="flex flex-col gap-3 pt-2 border-t border-slate-700/30">

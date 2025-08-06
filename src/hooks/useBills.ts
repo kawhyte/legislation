@@ -37,6 +37,7 @@ const useBills = (selectedJurisdiction: States | null) =>{
 			? {
 					params: {
 						jurisdiction: selectedJurisdiction.name,
+						subject:["Education"],
 					},
 			  }
 			: undefined,
