@@ -52,29 +52,29 @@ export function analyzeBillMomentum(bill: any): MomentumAnalysis {
     }
     
     if (classifications.includes("reading-1") || classifications.includes("reading-2")) {
-      score += 3;
+      score += 2;
       reasons.push("Floor reading occurred");
     }
 
     if (classifications.includes("amendment-passage")) {
-      score += 2;
+      score += 1;
       reasons.push("Amendments were adopted");
     }
 
     // Medium momentum indicators (+2 points each)
     if (classifications.includes("referral-committee")) {
-      score += 2;
+      score += 1;
       reasons.push("Referred to committee for review");
     }
 
     // Check for positive movement in description
     if (description.includes("ordered to third reading")) {
-      score += 3;
+      score += 2;
       reasons.push("Ordered to third reading - likely to be voted on");
     }
 
     if (description.includes("ordered to second reading")) {
-      score += 2;
+      score += 1;
       reasons.push("Ordered to second reading");
     }
 
@@ -118,6 +118,8 @@ export function analyzeBillMomentum(bill: any): MomentumAnalysis {
   // Determine momentum level and display decision
   let level: MomentumLevel;
   let shouldDisplay: boolean;
+console.log("SCORE***", score)
+
 
   if (score >= 5) {
     level = "High";

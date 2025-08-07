@@ -4,12 +4,28 @@ import type { States } from "@/components/JurisdictionSelector";
 import useData from "./useData";
 import { useMemo } from "react";
 import { filterBillsByMomentum, enrichBillsWithMomentum, type MomentumAnalysis } from "../utils/billMomentum";
+import { getPastDate } from "@/lib/utils";
 
 interface Jurisdiction {
 	id: string;
 	name: string;
 	classification: string;
 }
+
+  interface Organization {
+	id: string;
+	name: string;
+	classification: 'lower' | 'upper' | string; // Can be specific or a general string
+  }
+  
+interface Action {
+	id: string;
+	organization: Organization;
+	description: string;
+	date: string; // The type is string, but you can convert it to a Date object upon processing.
+	classification: string[];
+	order: number;
+  }
 
 export interface Bill {
 	id: string;
@@ -28,20 +44,17 @@ export interface Bill {
 	house_passage_date: string;
 	senate_passage_date: string;
 	enacted_date: string;
-	actions?: any[]; // Add actions array
+	actions?: Action[]; // Add actions array
 	momentum?: MomentumAnalysis; // Add momentum analysis
 }
 
 // Dynamically calculate the date
-const date = new Date();
-date.setMonth(date.getMonth() - 2); // Set date to 1 month ago
+const MonthAgo = getPastDate(2, 'months');
+const DaysAgo = getPastDate(55, 'days');
 
-const year = date.getFullYear();
-const month = String(date.getMonth() + 1).padStart(2, '0');
-const day = String(date.getDate()).padStart(2, '0');
-const oneMonthAgoDate = `${year}-${month}-${day}`;
 
-console.log(`Fetching bills created since: ${oneMonthAgoDate}`);
+
+
 
 const useBills = (selectedJurisdiction: States | null) => {
 	const { data: rawData, error, isLoading } = useData<Bill>(
@@ -50,12 +63,13 @@ const useBills = (selectedJurisdiction: States | null) => {
 			? {
 					params: {
 						jurisdiction: selectedJurisdiction.name,
-						subject: ["Technology"],
-						created_since: oneMonthAgoDate,
+						subject: ["Paid Leave", "Artificial Intelligence","Technology", "Healthcare", "Education", "Housing"],
+						created_since: MonthAgo,
 						per_page: 20, // Increased to account for filtering
 						sort: 'updated_desc',
 						// Include actions in API response
-						include: 'actions'
+						include: 'actions',
+						action_since:DaysAgo
 					},
 			  }
 			: undefined,
@@ -77,7 +91,7 @@ const useBills = (selectedJurisdiction: States | null) => {
 		console.log(`[useBills] Filtered from ${rawData.length} to ${filteredBills.length} bills`);
 		
 		// Step 3: Log momentum distribution for debugging
-		const momentumCounts = filteredBills.reduce((acc: any, bill: any) => {
+		const momentumCounts = filteredBills.reduce((acc: any, bill: Bill) => {
 			const level = bill.momentum?.level || 'None';
 			acc[level] = (acc[level] || 0) + 1;
 			return acc;

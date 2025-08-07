@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, MapPin, Sparkles, TrendingUp, Users, Zap } from "lucide-react";
+import {  MapPin, Sparkles, TrendingUp, Users, Zap } from "lucide-react";
 import StateSelector, { type States } from "./JurisdictionSelector";
-import { Button } from "./ui/button";
 import usStates from "@/data/usStates";
 
 const geoapifyApiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
@@ -52,8 +51,8 @@ const HeroSection = ({
 	];
 
 	const quickActions = [
+		"Paid Leave",
 		"Healthcare Reform",
-		"Climate Policy", 
 		"Education Bills",
 		"Tech Regulation",
 		"Housing Policy"
