@@ -47,7 +47,9 @@ const useBills = (selectedJurisdiction: States | null) =>{
 					params: {
 						jurisdiction: selectedJurisdiction.name,
 						subject:["Technology"],
-						created_since: fiveMonthsAgoDate
+						created_since: fiveMonthsAgoDate,
+						per_page: 12,
+						sort: 'updated_desc',
 					},
 			  }
 			: undefined,

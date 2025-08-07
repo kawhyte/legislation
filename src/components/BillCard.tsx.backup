@@ -1,4 +1,4 @@
-// BillCard.tsx - Updated with proper cleanup and improved logic
+// BillCard.tsx - Updated with enhanced progress bar
 import type { Bill } from "../hooks/useBills";
 import usStates from "../data/usStates";
 import { useBillSummary } from "../hooks/useBillSummary";
@@ -13,8 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Sparkles, Gavel, XCircle, Calendar, Building2, Brain, ChevronRight } from "lucide-react";
 import { useEffect } from "react";
-import BillProgressBar from "./BillProgressBar";
-import StatusBadge from "./StatusBadge";
+import BillProgressBar from "./BillProgressBar"; // Import the progress component
+import StatusBadge from "./StatusBadge"; // Import the new StatusBadge component
 
 import {formatDate, toSentenceCase}  from '../lib/utils'
 
@@ -29,29 +29,25 @@ const BillCard = ({ bill }: BillCardProps) => {
 		isLoading: summaryLoading, 
 		error: summaryError, 
 		generateSummary,
-		cleanup // This is for cleaning up API requests when component unmounts
+		cleanup
 	} = useBillSummary(bill.title, {
 		maxLength: 150,
 		targetAge: "18-40"
 	});
 
-	// Debug logging - remove in production
+	// Debug logging
 	console.log('[BillCard] Component render - Bill:', bill.title);
 	console.log('[BillCard] Summary state:', summary);
 	console.log('[BillCard] Impacts state:', impacts);
 	console.log('[BillCard] Loading state:', summaryLoading);
 	console.log('[BillCard] Error state:', summaryError);
 
-	// Proper cleanup implementation to prevent memory leaks
+	// Cleanup on unmount
 	useEffect(() => {
-		// Cleanup function runs when component unmounts or bill.id changes
 		return () => {
-			if (cleanup && typeof cleanup === 'function') {
-				console.log('[BillCard] Cleaning up resources for bill:', bill.id);
-				cleanup();
-			}
+			cleanup?.();
 		};
-	}, [cleanup, bill.id]); // Include bill.id to cleanup when bill changes
+	}, [cleanup]);
 
 	const stateInfo = usStates.find(
 		(state) => state.name.toLowerCase() === bill.jurisdiction.name.toLowerCase()
@@ -70,21 +66,21 @@ const BillCard = ({ bill }: BillCardProps) => {
 		</div>
 	);
 
-	// Enhanced summary section with proper error handling
+	// Enhanced summary section with on-demand loading
 	const SummarySection = () => {
 		console.log('[SummarySection] Render - summary:', summary, 'loading:', summaryLoading, 'error:', summaryError);
 		
 		if (!summary && !summaryLoading && !summaryError) {
 			console.log('[SummarySection] Showing initial button state');
 			return (
-				<div className="p-6 rounded-xl border border-violet-200/30 bg-gradient-to-br from-slate-800/80 to-slate-900/80 text-center">
+				<div className="p-6 rounded-xl  border border-violet-200/30 bg-gradient-to-br from-slate-800/80 to-slate-900/80 text-center">
 					<div className="flex flex-col items-center space-y-4">
 						<div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-violet-500/20 to-blue-500/20 backdrop-blur-xl border">
 							<Brain className="h-6 w-6 text-white" />
 						</div>
 						<div className="space-y-2">
 							<p className="text-sm font-medium text-white">
-								Skip the Political Jargon
+								Skip the Political Jargons
 							</p>
 							<p className="text-xs text-white max-w-xs">
 								Click below to find out what this bill actually does — no law degree needed
@@ -272,12 +268,12 @@ const BillCard = ({ bill }: BillCardProps) => {
 				<div>
 					<h3 className='text-base font-semibold text-slate-200 mb-3 flex items-center'>
 						<span className="w-1 h-4 bg-gradient-to-b from-violet-400 to-blue-400 rounded-full mr-3"></span>
-						AI-Powered Analysis
+						AI-Powered  Analysis
 					</h3>
 					<SummarySection />
 				</div>
 
-				{/* Enhanced Progress Section with improved calculation */}
+				{/* Enhanced Progress Section */}
 				<BillProgressBar bill={bill} />
 
 				{/* Footer information */}
