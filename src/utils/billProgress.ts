@@ -239,7 +239,7 @@ export function getStatusBadgeConfig(progress: BillProgress): {
   switch (progress.current.status) {
     case "Passed":
       return {
-        text: "Enacted",
+        text: "Became Law",
         className: "gap-1.5 pl-2.5 pr-3 py-1.5 bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20 transition-colors",
         icon: "CheckCircle2"
       };

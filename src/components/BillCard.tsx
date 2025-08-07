@@ -247,13 +247,13 @@ const BillCard = ({ bill }: BillCardProps) => {
 								<Building2 className="h-3 w-3 mr-1" />
 								{bill.jurisdiction.name}
 							</Badge>
-							<Badge variant="outline" className="w-fit bg-blue-500/10 text-blue-300 border-blue-500/30 text-xs">
+							{/* <Badge variant="outline" className="w-fit bg-blue-500/10 text-blue-300 border-blue-500/30 text-xs">
 								{toSentenceCase(bill.subject[0])}
-							</Badge>
+							</Badge> */}
 						</div>
 					</div>
 					
-					<StatusBadge bill={bill} />
+					<StatusBadge bill={bill} showMomentum={true} />
 				</div>
 
 				{/* Bill title and identifier */}
