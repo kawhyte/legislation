@@ -72,10 +72,10 @@ const BillCard = ({ bill }: BillCardProps) => {
 
 	// Enhanced summary section with proper error handling
 	const SummarySection = () => {
-		console.log('[SummarySection] Render - summary:', summary, 'loading:', summaryLoading, 'error:', summaryError);
+		// console.log('[SummarySection] Render - summary:', summary, 'loading:', summaryLoading, 'error:', summaryError);
 		
 		if (!summary && !summaryLoading && !summaryError) {
-			console.log('[SummarySection] Showing initial button state');
+			// console.log('[SummarySection] Showing initial button state');
 			return (
 				<div className="p-6 rounded-xl border border-violet-200/30 bg-gradient-to-br from-slate-800/80 to-slate-900/80 text-center">
 					<div className="flex flex-col items-center space-y-4">
@@ -92,7 +92,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 						</div>
 						<Button 
 							onClick={() => {
-								console.log('[SummarySection] Button clicked, calling generateSummary');
+								// console.log('[SummarySection] Button clicked, calling generateSummary');
 								generateSummary();
 							}}
 							className="bg-gradient-to-r from-violet-500 to-blue-500 hover:from-violet-600 hover:to-blue-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200 group"
@@ -108,7 +108,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 		}
 
 		if (summaryLoading) {
-			console.log('[SummarySection] Showing loading state');
+			// console.log('[SummarySection] Showing loading state');
 			return (
 				<div className="p-6 rounded-xl bg-gradient-to-br from-violet-50/50 to-blue-50/50 border border-violet-200/30">
 					<div className="flex flex-col items-center space-y-4">
@@ -132,7 +132,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 		}
 
 		if (summaryError) {
-			console.log('[SummarySection] Showing error state:', summaryError);
+			// console.log('[SummarySection] Showing error state:', summaryError);
 			return (
 				<div className="p-6 rounded-xl bg-gradient-to-br from-red-50/50 to-pink-50/50 border border-red-200/30">
 					<div className="flex items-center justify-between">
@@ -146,7 +146,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 							variant="outline" 
 							size="sm" 
 							onClick={() => {
-								console.log('[SummarySection] Retry button clicked');
+								// console.log('[SummarySection] Retry button clicked');
 								generateSummary();
 							}}
 							className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
@@ -160,38 +160,38 @@ const BillCard = ({ bill }: BillCardProps) => {
 		}
 
 		if (summary) {
-			console.log('[SummarySection] Showing success state with summary:', summary, 'and impacts:', impacts);
+			// console.log('[SummarySection] Showing success state with summary:', summary, 'and impacts:', impacts);
 			return (
 				<div className="space-y-4">
 					{/* AI Summary */}
-					<div className="p-5 rounded-xl bg-gradient-to-br from-violet-50/50 to-blue-50/50 border border-violet-200/30">
+					<div className="p-5 rounded-xl  border border-violet-200/30">
 						<div className="flex items-center mb-3">
 							<div className="flex items-center justify-center w-6 h-6 rounded-full bg-violet-500/20 mr-2">
-								<Sparkles className="h-3.5 w-3.5 text-violet-600" />
+								<Sparkles className="h-3.5 w-3.5 text-violet-500" />
 							</div>
-							<span className="text-sm font-semibold text-violet-700">
+							<span className="text-sm font-semibold text-violet-500">
 								AI Summary
 							</span>
 						</div>
-						<p className="text-sm text-slate-700 leading-relaxed">
+						<p className="text-sm text-whiteleading-relaxed">
 							{summary}
 						</p>
 					</div>
 
 					{/* Impact Analysis */}
 					{impacts && impacts.length > 0 && (
-						<div className="p-5 rounded-xl bg-gradient-to-br from-blue-50/50 to-cyan-50/50 border border-blue-200/30">
+						<div className="p-5 rounded-xl  border border-blue-200/30">
 							<div className="flex items-center mb-3">
 								<div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 mr-2">
-									<Gavel className="h-3.5 w-3.5 text-blue-600" />
+									<Gavel className="h-3.5 w-3.5 text-blue-500" />
 								</div>
-								<span className="text-sm font-semibold text-blue-700">
+								<span className="text-sm font-semibold text-blue-500">
 									Impact if passed
 								</span>
 							</div>
 							<ul className="space-y-2">
 								{impacts.map((impact, index) => (
-									<li key={index} className="flex items-start space-x-2 text-sm text-slate-700">
+									<li key={index} className="flex items-start space-x-2 text-sm text-white">
 										<span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
 										<span className="leading-relaxed">{impact}</span>
 									</li>
@@ -206,7 +206,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 							variant="ghost" 
 							size="sm" 
 							onClick={() => {
-								console.log('[SummarySection] Regenerate button clicked');
+								// console.log('[SummarySection] Regenerate button clicked');
 								generateSummary();
 							}}
 							className="text-white hover:text-violet-500 hover:bg-violet-50 text-xs"
@@ -219,7 +219,7 @@ const BillCard = ({ bill }: BillCardProps) => {
 			);
 		}
 
-		console.log('[SummarySection] No matching condition, returning null');
+		// console.log('[SummarySection] No matching condition, returning null');
 		return null;
 	};
 

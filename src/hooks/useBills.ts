@@ -49,8 +49,8 @@ export interface Bill {
 }
 
 // Dynamically calculate the date
-const MonthAgo = getPastDate(2, 'months');
-const DaysAgo = getPastDate(55, 'days');
+const MonthAgo = getPastDate(3, 'months');
+const DaysAgo = getPastDate(80, 'days');
 
 
 
@@ -63,10 +63,11 @@ const useBills = (selectedJurisdiction: States | null) => {
 			? {
 					params: {
 						jurisdiction: selectedJurisdiction.name,
-						subject: ["Paid Leave", "Artificial Intelligence","Technology", "Healthcare", "Education", "Housing"],
+						// subject: ["Paid Leave", "Artificial Intelligence","Technology", "Healthcare", "Education", "Housing"],
 						created_since: MonthAgo,
 						per_page: 20, // Increased to account for filtering
 						sort: 'updated_desc',
+						q:'Paid Leave OR Redistricting OR Technology OR Health care OR Voting OR Artificial Intelligence OR Education OR Election',
 						// Include actions in API response
 						include: 'actions',
 						action_since:DaysAgo
