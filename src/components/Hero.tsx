@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
 import {  MapPin, Sparkles, TrendingUp, Users, Zap } from "lucide-react";
 import StateSelector, { type States } from "./JurisdictionSelector";
@@ -82,7 +83,7 @@ const HeroSection = ({
 						/>
 						{/* Gradient masks for soft edges */}
 						<div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-transparent to-slate-950" />
-						<div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-transparent via-transparent to-slate-950" />
+						<div className="absolute inset-0 bg-gradient-to-b from-slate-950  via-transparent to-slate-950" />
 						<div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/60" />
 					</div>
 				)}
