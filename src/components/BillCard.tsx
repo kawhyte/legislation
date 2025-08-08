@@ -15,6 +15,7 @@ import { RefreshCw, Sparkles, Gavel, XCircle, Calendar, Building2, Brain, Chevro
 import { useEffect } from "react";
 import BillProgressBar from "./BillProgressBar";
 import StatusBadge from "./StatusBadge";
+import BookmarkButton from './BookmarkButton';
 
 import {formatDate, toSentenceCase}  from '../lib/utils'
 
@@ -254,7 +255,14 @@ const BillCard = ({ bill }: BillCardProps) => {
 					</div>
 					
 					<StatusBadge bill={bill} showMomentum={true} />
+
+
 				</div>
+
+				<div className="flex items-center justify-between mt-4">
+  <div className="flex-1" />
+  <BookmarkButton bill={bill} />
+</div>
 
 				{/* Bill title and identifier */}
 				<div className='space-y-2'>
