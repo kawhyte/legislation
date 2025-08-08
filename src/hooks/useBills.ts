@@ -92,6 +92,7 @@ const useBills = (selectedJurisdiction: States | null) => {
 		console.log(`[useBills] Filtered from ${rawData.length} to ${filteredBills.length} bills`);
 		
 		// Step 3: Log momentum distribution for debugging
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const momentumCounts = filteredBills.reduce((acc: any, bill: Bill) => {
 			const level = bill.momentum?.level || 'None';
 			acc[level] = (acc[level] || 0) + 1;

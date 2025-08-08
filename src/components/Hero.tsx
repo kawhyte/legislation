@@ -51,10 +51,10 @@ const HeroSection = ({
 	];
 
 	const quickActions = [
-		"Paid Leave",
+		"Paid Family Leave",
 		"Healthcare Reform",
 		"Education Bills",
-		"Tech Regulation",
+		"Technology",
 		"Housing Policy"
 	];
 
