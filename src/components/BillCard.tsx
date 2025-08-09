@@ -1,131 +1,102 @@
-// BillCard.tsx - Updated with proper cleanup and improved logic
+// BillCardCompact.tsx - Improved Version
 import type { Bill } from "../hooks/useBills";
 import usStates from "../data/usStates";
 import { useBillSummary } from "../hooks/useBillSummary";
-import {
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Sparkles, Gavel, XCircle, Calendar, Building2, Brain, ChevronRight } from "lucide-react";
+import {
+	RefreshCw,
+	Sparkles,
+	Gavel,
+	Calendar,
+	Brain,
+	ChevronRight,
+	FileText,
+} from "lucide-react";
 import { useEffect } from "react";
 import BillProgressBar from "./BillProgressBar";
 import StatusBadge from "./StatusBadge";
-import BookmarkButton from './BookmarkButton';
-
-import {formatDate, toSentenceCase}  from '../lib/utils'
+import BookmarkButton from "./BookmarkButton";
+import { formatDate, toSentenceCase } from "../lib/utils";
+import MomentumBadge from "./MomentumBadge";
 
 interface BillCardProps {
 	bill: Bill;
 }
 
-const BillCard = ({ bill }: BillCardProps) => {
-	const { 
-		summary, 
+const BillCardCompact = ({ bill }: BillCardProps) => {
+	const {
+		summary,
 		impacts,
-		isLoading: summaryLoading, 
-		error: summaryError, 
+		isLoading: summaryLoading,
+		error: summaryError,
 		generateSummary,
-		cleanup // This is for cleaning up API requests when component unmounts
+		cleanup,
 	} = useBillSummary(bill.title, {
 		maxLength: 150,
-		targetAge: "18-40"
+		targetAge: "18-40",
 	});
 
-	// Debug logging - remove in production
-	console.log('[BillCard] Component render - Bill:', bill.title);
-	console.log('[BillCard] Summary state:', summary);
-	console.log('[BillCard] Impacts state:', impacts);
-	console.log('[BillCard] Loading state:', summaryLoading);
-	console.log('[BillCard] Error state:', summaryError);
-
-	// Proper cleanup implementation to prevent memory leaks
 	useEffect(() => {
-		// Cleanup function runs when component unmounts or bill.id changes
 		return () => {
-			if (cleanup && typeof cleanup === 'function') {
-				console.log('[BillCard] Cleaning up resources for bill:', bill.id);
-				cleanup();
-			}
+			if (cleanup) cleanup();
 		};
-	}, [cleanup, bill.id]); // Include bill.id to cleanup when bill changes
+	}, [cleanup, bill.id]);
 
 	const stateInfo = usStates.find(
 		(state) => state.name.toLowerCase() === bill.jurisdiction.name.toLowerCase()
 	);
+	const flagUrl = stateInfo?.flagUrl || "https://placehold.co/32x24";
+	const flagAbbreviation = stateInfo?.abbreviation || "NA";
 
-	const flagUrl = stateInfo
-		? stateInfo.flagUrl
-		: "https://placehold.co/32x24/cccccc/333333?text=N/A";
-
-	// Loading animation component
 	const LoadingDots = () => (
-		<div className="flex items-center space-x-1">
-			<div className="w-2 h-2 bg-violet-400 rounded-full animate-pulse"></div>
-			<div className="w-2 h-2 bg-violet-400 rounded-full animate-pulse delay-75"></div>
-			<div className="w-2 h-2 bg-violet-400 rounded-full animate-pulse delay-150"></div>
+		<div className='flex items-center space-x-1'>
+			<div className='w-1 h-1 bg-violet-400 rounded-full animate-pulse'></div>
+			<div className='w-1 h-1 bg-violet-400 rounded-full animate-pulse delay-75'></div>
+			<div className='w-1 h-1 bg-violet-400 rounded-full animate-pulse delay-150'></div>
 		</div>
 	);
 
-	// Enhanced summary section with proper error handling
-	const SummarySection = () => {
-		// console.log('[SummarySection] Render - summary:', summary, 'loading:', summaryLoading, 'error:', summaryError);
-		
+	const AIAnalysisSection = () => {
 		if (!summary && !summaryLoading && !summaryError) {
-			// console.log('[SummarySection] Showing initial button state');
 			return (
-				<div className="p-6 rounded-xl border border-violet-200/30 bg-gradient-to-br from-slate-800/80 to-slate-900/80 text-center">
-					<div className="flex flex-col items-center space-y-4">
-						<div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-violet-500/20 to-blue-500/20 backdrop-blur-xl border">
-							<Brain className="h-6 w-6 text-white" />
+				<div className='bg-gradient-to-r from-violet-500/10 to-blue-500/10 border border-violet-400/20 rounded-lg p-3'>
+					<div className='flex items-center justify-between'>
+						<div className='flex items-center gap-2'>
+							<Brain className="h-4 w-4 text-violet-400" />
+							<span className="text-sm font-medium text-slate-200">AI Analysis</span>
 						</div>
-						<div className="space-y-2">
-							<p className="text-sm font-medium text-white">
-								Skip the Political Jargon
-							</p>
-							<p className="text-xs text-white max-w-xs">
-								Click below to find out what this bill actually does — no law degree needed
-							</p>
-						</div>
-						<Button 
-							onClick={() => {
-								// console.log('[SummarySection] Button clicked, calling generateSummary');
-								generateSummary();
-							}}
-							className="bg-gradient-to-r from-violet-500 to-blue-500 hover:from-violet-600 hover:to-blue-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200 group"
-							size="sm"
-						>
-							<Sparkles className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
-							Decode the Bill
-							<ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
+						<Button
+							onClick={generateSummary}
+							size='sm'
+							className='bg-gradient-to-r from-violet-500 to-blue-500 hover:from-violet-600 hover:to-blue-600 text-white text-xs px-3 py-1.5 h-auto'>
+							<Sparkles className='h-3 w-3 mr-1' />
+							Decode Bill
+							<ChevronRight className='h-3 w-3 ml-1' />
 						</Button>
 					</div>
+					<p className="text-xs text-slate-400 mt-2">
+						Get an AI-powered breakdown of what this bill actually does
+					</p>
 				</div>
 			);
 		}
 
 		if (summaryLoading) {
-			// console.log('[SummarySection] Showing loading state');
 			return (
-				<div className="p-6 rounded-xl bg-gradient-to-br from-violet-50/50 to-blue-50/50 border border-violet-200/30">
-					<div className="flex flex-col items-center space-y-4">
-						<div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-violet-500/20 to-blue-500/20">
-							<div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
-						</div>
-						<div className="space-y-3 text-center">
-							<div className="flex items-center justify-center space-x-2">
-								<span className="text-sm font-medium text-violet-700">
-									AI is analyzing this bill
-								</span>
-								<LoadingDots />
+				<div className='bg-violet-500/5 border border-violet-400/20 rounded-lg p-3'>
+					<div className='flex items-center gap-3'>
+						<div className='w-4 h-4 border-2 border-violet-400 border-t-transparent rounded-full animate-spin'></div>
+						<div className='flex-1'>
+							<div className='flex items-center gap-2 mb-1'>
+								<Brain className="h-4 w-4 text-violet-400" />
+								<span className="text-sm font-medium text-slate-200">AI Analysis</span>
 							</div>
-							<div className="w-full bg-violet-200/30 rounded-full h-1.5 overflow-hidden">
-								<div className="h-full bg-gradient-to-r from-violet-500 to-blue-500 rounded-full animate-pulse"></div>
-							</div>
+							<p className='text-xs text-violet-400 flex items-center gap-1'>
+								Analyzing legislation <LoadingDots />
+							</p>
 						</div>
 					</div>
 				</div>
@@ -133,185 +104,134 @@ const BillCard = ({ bill }: BillCardProps) => {
 		}
 
 		if (summaryError) {
-			// console.log('[SummarySection] Showing error state:', summaryError);
 			return (
-				<div className="p-6 rounded-xl bg-gradient-to-br from-red-50/50 to-pink-50/50 border border-red-200/30">
-					<div className="flex items-center justify-between">
-						<div className="flex items-center space-x-3">
-							<div className="flex items-center justify-center w-8 h-8 rounded-full bg-red-500/20">
-								<XCircle className="h-4 w-4 text-red-600" />
-							</div>
-							<span className="text-sm text-red-700">Unable to generate summary</span>
+				<div className='bg-red-500/5 border border-red-400/20 rounded-lg p-3'>
+					<div className='flex items-center justify-between'>
+						<div className='flex items-center gap-2'>
+							<Brain className="h-4 w-4 text-red-400" />
+							<span className="text-sm font-medium text-red-400">Analysis Failed</span>
 						</div>
 						<Button 
-							variant="outline" 
-							size="sm" 
-							onClick={() => {
-								// console.log('[SummarySection] Retry button clicked');
-								generateSummary();
-							}}
-							className="border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
-						>
-							<RefreshCw className="h-3 w-3 mr-1.5" />
+							variant='outline' 
+							size='sm' 
+							onClick={generateSummary}
+							className='text-xs px-3 py-1.5 h-auto border-red-400/30 text-red-400 hover:bg-red-500/10'>
+							<RefreshCw className='h-3 w-3 mr-1' />
 							Retry
 						</Button>
 					</div>
+					<p className='text-xs text-red-400/80 mt-1'>
+						Unable to generate analysis
+					</p>
 				</div>
 			);
 		}
 
 		if (summary) {
-			// console.log('[SummarySection] Showing success state with summary:', summary, 'and impacts:', impacts);
 			return (
-				<div className="space-y-4">
-					{/* AI Summary */}
-					<div className="p-5 rounded-xl  border border-violet-200/30">
-						<div className="flex items-center mb-3">
-							<div className="flex items-center justify-center w-6 h-6 rounded-full bg-violet-500/20 mr-2">
-								<Sparkles className="h-3.5 w-3.5 text-violet-500" />
-							</div>
-							<span className="text-sm font-semibold text-violet-500">
-								AI Summary
-							</span>
+				<div className='bg-gradient-to-r from-violet-500/10 to-blue-500/10 border border-violet-400/20 rounded-lg p-3 space-y-3'>
+					<div className='flex items-center justify-between'>
+						<div className='flex items-center gap-2'>
+							<Brain className="h-4 w-4 text-violet-400" />
+							<span className="text-sm font-medium text-slate-200">AI Analysis</span>
 						</div>
-						<p className="text-sm text-whiteleading-relaxed">
-							{summary}
-						</p>
-					</div>
-
-					{/* Impact Analysis */}
-					{impacts && impacts.length > 0 && (
-						<div className="p-5 rounded-xl  border border-blue-200/30">
-							<div className="flex items-center mb-3">
-								<div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 mr-2">
-									<Gavel className="h-3.5 w-3.5 text-blue-500" />
-								</div>
-								<span className="text-sm font-semibold text-blue-500">
-									Impact if passed
-								</span>
-							</div>
-							<ul className="space-y-2">
-								{impacts.map((impact, index) => (
-									<li key={index} className="flex items-start space-x-2 text-sm text-white">
-										<span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
-										<span className="leading-relaxed">{impact}</span>
-									</li>
-								))}
-							</ul>
-						</div>
-					)}
-
-					{/* Regenerate button */}
-					<div className="flex justify-center pt-2">
-						<Button 
-							variant="ghost" 
-							size="sm" 
-							onClick={() => {
-								// console.log('[SummarySection] Regenerate button clicked');
-								generateSummary();
-							}}
-							className="text-white hover:text-violet-500 hover:bg-violet-50 text-xs"
-						>
-							<RefreshCw className="h-3 w-3 mr-1.5" />
-							Regenerate Analysis
+						<Button
+							variant='ghost'
+							size='sm'
+							onClick={generateSummary}
+							className='text-xs px-2 py-1 h-auto text-violet-400 hover:text-violet-300 hover:bg-violet-500/10'>
+							<RefreshCw className='h-3 w-3 mr-1' />
+							Refresh
 						</Button>
 					</div>
+					
+					<div className='bg-slate-800/40 border border-slate-600/30 rounded-md p-2.5'>
+						<p className='text-xs text-slate-100 leading-relaxed'>{summary}</p>
+					</div>
+					
+					{impacts?.length > 0 && (
+						<div className='bg-blue-500/5 border border-blue-400/20 rounded-md p-2.5'>
+							<p className='text-xs font-medium text-blue-400 mb-2'>
+								Potential Impact if Passed
+							</p>
+							<div className='grid grid-cols-1 gap-1'>
+								{impacts.slice(0, 3).map((impact, i) => (
+									<div key={i} className='flex items-start gap-2'>
+										<div className='w-1 h-1 bg-blue-400 rounded-full mt-1.5 flex-shrink-0'></div>
+										<p className='text-xs text-slate-300 leading-relaxed'>{impact}</p>
+									</div>
+								))}
+								{impacts.length > 3 && (
+									<p className='text-xs text-blue-400/70 mt-1'>
+										+{impacts.length - 3} more impacts
+									</p>
+								)}
+							</div>
+						</div>
+					)}
 				</div>
 			);
 		}
 
-		// console.log('[SummarySection] No matching condition, returning null');
 		return null;
 	};
 
 	return (
-		<Card className='group relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-violet-500/10 bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-slate-700/50 hover:border-violet-500/30'>
-			{/* Subtle background gradient */}
-			<div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-transparent to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-			
-			<CardHeader className="relative pb-4">
-				{/* Header with state flag and status */}
-				<div className='flex items-start justify-between gap-4 mb-4'>
-					<div className="flex items-center gap-3">
-						<Avatar className='w-10 h-10 border-2 border-slate-600/50 shadow-lg rounded-xl bg-slate-800 ring-2 ring-violet-500/10'>
-							<AvatarImage
-								src={flagUrl}
-								alt={`${bill.jurisdiction.name} flag`}
-								className='object-cover rounded-lg'
-							/>
-							<AvatarFallback className='bg-slate-700 text-slate-300 text-xs rounded-lg'>
+		<Card className='bg-gradient-to-br from-slate-900/95 to-slate-800/95 border-slate-700/50 hover:border-slate-600/60 transition-all duration-200'>
+			<CardHeader className='pb-3'>
+				{/* Compact header row */}
+				<div className='flex items-center justify-between mb-2'>
+					<div className='flex items-center gap-2'>
+						<Avatar className='w-7 h-7 border border-slate-600 rounded-md'>
+							<AvatarImage src={flagUrl} alt={bill.jurisdiction.name} />
+							<AvatarFallback className='text-xs'>
 								{bill.jurisdiction.name.slice(0, 2).toUpperCase()}
 							</AvatarFallback>
 						</Avatar>
-						<div className="flex flex-col gap-1">
-							<Badge variant="secondary" className="w-fit bg-slate-700/50 text-slate-300 border-slate-600/50">
-								<Building2 className="h-3 w-3 mr-1" />
-								{bill.jurisdiction.name}
-							</Badge>
-							{/* <Badge variant="outline" className="w-fit bg-blue-500/10 text-blue-300 border-blue-500/30 text-xs">
-								{toSentenceCase(bill.subject[0])}
-							</Badge> */}
+						<div className='flex items-center gap-1.5 text-xs text-slate-400'>
+							<span className='font-medium'>{flagAbbreviation}</span>
+							<span>•</span>
+							<span className='font-mono'>{bill.identifier}</span>
+							{bill.sources?.length > 0 && (
+								<>
+									<span>•</span>
+									<div className='flex items-center gap-1'>
+										<FileText className='h-3 w-3' />
+										<span>{bill.sources.length}</span>
+									</div>
+								</>
+							)}
 						</div>
 					</div>
-					
-					<StatusBadge bill={bill} showMomentum={true} />
-
-
-				</div>
-
-				<div className="flex items-center justify-between mt-4">
-  <div className="flex-1" />
-  <BookmarkButton bill={bill} />
-</div>
-
-				{/* Bill title and identifier */}
-				<div className='space-y-2'>
-					<div className="text-sm font-mono text-slate-400 bg-slate-800/50 px-2 py-1 rounded w-fit">
-						{bill.identifier}
+					<div className='flex items-center gap-2'>
+						{/* <span className='text-xs text-slate-500'>
+							{formatDate(bill.latest_action_date) || "Unknown"}
+						</span> */}
+						<BookmarkButton
+							className='h-6 w-6 p-0 text-slate-400 hover:text-yellow-400 hover:bg-yellow-400/10'
+							bill={bill}
+						/>
 					</div>
-					<CardTitle className='text-xl line-clamp-3 leading-tight text-slate-100 group-hover:text-white transition-colors'>
-						{toSentenceCase(bill.title)}
-					</CardTitle>
 				</div>
+
+				{/* Status badges */}
+				<div className='flex items-center gap-2 mb-3'>
+					<StatusBadge bill={bill} showMomentum={true} />
+					{bill.momentum && <MomentumBadge momentum={bill.momentum} />}
+				</div>
+
+				{/* Title */}
+				<CardTitle className='text-sm font-semibold line-clamp-2 text-slate-100 leading-tight'>
+					{toSentenceCase(bill.title)}
+				</CardTitle>
 			</CardHeader>
 
-			<CardContent className='relative space-y-6'>
-				{/* AI Summary Section */}
-				<div>
-					<h3 className='text-base font-semibold text-slate-200 mb-3 flex items-center'>
-						<span className="w-1 h-4 bg-gradient-to-b from-violet-400 to-blue-400 rounded-full mr-3"></span>
-						AI-Powered Analysis
-					</h3>
-					<SummarySection />
-				</div>
-
-				{/* Enhanced Progress Section with improved calculation */}
+			<CardContent className='space-y-4 pt-0'>
 				<BillProgressBar bill={bill} />
-
-				{/* Footer information */}
-				<div className="flex flex-col gap-3 pt-2 border-t border-slate-700/30">
-					<div className='flex items-center text-xs text-slate-400'>
-						<Calendar className="h-3 w-3 mr-1.5" />
-						Last updated {formatDate(bill.latest_action_date) || "Unknown"}
-					</div>
-
-					{bill.sources && bill.sources.length > 0 && (
-						<div className='flex flex-wrap gap-2 items-center'>
-							<span className="text-xs text-slate-500">Sources:</span>
-							{bill.sources.map((src, idx) => (
-								<Badge
-									key={idx}
-									variant='outline'
-									className='text-xs bg-slate-800/50 text-slate-400 border-slate-600/50 hover:border-slate-500/50 transition-colors'>
-									{src}
-								</Badge>
-							))}
-						</div>
-					)}
-				</div>
+				<AIAnalysisSection />
 			</CardContent>
 		</Card>
 	);
 };
 
-export default BillCard;
+export default BillCardCompact;

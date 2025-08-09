@@ -240,7 +240,7 @@ export function getStatusBadgeConfig(progress: BillProgress): {
     case "Passed":
       return {
         text: "Became Law",
-        className: "gap-1.5 pl-2.5 pr-3 py-1.5 bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20 transition-colors",
+        className: "gap-1.5 pl-2.5 pr-3 py-1.5 bg-green-500/10 text-green-400 border-green-500/20 hover:bg-green-500/20 transition-colors",
         icon: "CheckCircle2"
       };
     case "Failed":
@@ -253,7 +253,7 @@ export function getStatusBadgeConfig(progress: BillProgress): {
     default:
       return {
         text: "In Progress",
-        className: "gap-1.5 pl-2.5 pr-3 py-1.5 bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20 transition-colors",
+        className: "gap-1.5 pl-2.5 pr-3 py-1.5 bg-yellow-500/10 text-yellow-400 border-yellow-500/20 hover:bg-yellow-500/20 transition-colors",
         icon: "Clock"
       };
   }

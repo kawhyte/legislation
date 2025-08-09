@@ -1,19 +1,18 @@
-// components/BillProgressBar.tsx
+// components/BillProgressBar.tsx - Improved Version
 import React from 'react';
-import { Gavel } from 'lucide-react';
+import { Gavel, CheckCircle2, Circle, Clock } from 'lucide-react';
 import { determineBillProgress } from '../utils/billProgress';
 import { Progress } from "@/components/ui/progress";
 import { formatDate } from '../lib/utils';
 
 interface BillProgressBarProps {
-  bill: any; // Your Bill type
+  bill: any;
   className?: string;
 }
 
 const BillProgressBar: React.FC<BillProgressBarProps> = ({ bill, className = "" }) => {
   const progress = determineBillProgress(bill);
   
-  // Extract dates from progress stages for display
   const dates = {
     introduced: progress.stages.introduced.date || bill.first_action_date,
     house: progress.stages.house.date,
@@ -21,46 +20,107 @@ const BillProgressBar: React.FC<BillProgressBarProps> = ({ bill, className = "" 
     enacted: progress.stages.enacted.date
   };
 
+  const stages = [
+    { 
+      key: 'introduced', 
+      label: 'Introduced', 
+      shortLabel: 'Intro',
+      date: dates.introduced,
+      completed: progress.stages.introduced.completed 
+    },
+    { 
+      key: 'house', 
+      label: 'House', 
+      shortLabel: 'House',
+      date: dates.house,
+      completed: progress.stages.house.completed 
+    },
+    { 
+      key: 'senate', 
+      label: 'Senate', 
+      shortLabel: 'Senate',
+      date: dates.senate,
+      completed: progress.stages.senate.completed 
+    },
+    { 
+      key: 'enacted', 
+      label: 'Enacted', 
+      shortLabel: 'Law',
+      date: dates.enacted,
+      completed: progress.stages.enacted.completed 
+    }
+  ];
+
+  const getStageIcon = (completed: boolean, isActive: boolean) => {
+    if (completed) {
+      return <CheckCircle2 className="h-3 w-3 text-emerald-400" />;
+    }
+    if (isActive) {
+      return <Clock className="h-3 w-3 text-violet-400" />;
+    }
+    return <Circle className="h-3 w-3 text-slate-500" />;
+  };
+
+  const currentStageIndex = stages.findIndex(stage => !stage.completed);
+  
   return (
-    <div className={`space-y-3 p-4 rounded-lg bg-slate-800/30 border border-slate-700/30 ${className}`}>
-      <h3 className='text-sm font-medium text-slate-300 flex items-center'>
-        <Gavel className='mr-2 h-4 w-4 text-slate-400' />
-        Legislative Progress
-      </h3>
-      
-      <div className='relative flex justify-between text-[10px] font-medium text-slate-500 mb-2'>
-        <span className='text-center w-1/4'>Introduced</span>
-        <span className='text-center w-1/4'>House</span>
-        <span className='text-center w-1/4'>Senate</span>
-        <span className='text-center w-1/4'>Enacted</span>
+    <div className={`bg-slate-800/30 border border-slate-600/30 rounded-lg p-3 ${className}`}>
+      <div className='flex items-center gap-2 mb-3'>
+        <Gavel className='h-4 w-4 text-slate-400' />
+        <span className='text-sm font-medium text-slate-300'>Progress</span>
+        <div className='ml-auto text-[.65rem] text-slate-500'>
+          {progress.current.percentage.toFixed(0)}% complete
+        </div>
       </div>
       
-      <Progress
-        value={progress.current.percentage}
-        className='h-2.5 w-full bg-slate-700/50 [&>div]:bg-gradient-to-r [&>div]:from-violet-500 [&>div]:to-blue-500'
-      />
+      {/* Progress bar */}
+      <div className='mb-3'>
+        <Progress
+          value={progress.current.percentage}
+          className='h-2 w-full bg-slate-700/50 [&>div]:bg-gradient-to-r [&>div]:from-violet-500 [&>div]:to-blue-500 [&>div]:transition-all [&>div]:duration-300'
+        />
+      </div>
       
-      <div className='relative flex justify-between text-xs text-slate-400 mt-2'>
-        <span className='text-center w-1/4'>
-          {formatDate(dates.introduced) || "—"}
-        </span>
-        <span className='text-center w-1/4'>
-          {formatDate(dates.house) || "—"}
-        </span>
-        <span className='text-center w-1/4'>
-          {formatDate(dates.senate) || "—"}
-        </span>
-        <span className='text-center w-1/4'>
-          {formatDate(dates.enacted) || "—"}
-        </span>
+      {/* Stage indicators */}
+      <div className='grid grid-cols-4 gap-2'>
+        {stages.map((stage, index) => {
+          const isActive = index === currentStageIndex;
+          const isMobile = window.innerWidth < 640; // You might want to use a proper responsive hook
+          
+          return (
+            <div key={stage.key} className='flex flex-col items-center gap-1'>
+              <div className='flex items-center justify-center'>
+                {getStageIcon(stage.completed, isActive)}
+              </div>
+              <div className='text-center'>
+                <div className={`text-xs font-medium leading-tight ${
+                  stage.completed 
+                    ? 'text-emerald-400' 
+                    : isActive 
+                      ? 'text-violet-400' 
+                      : 'text-slate-500'
+                }`}>
+                  <span className="hidden sm:inline">{stage.label}</span>
+                  <span className="sm:hidden">{stage.shortLabel}</span>
+                </div>
+                <div className='text-[.65rem] text-slate-500 mt-0.5'>
+                  {stage.date ? formatDate(stage.date) : "—"}
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Optional: Show current status as subtle indicator */}
+      {/* Current status */}
       {progress.current.description && (
-        <div className="pt-2 border-t border-slate-700/30">
-          <p className="text-xs text-slate-400">
-            Status: {progress.current.description}
-          </p>
+        <div className="mt-3 pt-2 border-t border-slate-700/30">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-violet-400 rounded-full animate-pulse"></div>
+            <p className="text-xs text-slate-400">
+              {progress.current.description}
+            </p>
+          </div>
         </div>
       )}
     </div>
