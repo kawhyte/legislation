@@ -37,7 +37,7 @@ const MomentumBadge: React.FC<MomentumBadgeProps> = ({ momentum, className = "" 
         };
       case "low":
         return {
-          icon: Minus,
+          icon: TrendingDown,
           text: "Slow Momentum",
           className: "bg-slate-500/10 text-slate-400 border-slate-500/20 hover:bg-slate-500/20"
         };
