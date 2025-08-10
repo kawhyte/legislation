@@ -14,7 +14,7 @@ const MomentumBadge: React.FC<MomentumBadgeProps> = ({ momentum, className = "" 
       case "enacted":
         return {
           icon: ShieldCheck,
-          text: "Enacted",
+          text: "Enacted/Became Law",
           className: "bg-green-500/10 text-green-400 border-green-500/20 hover:bg-green-500/20"
         };
       case "passed":

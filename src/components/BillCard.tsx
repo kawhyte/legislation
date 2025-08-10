@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { useEffect } from "react";
 import BillProgressBar from "./BillProgressBar";
-import StatusBadge from "./StatusBadge";
 import BookmarkButton from "./BookmarkButton";
 import { formatDate, toSentenceCase } from "../lib/utils";
 import MomentumBadge from "./MomentumBadge";
@@ -197,7 +196,7 @@ const BillCardCompact = ({ bill }: BillCardProps) => {
 									<span>•</span>
 									<div className='flex items-center gap-1'>
 										<FileText className='h-3 w-3' />
-										<span>{bill.sources.length}</span>
+										<span>{bill.sources.length }</span>
 									</div>
 								</>
 							)}
@@ -216,7 +215,7 @@ const BillCardCompact = ({ bill }: BillCardProps) => {
 
 				{/* Status badges */}
 				<div className='flex items-center gap-2 mb-3'>
-					<StatusBadge bill={bill} showMomentum={true} />
+					{/* <StatusBadge bill={bill} showMomentum={false} /> */}
 					{bill.momentum && <MomentumBadge momentum={bill.momentum} />}
 				</div>
 
