@@ -94,7 +94,7 @@ const Header = () => {
 				onClick={() => navigate("/saved")}
 				className='gap-2 text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all duration-200 relative'>
 				<Bookmark className='h-4 w-4 text-violet-400' />
-				Saved
+				Saved Bills
 				{bookmarkCount > 0 && (
 					<Badge className='absolute -top-1 -right-1 h-5 w-5 p-0 text-xs bg-violet-500 text-white border-0 flex items-center justify-center'>
 						{bookmarkCount > 9 ? "9+" : bookmarkCount}

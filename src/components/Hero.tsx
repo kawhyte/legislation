@@ -60,7 +60,7 @@ const HeroSection = ({
 	];
 
 	return (
-		<div className='relative min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 overflow-hidden'>
+		<div className='relative bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 overflow-hidden'>
 			{/* Animated background elements */}
 			<div className="absolute inset-0">
 				{/* Main gradient overlay */}
@@ -81,7 +81,7 @@ const HeroSection = ({
 							onLoad={() => setMapLoading(false)}
 							onError={() => setMapLoading(false)}
 						/>
-						{/* Gradient masks for soft edges */}
+					
 						<div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-transparent to-slate-950" />
 						<div className="absolute inset-0 bg-gradient-to-b from-slate-950  via-transparent to-slate-950" />
 						<div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/60" />
