@@ -81,6 +81,7 @@ const Header = () => {
 			{/* Trending Bills */}
 			<Button
 				variant='ghost'
+				onClick={() => navigate('/trending')}
 				size='sm'
 				className='gap-2 text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all duration-200'>
 				<TrendingUp className='h-4 w-4 text-emerald-400' />
@@ -171,6 +172,7 @@ const Header = () => {
 				<div className='grid grid-cols-2 gap-3'>
 					<Button
 						variant='ghost'
+						onClick={() => navigate('/trending')}
 						className='justify-start gap-3 text-slate-300 hover:text-white hover:bg-slate-800/50 p-4'>
 						<TrendingUp className='h-4 w-4 text-emerald-400' />
 						Trending Bills

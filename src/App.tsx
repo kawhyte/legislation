@@ -7,6 +7,7 @@ import usStates from "./data/usStates";
 import SectionHeader from "./components/SectionHeader";
 import Hero from "./components/Hero";
 import SavedBillsPage from "./components/SavedBillsPage";
+import TrendingBillsPage from "./components/TrendingBillsPage";
 
 const HomePage = ({ selectedJurisdiction, setSelectedJurisdiction }: {
 	selectedJurisdiction: States | null;
@@ -43,6 +44,7 @@ const App = () => {
 						} 
 					/>
 					<Route path="/saved" element={<SavedBillsPage />} />
+					<Route path="/trending" element={<TrendingBillsPage />} />
 				</Routes>
 			</div>
 		</Router>
