@@ -36,7 +36,7 @@ const BillCardCompact = ({ bill }: BillCardProps) => {
 		error: summaryError,
 		generateSummary,
 		cleanup,
-	} = useBillSummary(bill.title, {
+	} = useBillSummary(bill, {
 		maxLength: 150,
 		targetAge: "18-40",
 	});

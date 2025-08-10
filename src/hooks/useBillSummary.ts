@@ -1,5 +1,6 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { GeminiService } from '../services/geminiServices';
+import type { Bill } from './useBills'; // Import the Bill type
 
 interface UseBillSummaryOptions {
   maxLength?: number;
@@ -12,10 +13,11 @@ interface UseBillSummaryReturn {
   isLoading: boolean;
   error: string | null;
   generateSummary: () => void;
+  cleanup: () => void;
 }
 
 export const useBillSummary = (
-  billTitle: string,
+  bill: Bill,
   options: UseBillSummaryOptions = {}
 ): UseBillSummaryReturn => {
   const [summary, setSummary] = useState<string | null>(null);
@@ -27,65 +29,46 @@ export const useBillSummary = (
   const geminiService = useRef(new GeminiService());
   const abortController = useRef<AbortController | null>(null);
 
-  const generateSummary = async () => {
-    if (!billTitle) {
-      console.log('[useBillSummary] No bill title provided');
-      return;
-    }
-
-    // Prevent multiple simultaneous requests for the same bill
-    if (isLoading) {
-      console.log('[useBillSummary] Request already in progress, skipping');
-      return;
-    }
-
-    console.log('[useBillSummary] Starting summary generation for:', billTitle);
-
-    // Cancel any existing request
+  const cleanup = useCallback(() => {
     if (abortController.current) {
       abortController.current.abort();
     }
-    
+  }, []);
+
+  const generateSummary = useCallback(async () => {
+    if (isLoading) return;
+
+    cleanup(); // Abort any previous request
     abortController.current = new AbortController();
+    
     setIsLoading(true);
     setError(null);
 
     try {
-      console.log('[useBillSummary] Calling geminiService.summarizeBillWithImpacts');
       const result = await geminiService.current.summarizeBillWithImpacts(
-        billTitle,
+        bill,
         { maxLength, targetAge, useCache: true }
       );
       
-      console.log('[useBillSummary] Received result:', result);
-      
-      //if (!abortController.current.signal.aborted) {
-        console.log('[useBillSummary] Setting summary and impacts:', result.summary, result.impacts);
+      if (!abortController.current.signal.aborted) {
         setSummary(result.summary);
         setImpacts(result.impacts);
-        setIsLoading(false);
-      //}
+      }
     } catch (err) {
-      console.error('[useBillSummary] Error in generateSummary:', err);
-      if (!abortController.current.signal.aborted) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to generate summary';
-        setError(errorMessage);
-        console.error('Summary generation error:', err);
+      if (err.name !== 'AbortError') {
+        console.error('[useBillSummary] Error in generateSummary:', err);
+        setError(err instanceof Error ? err.message : 'Failed to generate summary');
       }
     } finally {
-      if (!abortController.current.signal.aborted) {
-        console.log('[useBillSummary] Setting loading to false');
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }
-  };
+  }, [bill, isLoading, maxLength, targetAge, cleanup]);
 
-  // Cleanup function to cancel requests
-  const cleanup = () => {
-    if (abortController.current) {
-      abortController.current.abort();
-    }
-  };
+  useEffect(() => {
+    // This effect provides a cleanup function that will be called by the component
+    // when it unmounts or when the dependencies of the effect in the parent component change.
+    return cleanup;
+  }, [cleanup]);
 
   return {
     summary,
@@ -93,10 +76,6 @@ export const useBillSummary = (
     isLoading,
     error,
     generateSummary,
-    cleanup: () => {
-      if (abortController.current) {
-        abortController.current.abort();
-      }
-    }
+    cleanup
   };
 };
