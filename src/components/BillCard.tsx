@@ -171,7 +171,7 @@ const BillCardCompact = ({ bill }: BillCardProps) => {
 							className='w-full bg-slate-800/50 border-slate-700/80 hover:bg-slate-800 hover:border-violet-500/50 text-slate-300 hover:text-white'
 						>
 							<Brain className="h-4 w-4 mr-2 text-violet-400" />
-							AI Analysis
+							Explain This Bill
 							<ChevronRight className="h-4 w-4 ml-auto text-slate-500" />
 						</Button>
 					</DialogTrigger>
@@ -179,7 +179,7 @@ const BillCardCompact = ({ bill }: BillCardProps) => {
 						<DialogHeader>
 							<DialogTitle className='flex items-center gap-3'>
 								<Sparkles className="h-5 w-5 text-violet-400" />
-								<span className='text-xl'>AI-Powered Analysis</span>
+								<span className='text-xl'>Powered by AI to find what matters</span>
 							</DialogTitle>
 						</DialogHeader>
 						<div className="max-h-[70vh] overflow-y-auto p-1 pr-4">
