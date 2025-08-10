@@ -1,207 +1,105 @@
 // utils/billMomentum.ts
 
-export type MomentumLevel = "High" | "Medium" | "Low" | "None";
+import { type Bill } from "@/hooks/useBills";
+
+// Expanded momentum levels to capture the full lifecycle
+export type MomentumLevel = "Enacted" | "Passed" | "High" | "Medium" | "Low" | "Stalled" | "None";
 
 export interface MomentumAnalysis {
   level: MomentumLevel;
   score: number;
   reasons: string[];
-  shouldDisplay: boolean;
-  isIntroductionStage: boolean;
 }
 
 /**
- * Analyzes bill momentum based on actions and descriptions
- * Only applies momentum logic to bills in introduction stage
+ * Analyzes bill momentum based on its entire lifecycle.
  */
-export function analyzeBillMomentum(bill: any): MomentumAnalysis {
+export function analyzeBillMomentum(bill: Bill): MomentumAnalysis {
   const actions = bill.actions || [];
-  const latestAction = bill.latest_action_description?.toLowerCase() || "";
+  const sortedActions = actions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  // --- Check 1: Definitive Final Outcomes ---
+  if (bill.enacted_date || actions.some(a => a.classification.includes("became-law"))) {
+    return { level: "Enacted", score: 100, reasons: ["Enacted into law"] };
+  }
   
-  // First, check if bill is past introduction stage
-  const isIntroductionStage = checkIfIntroductionStage(bill);
-  
-  // If not in introduction stage, always display (let existing progress logic handle it)
-  if (!isIntroductionStage) {
-    return {
-      level: "None",
-      score: 0,
-      reasons: ["Bill has progressed beyond introduction stage"],
-      shouldDisplay: true,
-      isIntroductionStage: false
-    };
+  const failureKeywords = ["died", "failed", "rejected", "vetoed", "indefinitely postponed", "withdrawn"];
+  if (actions.some(a => failureKeywords.some(kw => a.description.toLowerCase().includes(kw)))) {
+    return { level: "Stalled", score: -100, reasons: ["Bill has failed or stalled"] };
   }
 
-  // For introduction stage bills, analyze momentum
+  // --- Check 2: Major Legislative Milestones ---
+  if (bill.house_passage_date && bill.senate_passage_date) {
+    return { level: "Passed", score: 90, reasons: ["Passed both chambers"] };
+  }
+  if (bill.house_passage_date || bill.senate_passage_date) {
+    const chamber = bill.house_passage_date ? "House" : "Senate";
+    return { level: "High", score: 75, reasons: [`Passed the ${chamber}`] };
+  }
+
+  // --- Check 3: In-Progress Scoring Model ---
   let score = 0;
   const reasons: string[] = [];
 
-  // Analyze action classifications (chronologically)
-  const sortedActions = actions.sort((a: any, b: any) => 
-    new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
-
+  // Scoring based on action classifications
   for (const action of sortedActions) {
     const classifications = action.classification || [];
-    const description = action.description?.toLowerCase() || "";
-
-    // High momentum indicators (+3 points each)
     if (classifications.includes("committee-passage")) {
+      score += 5;
+      reasons.push("Passed a committee");
+    }
+    if (classifications.includes("reading-3")) {
       score += 3;
-      reasons.push("Committee approved the bill");
+      reasons.push("Advanced to 3rd reading");
     }
-    
-    if (classifications.includes("reading-1") || classifications.includes("reading-2")) {
-      score += 2;
-      reasons.push("Floor reading occurred");
-    }
-
-    if (classifications.includes("amendment-passage")) {
-      score += 1;
-      reasons.push("Amendments were adopted");
-    }
-
-    // Medium momentum indicators (+2 points each)
     if (classifications.includes("referral-committee")) {
       score += 1;
-      reasons.push("Referred to committee for review");
-    }
-
-    // Check for positive movement in description
-    if (description.includes("ordered to third reading")) {
-      score += 2;
-      reasons.push("Ordered to third reading - likely to be voted on");
-    }
-
-    if (description.includes("ordered to second reading")) {
-      score += 1;
-      reasons.push("Ordered to second reading");
-    }
-
-    // Negative momentum indicators
-    if (description.includes("held at desk")) {
-      score -= 1;
-      reasons.push("Currently held at desk (waiting)");
-    }
-
-    if (description.includes("indefinitely postponed") || 
-        description.includes("tabled") || 
-        description.includes("withdrawn")) {
-      score -= 5;
-      reasons.push("Bill has stalled or been withdrawn");
+      reasons.push("Referred to committee");
     }
   }
 
-  // Latest action analysis
-  if (latestAction.includes("ordered to third reading")) {
-    score += 2;
-    if (!reasons.some(r => r.includes("third reading"))) {
-      reasons.push("Latest: Ordered to third reading");
-    }
+  // Factor in Action Velocity (actions in the last 14 days)
+  const twoWeeksAgo = new Date();
+  twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+  const recentActions = sortedActions.filter(a => new Date(a.date) > twoWeeksAgo).length;
+  if (recentActions > 0) {
+    score += recentActions * 2;
+    reasons.push(`${recentActions} recent action(s)`);
   }
 
-  if (latestAction.includes("committee") && !latestAction.includes("held")) {
-    score += 1;
-    reasons.push("Latest: Active committee involvement");
+  // Time decay factor
+  const daysSinceIntro = bill.first_action_date ? Math.ceil((new Date().getTime() - new Date(bill.first_action_date).getTime()) / (1000 * 60 * 60 * 24)) : 0;
+  if (daysSinceIntro > 120) {
+    score -= 3; // Penalize bills that are very old and haven't passed
   }
 
-  // Time factor - newer bills might still gain momentum
-  const daysSinceIntroduction = getDaysSinceIntroduction(bill);
-  if (daysSinceIntroduction <= 30) {
-    score += 1;
-    reasons.push("Recently introduced (within 30 days)");
-  } else if (daysSinceIntroduction > 180) {
-    score -= 2;
-    reasons.push("Introduced over 6 months ago");
+  // Determine level based on score
+  if (score >= 10) {
+    return { level: "High", score, reasons };
   }
-
-  // Determine momentum level and display decision
-  let level: MomentumLevel;
-  let shouldDisplay: boolean;
-console.log("SCORE***", score)
-
-
   if (score >= 5) {
-    level = "High";
-    shouldDisplay = true;
-  } else if (score >= 2) {
-    level = "Medium";
-    shouldDisplay = true;
-  } else if (score >= 0) {
-    level = "Low";
-    shouldDisplay = false; // Don't display low momentum introduction bills
-  } else {
-    level = "None";
-    shouldDisplay = false; // Don't display stalled bills
+    return { level: "Medium", score, reasons };
+  }
+  if (score > 0) {
+    return { level: "Low", score, reasons };
   }
 
-  return {
-    level,
-    score,
-    reasons: reasons.slice(0, 3), // Limit to top 3 reasons
-    shouldDisplay,
-    isIntroductionStage: true
-  };
+  return { level: "Low", score: 0, reasons: ["Introduced"] };
 }
 
 /**
- * Checks if a bill is still in the introduction stage
+ * This function is no longer needed for the primary display logic but can be kept for other filtering if necessary.
+ * The new model displays all bills and their momentum, rather than pre-filtering.
  */
-function checkIfIntroductionStage(bill: any): boolean {
-  const actions = bill.actions || [];
-  
-  // Look for signs that bill has moved beyond introduction
-  const progressIndicators = [
-    "passage", // Passed a chamber
-    "became-law", // Enacted
-    "executive-signature" // Signed by governor
-  ];
-
-  const hasProgressed = actions.some((action: any) => {
-    const classifications = action.classification || [];
-    return progressIndicators.some(indicator => 
-      classifications.includes(indicator)
-    );
-  });
-
-  // Also check for chamber-specific passage
-  const hasPassedChamber = actions.some((action: any) => {
-    const description = action.description?.toLowerCase() || "";
-    const orgClass = action.organization?.classification?.toLowerCase();
-    
-    return (description.includes("passed") || description.includes("adopted")) &&
-           (orgClass === "upper" || orgClass === "lower");
-  });
-
-  return !hasProgressed && !hasPassedChamber;
+export function filterBillsByMomentum(bills: Bill[]): Bill[] {
+  // For now, let's return all bills enriched with new momentum data
+  return bills;
 }
 
 /**
- * Gets days since bill introduction
+ * Adds momentum data to bill objects using the new analysis model.
  */
-function getDaysSinceIntroduction(bill: any): number {
-  if (!bill.first_action_date) return 0;
-  
-  const introDate = new Date(bill.first_action_date);
-  const today = new Date();
-  const diffTime = Math.abs(today.getTime() - introDate.getTime());
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-}
-
-/**
- * Filters bills array to only include those with sufficient momentum
- */
-export function filterBillsByMomentum(bills: any[]): any[] {
-  return bills.filter(bill => {
-    const momentum = analyzeBillMomentum(bill);
-    return momentum.shouldDisplay;
-  });
-}
-
-/**
- * Adds momentum data to bill objects
- */
-export function enrichBillsWithMomentum(bills: any[]): any[] {
+export function enrichBillsWithMomentum(bills: Bill[]): Bill[] {
   return bills.map(bill => ({
     ...bill,
     momentum: analyzeBillMomentum(bill)

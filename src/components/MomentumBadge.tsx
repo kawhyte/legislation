@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, Minus, Zap } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Zap, CheckCircle2, ShieldCheck, XCircle } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { type MomentumAnalysis } from '../utils/billMomentum';
 
@@ -11,6 +11,18 @@ interface MomentumBadgeProps {
 const MomentumBadge: React.FC<MomentumBadgeProps> = ({ momentum, className = "" }) => {
   const getMomentumConfig = (level: string) => {
     switch (level.toLowerCase()) {
+      case "enacted":
+        return {
+          icon: ShieldCheck,
+          text: "Enacted",
+          className: "bg-green-500/10 text-green-400 border-green-500/20 hover:bg-green-500/20"
+        };
+      case "passed":
+        return {
+          icon: CheckCircle2,
+          text: "Passed Both Chambers",
+          className: "bg-sky-500/10 text-sky-400 border-sky-500/20 hover:bg-sky-500/20"
+        };
       case "high":
         return {
           icon: Zap,
@@ -29,11 +41,11 @@ const MomentumBadge: React.FC<MomentumBadgeProps> = ({ momentum, className = "" 
           text: "Slow Momentum",
           className: "bg-slate-500/10 text-slate-400 border-slate-500/20 hover:bg-slate-500/20"
         };
-      case "declining":
+      case "stalled":
         return {
-          icon: TrendingDown,
-          text: "Declining",
-          className: "bg-orange-500/10 text-orange-400 border-orange-500/20 hover:bg-orange-500/20"
+          icon: XCircle,
+          text: "Stalled or Failed",
+          className: "bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20"
         };
       default:
         return {

@@ -18,6 +18,8 @@ const TrendingBillCard = ({ bill }: TrendingBillCardProps) => {
 	const flagName = stateInfo?.name || "NA";
 	const flagUrl = stateInfo?.flagUrl;
 
+	
+
 	return (
 		<Card className='group relative bg-slate-800/50 border-slate-700/50 p-4 transition-all duration-300 hover:bg-slate-800 hover:border-violet-500/50'>
 			{/* Subtle glow effect on hover */}
