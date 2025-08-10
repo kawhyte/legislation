@@ -1,5 +1,5 @@
 import React from 'react';
-import { useBills } from '../hooks/useBills';
+import useBills from '../hooks/useBills';
 import BillCard from './BillCard';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -7,7 +7,7 @@ import BillCardSkeleton from './BillCardSkeleton';
 
 const TrendingBillsPage: React.FC = () => {
   // Later, you can add filters for "trending"
-  const { bills, error, isLoading } = useBills(null);
+  const { data, error, isLoading } = useBills('Florida');
 
   const renderContent = () => {
     if (isLoading) {
@@ -34,7 +34,7 @@ const TrendingBillsPage: React.FC = () => {
 
     return (
       <div className="grid grid-cols-[repeat(auto-fill,minmax(380px,1fr))] gap-6">
-        {bills.map((bill) => (
+        {data.map((bill) => (
           <BillCard key={bill.id} bill={bill} />
         ))}
       </div>
