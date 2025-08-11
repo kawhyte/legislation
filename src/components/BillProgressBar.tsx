@@ -61,6 +61,17 @@ const BillProgressBar: React.FC<BillProgressBarProps> = ({ bill, className = "" 
     return <Circle className="h-3 w-3 text-slate-500" />;
   };
 
+  const getProgressBarColor = () => {
+    switch (progress.current.status) {
+      case 'Passed':
+        return '[&>div]:bg-gradient-to-r [&>div]:from-emerald-500 [&>div]:to-green-500';
+      case 'Failed':
+        return '[&>div]:bg-gradient-to-r [&>div]:from-red-500 [&>div]:to-rose-500';
+      default:
+        return '[&>div]:bg-gradient-to-r [&>div]:from-violet-500 [&>div]:to-blue-500';
+    }
+  };
+
   const currentStageIndex = stages.findIndex(stage => !stage.completed);
   
   return (
@@ -77,7 +88,7 @@ const BillProgressBar: React.FC<BillProgressBarProps> = ({ bill, className = "" 
       <div className='mb-3'>
         <Progress
           value={progress.current.percentage}
-          className='h-2 w-full bg-slate-700/50 [&>div]:bg-gradient-to-r [&>div]:from-violet-500 [&>div]:to-blue-500 [&>div]:transition-all [&>div]:duration-300'
+          className={`h-2 w-full bg-slate-700/50 ${getProgressBarColor()} [&>div]:transition-all [&>div]:duration-300`}
         />
       </div>
       
