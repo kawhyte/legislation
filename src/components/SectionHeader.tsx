@@ -6,11 +6,9 @@ interface Props {
 
 const SectionHeader = ({ jurisdiction }: Props) => {
 	if (!jurisdiction) {
-		return (
-			<div>
-				<h2 className='text-2xl font-bold mb-4'>Legislature</h2>
-			</div>
-		);
+		return 
+			
+		
 	}
 
 	return (

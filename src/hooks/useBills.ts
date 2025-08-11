@@ -50,7 +50,7 @@ export interface Bill {
 
 // Dynamically calculate the date
 const MonthAgo = getPastDate(4, 'months');
-const DaysAgo = getPastDate(180, 'days');
+const DaysAgo = getPastDate(280, 'days');
 
 
 

@@ -46,7 +46,7 @@ const HeroSection = ({
 		},
 		{
 			icon: Users,
-			text: "Built for Gen Z & Millennials",
+			text: "TL;DR: The Law",
 			color: "text-blue-400"
 		}
 	];

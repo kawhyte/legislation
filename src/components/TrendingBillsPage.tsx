@@ -7,7 +7,7 @@ import BillCardSkeleton from './BillCardSkeleton';
 
 const TrendingBillsPage: React.FC = () => {
   // Later, you can add filters for "trending"
-  const { data, error, isLoading } = useBills('Florida');
+  const { data, error, isLoading } = useBills(null);
 
   const renderContent = () => {
     if (isLoading) {

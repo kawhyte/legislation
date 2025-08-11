@@ -25,7 +25,7 @@ interface Props {
 
 const JurisdictionSelector = ({ onSelectJurisdiction }: Props) => {
 	const data = usStates;
-	const [selectedValue, setSelectedValue] = useState<string>(data[0].name);
+	const [selectedValue, setSelectedValue] = useState<string>('');
 
 	return (
 		<div className='w-sm p-4'>

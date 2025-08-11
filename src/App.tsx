@@ -27,7 +27,7 @@ const HomePage = ({ selectedJurisdiction, setSelectedJurisdiction }: {
 
 const App = () => {
 	const [selectedJurisdiction, setSelectedJurisdiction] =
-		useState<States | null>(usStates[0]);
+		useState<States | null>(null);
 
 	return (
 		<Router>
