@@ -18,17 +18,18 @@ export function analyzeBillMomentum(bill: Bill): MomentumAnalysis {
   const actions = bill.actions || [];
   const sortedActions = actions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  // --- Check 1: Definitive Final Outcomes ---
-  if (bill.enacted_date || actions.some(a => a.classification.includes("became-law"))) {
-    return { level: "Enacted", score: 100, reasons: ["Enacted into law"] };
-  }
-  
+  // --- Check 1: Definitive FAILURE outcome (must come first) ---
   const failureKeywords = ["died", "failed", "rejected", "vetoed", "indefinitely postponed", "withdrawn"];
   if (actions.some(a => failureKeywords.some(kw => a.description.toLowerCase().includes(kw)))) {
     return { level: "Stalled", score: -100, reasons: ["Bill has failed or stalled"] };
   }
 
-  // --- Check 2: Major Legislative Milestones ---
+  // --- Check 2: Definitive SUCCESS outcome ---
+  if (bill.enacted_date || actions.some(a => a.classification.includes("became-law"))) {
+    return { level: "Enacted", score: 100, reasons: ["Enacted into law"] };
+  }
+
+  // --- Check 3: Major Legislative Milestones ---
   if (bill.house_passage_date && bill.senate_passage_date) {
     return { level: "Passed", score: 90, reasons: ["Passed both chambers"] };
   }
