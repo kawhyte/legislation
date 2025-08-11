@@ -70,7 +70,7 @@ const useBills = (selectedJurisdiction: States | null) => {
 	// The useMemo hook ensures that the params object is only recreated when the jurisdiction changes.
 	// This is crucial for preventing infinite loops and unnecessary API calls in the useData hook.
 	const params = useMemo(() => {
-		const baseParams: Record<string, any> = {
+		const baseParams: Record<string, string | number | string[]> = {
 			sort: 'updated_desc',
 			include: ['actions','sources','abstracts'],
 			action_since: DaysAgo,
