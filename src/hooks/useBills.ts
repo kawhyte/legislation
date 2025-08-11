@@ -95,16 +95,29 @@ const useBills = (selectedJurisdiction: States | null) => {
 			'teacher salary', 'election security', 'voting rights', 'water rights', 'clean energy'
 		];
 
-		// Function to find the first matching keyword
-		const getTrendingReason = (title: string): string | undefined => {
-			const lowerCaseTitle = title.toLowerCase();
-			return trendingKeywords.find(keyword => lowerCaseTitle.includes(keyword));
+		// Implements a "best available reason" strategy for why a bill is trending.
+		const getTrendingReason = (bill: Bill): string => {
+			// 1. First, try to find a direct keyword match in the title or abstract.
+			const searchableText = (
+				bill.title + ' ' + (bill.abstracts?.[0]?.abstract || '')
+			).toLowerCase();
+			
+			const keywordReason = trendingKeywords.find(keyword => searchableText.includes(keyword));
+			if (keywordReason) return keywordReason;
+
+			// 2. If no keyword match, fall back to the first subject tag.
+			if (bill.subject && bill.subject.length > 0) {
+				return bill.subject[0];
+			}
+
+			// 3. As a final resort, use a generic but relevant reason.
+			return "Recent Activity";
 		};
 
-		// Enrich bills with momentum and trending reason
+		// Enrich bills with momentum and a guaranteed trending reason
 		const enrichedBills = rawData.map(bill => {
 			const momentum = enrichBillsWithMomentum([bill])[0].momentum;
-			const trendingReason = getTrendingReason(bill.title);
+			const trendingReason = getTrendingReason(bill);
 			return { ...bill, momentum, trendingReason };
 		});
 		
