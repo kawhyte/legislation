@@ -16,6 +16,7 @@ import BillProgressBar from "./BillProgressBar";
 import BookmarkButton from "./BookmarkButton";
 import { toSentenceCase } from "../lib/utils";
 import MomentumBadge from "./MomentumBadge";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { 
     Dialog, 
     DialogContent, 
@@ -143,10 +144,12 @@ const BillCardCompact = ({ bill }: BillCardProps) => {
 							)}
 						</div>
 					</div>
-					<BookmarkButton
-						className='h-6 w-6 p-0 text-slate-400 hover:text-yellow-400 hover:bg-yellow-400/10'
-						bill={bill}
-					/>
+					<TooltipProvider>
+						<BookmarkButton
+							className='h-8 w-8 p-0'
+							bill={bill}
+						/>
+					</TooltipProvider>
 				</div>
 
 				<div className='flex items-center gap-2 mb-3'>
