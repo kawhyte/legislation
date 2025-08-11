@@ -97,7 +97,7 @@ const BillCardCompact = ({ bill }: BillCardProps) => {
 						<p className='text-base text-slate-100 leading-relaxed'>{summary}</p>
 					</div>
 					
-					{impacts?.length > 0 && (
+					{impacts && impacts.length > 0 && (
 						<div className='bg-blue-900/30 border border-blue-500/30 rounded-lg p-4'>
 							<p className='text-sm font-bold text-blue-300 mb-3'>
 								Potential Impact if Passed

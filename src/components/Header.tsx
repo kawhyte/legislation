@@ -157,7 +157,7 @@ const Header = () => {
 			}`}>
 			<div className='p-4 space-y-4'>
 				{/* Mobile Search */}
-				<div className='md:hidden relative'>
+				{/* <div className='md:hidden relative'>
 					<Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400' />
 					<Input
 						type='text'
@@ -166,7 +166,7 @@ const Header = () => {
 						onChange={(e) => setSearchQuery(e.target.value)}
 						className='pl-10 pr-4 py-2 bg-slate-800/50 border-slate-700/50 text-slate-200 placeholder:text-slate-500 focus:border-violet-500/50 focus:ring-violet-500/20 rounded-lg w-full'
 					/>
-				</div>
+				</div> */}
 
 				{/* Mobile Navigation Links */}
 				<div className='grid grid-cols-2 gap-3'>
@@ -219,7 +219,7 @@ const Header = () => {
 						<Logo />
 
 						{/* Search Bar - Desktop */}
-						<SearchBar />
+						{/* <SearchBar /> */}
 
 						{/* Navigation Buttons - Desktop */}
 						<NavigationButtons />
