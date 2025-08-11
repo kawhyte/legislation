@@ -20,7 +20,7 @@ export interface States {
 	// mapUrl: string;
 }
 interface Props {
-	onSelectJurisdiction: (jurisdiction: States) => void;
+	onSelectJurisdiction: (jurisdiction: States | null) => void;
 }
 
 const JurisdictionSelector = ({ onSelectJurisdiction }: Props) => {

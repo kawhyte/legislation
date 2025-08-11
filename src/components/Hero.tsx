@@ -8,7 +8,7 @@ const geoapifyApiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
 
 interface HeroSectionProps {
 	selectedJurisdiction: States | null;
-	setSelectedJurisdiction: (jurisdiction: States) => void;
+	setSelectedJurisdiction: (jurisdiction: States | null) => void;
 }
 
 const HeroSection = ({
@@ -94,11 +94,11 @@ const HeroSection = ({
 				<div className='max-w-4xl mx-auto text-center'>
 					{/* Main heading with animation */}
 					<div className={`transition-all duration-1000 ease-out ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-						<div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-sm font-medium mb-8">
+						{/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-sm font-medium mb-8">
 							<Zap className="h-4 w-4" />
 							Making democracy accessible for everyone
 						</div>
-						
+						 */}
 						<h1 className='text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-br from-white via-slate-200 to-slate-400 bg-clip-text text-transparent leading-[0.9] tracking-tight mb-6'>
 							Track US
 							<br />
@@ -124,6 +124,11 @@ const HeroSection = ({
 							</div>
 						))}
 					</div>
+
+
+
+
+					
 
 					{/* Main CTA Section */}
 					<div className={`transition-all duration-1000 delay-500 ease-out ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
