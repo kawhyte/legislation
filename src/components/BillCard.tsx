@@ -1,7 +1,7 @@
 import type { Bill } from "../hooks/useBills";
 import usStates from "../data/usStates";
 import { useBillSummary } from "../hooks/useBillSummary";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +10,7 @@ import {
 	Brain,
 	ChevronRight,
 	FileText,
+	Link,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import BillProgressBar from "./BillProgressBar";
@@ -24,9 +25,25 @@ import {
     DialogTitle, 
     DialogTrigger 
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface BillCardProps {
 	bill: Bill;
+}
+
+const getDomainFromUrl = (url: string) => {
+    try {
+        const hostname = new URL(url).hostname;
+        return hostname.replace(/^www\./, '');
+    } catch (error) {
+        console.error("Invalid source URL:", url, error);
+        return 'Official Source';
+    }
 }
 
 const BillCardCompact = ({ bill }: BillCardProps) => {
@@ -42,6 +59,8 @@ const BillCardCompact = ({ bill }: BillCardProps) => {
 		targetAge: "18-40",
 	});
 
+
+	console.log("My BILLs",bill.sources)
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	useEffect(() => {
@@ -162,7 +181,7 @@ const BillCardCompact = ({ bill }: BillCardProps) => {
 			</CardHeader>
 
 			<CardContent className='space-y-4 pt-0 flex-grow flex flex-col'>
-				<div className="flex-grow">
+				<div className="flex-grow space-y-4">
 					<BillProgressBar bill={bill} />
 				</div>
 
@@ -191,6 +210,29 @@ const BillCardCompact = ({ bill }: BillCardProps) => {
 					</DialogContent>
 				</Dialog>
 			</CardContent>
+      <CardFooter>
+        <div className="flex items-center justify-between w-full">
+            <span className="text-xs text-slate-400">Official Sources</span>
+            {bill.sources && bill.sources.length > 0 && (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                            <Link className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        {bill.sources.map((source, index) => (
+                            <DropdownMenuItem key={index} asChild>
+                                <a href={source.url} target="_blank" rel="noopener noreferrer">
+                                    {source.note || getDomainFromUrl(source.url)}
+                                </a>
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            )}
+        </div>
+      </CardFooter>
 		</Card>
 	);
 };

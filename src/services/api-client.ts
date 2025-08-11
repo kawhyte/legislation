@@ -1,9 +1,13 @@
 import axios from "axios";
+import { stringify } from "qs";
 
 export default axios.create({
 	baseURL: "https://v3.openstates.org",
 	headers: {
 		"X-API-KEY": import.meta.env.VITE_OPENSTATES_API_KEY,
+	},
+	paramsSerializer: params => {
+		return stringify(params, { arrayFormat: 'repeat' })
 	}
 	// params: {
 	// 	// q: "Budget",

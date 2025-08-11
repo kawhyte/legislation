@@ -27,13 +27,24 @@ interface Action {
 	order: number;
   }
 
+interface Source {
+  note: string;
+  url: string;
+}
+
+interface Abstract {
+  abstract: string;
+  note: string;
+  date: string;
+}
+
 export interface Bill {
 	id: string;
 	title: string;
 	introduced: string;
 	status: string;
-	summary: string;
-	sources: string[];
+	summary?: string;
+	sources: Source[];
 	jurisdiction: Jurisdiction;
 	latest_action?: string;
 	identifier: string;
@@ -45,6 +56,7 @@ export interface Bill {
 	senate_passage_date: string;
 	enacted_date: string;
 	actions?: Action[];
+	abstracts?: Abstract[];
 	momentum?: MomentumAnalysis;
 	trendingReason?: string; // Add field for trending context
 }
@@ -60,7 +72,7 @@ const useBills = (selectedJurisdiction: States | null) => {
 	const params = useMemo(() => {
 		const baseParams: Record<string, any> = {
 			sort: 'updated_desc',
-			include: 'actions',
+			include: ['actions','sources','abstracts'],
 			action_since: DaysAgo,
 		};
 
@@ -73,13 +85,14 @@ const useBills = (selectedJurisdiction: States | null) => {
 			// Logic for the nationwide "Trending" view
 			baseParams.per_page = 20; // Get the max allowed bills to ensure a good mix
 			// This query searches for bills that contain any of these high-impact keywords.
-			baseParams.q = '("artificial intelligence" OR "paid leave" OR "housing" OR "rent control" OR "teacher salary" OR "election security" OR "voting rights" OR "water rights" OR "clean energy")';
+			baseParams.q = '"artificial intelligence" | "paid leave" | "housing" | "rent control" | "teacher salary" | "election security" | "voting rights" | "water rights" | "clean energy"';
 			// Adding a date filter makes the nationwide query much faster and avoids timeouts.
 			baseParams.created_since = OneYearAgo;
 		}
 		return baseParams;
 	}, [selectedJurisdiction]);
 
+	
 	const { data: rawData, error, isLoading } = useData<Bill>(
 		"/bills",
 		{ params },
