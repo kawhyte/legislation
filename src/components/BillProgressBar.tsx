@@ -1,6 +1,6 @@
 // components/BillProgressBar.tsx - Improved Version
 import React from 'react';
-import { Gavel, CheckCircle2, Circle, Clock } from 'lucide-react';
+import { Gavel, CheckCircle2, Circle, Clock, XCircle } from 'lucide-react';
 import { determineBillProgress } from '../utils/billProgress';
 import { Progress } from "@/components/ui/progress";
 import { formatDate } from '../lib/utils';
@@ -51,7 +51,10 @@ const BillProgressBar: React.FC<BillProgressBarProps> = ({ bill, className = "" 
     }
   ];
 
-  const getStageIcon = (completed: boolean, isActive: boolean) => {
+  const getStageIcon = (completed: boolean, isActive: boolean, isFailureStage: boolean) => {
+    if (isFailureStage) {
+      return <XCircle className="h-3 w-3 text-red-400" />;
+    }
     if (completed) {
       return <CheckCircle2 className="h-3 w-3 text-emerald-400" />;
     }
@@ -96,21 +99,23 @@ const BillProgressBar: React.FC<BillProgressBarProps> = ({ bill, className = "" 
       <div className='grid grid-cols-4 gap-2'>
         {stages.map((stage, index) => {
           const isActive = index === currentStageIndex;
-          const isMobile = window.innerWidth < 640; // You might want to use a proper responsive hook
+          const isFailureStage = progress.current.status === 'Failed' && progress.current.stage === stage.label;
+
+          const stageTextColor = isFailureStage
+            ? 'text-red-400'
+            : stage.completed
+              ? 'text-emerald-400'
+              : isActive
+                ? 'text-violet-400'
+                : 'text-slate-500';
           
           return (
             <div key={stage.key} className='flex flex-col items-center gap-1'>
               <div className='flex items-center justify-center'>
-                {getStageIcon(stage.completed, isActive)}
+                {getStageIcon(stage.completed, isActive, isFailureStage)}
               </div>
               <div className='text-center'>
-                <div className={`text-xs font-medium leading-tight ${
-                  stage.completed 
-                    ? 'text-emerald-400' 
-                    : isActive 
-                      ? 'text-violet-400' 
-                      : 'text-slate-500'
-                }`}>
+                <div className={`text-xs font-medium leading-tight ${stageTextColor}`}>
                   <span className="hidden sm:inline">{stage.label}</span>
                   <span className="sm:hidden">{stage.shortLabel}</span>
                 </div>
@@ -127,7 +132,7 @@ const BillProgressBar: React.FC<BillProgressBarProps> = ({ bill, className = "" 
       {progress.current.description && (
         <div className="mt-3 pt-2 border-t border-slate-700/30">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-violet-400 rounded-full animate-pulse"></div>
+            <div className={`w-2 h-2 rounded-full ${progress.current.status === 'Failed' ? 'bg-red-400' : 'bg-violet-400 animate-pulse'}`}></div>
             <p className="text-xs text-slate-400">
               {progress.current.description}
             </p>
