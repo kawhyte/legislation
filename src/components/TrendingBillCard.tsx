@@ -1,5 +1,6 @@
 import type { Bill } from "../hooks/useBills";
 import { Card } from "@/components/ui/card";
+import { Flame } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toSentenceCase } from "../lib/utils";
 import MomentumBadge from "./MomentumBadge";
@@ -44,6 +45,12 @@ const TrendingBillCard = ({ bill }: TrendingBillCardProps) => {
 						<h3 className='font-semibold text-sm text-slate-100 leading-tight line-clamp-2'>
 							{toSentenceCase(bill.title)}
 						</h3>
+						{bill.trendingReason && (
+							<div className="flex items-center gap-1.5 mt-2 text-xs text-amber-400/80">
+								<Flame className="h-3.5 w-3.5" />
+								<span className="capitalize">Trending for: {bill.trendingReason}</span>
+							</div>
+						)}
 					</div>
 					<BookmarkButton bill={bill} className='text-slate-400 hover:text-yellow-400' />
 				</div>

@@ -3,7 +3,7 @@
 import type { States } from "@/components/JurisdictionSelector";
 import useData from "./useData";
 import { useMemo } from "react";
-import { filterBillsByMomentum, enrichBillsWithMomentum, type MomentumAnalysis } from "../utils/billMomentum";
+import { enrichBillsWithMomentum, type MomentumAnalysis } from "../utils/billMomentum";
 import { getPastDate } from "@/lib/utils";
 
 interface Jurisdiction {
@@ -44,64 +44,73 @@ export interface Bill {
 	house_passage_date: string;
 	senate_passage_date: string;
 	enacted_date: string;
-	actions?: Action[]; // Add actions array
-	momentum?: MomentumAnalysis; // Add momentum analysis
+	actions?: Action[];
+	momentum?: MomentumAnalysis;
+	trendingReason?: string; // Add field for trending context
 }
 
 // Dynamically calculate the date
 const MonthAgo = getPastDate(4, 'months');
+const OneYearAgo = getPastDate(12, 'months');
 const DaysAgo = getPastDate(280, 'days');
 
-
-
-
-
 const useBills = (selectedJurisdiction: States | null) => {
+	// The useMemo hook ensures that the params object is only recreated when the jurisdiction changes.
+	// This is crucial for preventing infinite loops and unnecessary API calls in the useData hook.
+	const params = useMemo(() => {
+		const baseParams: Record<string, any> = {
+			sort: 'updated_desc',
+			include: 'actions',
+			action_since: DaysAgo,
+		};
+
+		if (selectedJurisdiction) {
+			// Logic for when a specific state is selected
+			baseParams.jurisdiction = selectedJurisdiction.name;
+			baseParams.created_since = MonthAgo;
+			baseParams.per_page = 20;
+		} else {
+			// Logic for the nationwide "Trending" view
+			baseParams.per_page = 20; // Get the max allowed bills to ensure a good mix
+			// This query searches for bills that contain any of these high-impact keywords.
+			baseParams.q = '("artificial intelligence" OR "paid leave" OR "housing" OR "rent control" OR "teacher salary" OR "election security" OR "voting rights" OR "water rights" OR "clean energy")';
+			// Adding a date filter makes the nationwide query much faster and avoids timeouts.
+			baseParams.created_since = OneYearAgo;
+		}
+		return baseParams;
+	}, [selectedJurisdiction]);
+
 	const { data: rawData, error, isLoading } = useData<Bill>(
-		selectedJurisdiction ? "/bills" : null,
-		selectedJurisdiction
-			? {
-					params: {
-						jurisdiction: selectedJurisdiction.name,
-						// subject: ["Paid Leave", "Artificial Intelligence","Technology", "Healthcare", "Education", "Housing"],
-						created_since: MonthAgo,
-						per_page: 20, // Increased to account for filtering
-						sort: 'updated_desc',
-						// q:'Paid Leave OR Redistricting OR Technology OR Health care OR Voting OR Artificial Intelligence OR Education OR Election',
-						// Include actions in API response
-						include: 'actions',
-						action_since:DaysAgo
-					},
-			  }
-			: undefined,
-		[selectedJurisdiction?.name]
+		"/bills",
+		{ params },
+		[params] // The dependency array now uses the stable params object
 	);
 
 	// Process bills with momentum analysis and filtering
 	const processedData = useMemo(() => {
 		if (!rawData || rawData.length === 0) return [];
 
-		console.log(`[useBills] Processing ${rawData.length} bills for momentum`);
+		const trendingKeywords = [
+			'artificial intelligence', 'paid leave', 'housing', 'rent control', 
+			'teacher salary', 'election security', 'voting rights', 'water rights', 'clean energy'
+		];
+
+		// Function to find the first matching keyword
+		const getTrendingReason = (title: string): string | undefined => {
+			const lowerCaseTitle = title.toLowerCase();
+			return trendingKeywords.find(keyword => lowerCaseTitle.includes(keyword));
+		};
+
+		// Enrich bills with momentum and trending reason
+		const enrichedBills = rawData.map(bill => {
+			const momentum = enrichBillsWithMomentum([bill])[0].momentum;
+			const trendingReason = getTrendingReason(bill.title);
+			return { ...bill, momentum, trendingReason };
+		});
 		
-		// Step 1: Enrich bills with momentum analysis
-		const enrichedBills = enrichBillsWithMomentum(rawData);
+		console.log(`[useBills] Displaying ${enrichedBills.length} trending bills`);
 		
-		// Step 2: Filter out low/no momentum introduction-stage bills
-		const filteredBills = filterBillsByMomentum(enrichedBills);
-		
-		console.log(`[useBills] Filtered from ${rawData.length} to ${filteredBills.length} bills`);
-		
-		// Step 3: Log momentum distribution for debugging
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const momentumCounts = filteredBills.reduce((acc: any, bill: Bill) => {
-			const level = bill.momentum?.level || 'None';
-			acc[level] = (acc[level] || 0) + 1;
-			return acc;
-		}, {});
-		
-		console.log('[useBills] Momentum distribution:', momentumCounts);
-		
-		return filteredBills;
+		return enrichedBills;
 	}, [rawData]);
 
 	return { 
