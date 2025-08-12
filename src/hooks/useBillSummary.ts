@@ -62,7 +62,7 @@ export const useBillSummary = (
     } finally {
       setIsLoading(false);
     }
-  }, [bill, isLoading, maxLength, targetAge, cleanup]);
+  }, [bill, maxLength, targetAge, cleanup]);
 
   useEffect(() => {
     // This effect provides a cleanup function that will be called by the component

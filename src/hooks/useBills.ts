@@ -3,7 +3,7 @@
 import type { States } from "@/components/JurisdictionSelector";
 import useData from "./useData";
 import { useMemo } from "react";
-import { enrichBillsWithMomentum, type MomentumAnalysis } from "../utils/billMomentum";
+import { analyzeBillMomentum, type MomentumAnalysis } from "../utils/billMomentum";
 import { getPastDate } from "@/lib/utils";
 
 interface Jurisdiction {
@@ -45,7 +45,7 @@ export interface Bill {
 	status: string;
 	summary?: string;
 	sources: Source[];
-	jurisdiction: Jurisdiction;
+	jurisdiction?: Jurisdiction;
 	latest_action?: string;
 	identifier: string;
 	latest_action_date: string;
@@ -73,11 +73,11 @@ const useBills = (selectedJurisdiction: States | null) => {
 		const baseParams: Record<string, string | number | string[]> = {
 			sort: 'updated_desc',
 			include: ['actions','sources','abstracts'],
-			action_since: DaysAgo,
 		};
 
 		if (selectedJurisdiction) {
 			// Logic for when a specific state is selected
+			baseParams.action_since = DaysAgo;
 			baseParams.jurisdiction = selectedJurisdiction.name;
 			baseParams.created_since = MonthAgo;
 			baseParams.per_page = 20;
@@ -87,7 +87,7 @@ const useBills = (selectedJurisdiction: States | null) => {
 			// This query searches for bills that contain any of these high-impact keywords.
 			baseParams.q = '"artificial intelligence" | "paid leave" | "housing" | "rent control" | "teacher salary" | "election security" | "voting rights" | "water rights" | "clean energy"';
 			// Adding a date filter makes the nationwide query much faster and avoids timeouts.
-			baseParams.created_since = OneYearAgo;
+			
 		}
 		return baseParams;
 	}, [selectedJurisdiction]);
@@ -129,7 +129,7 @@ const useBills = (selectedJurisdiction: States | null) => {
 
 		// Enrich bills with momentum and a guaranteed trending reason
 		const enrichedBills = rawData.map(bill => {
-			const momentum = enrichBillsWithMomentum([bill])[0].momentum;
+			const momentum = analyzeBillMomentum(bill);
 			const trendingReason = getTrendingReason(bill);
 			return { ...bill, momentum, trendingReason };
 		});

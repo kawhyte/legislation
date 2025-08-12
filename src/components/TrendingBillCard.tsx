@@ -19,6 +19,10 @@ interface TrendingBillCardProps {
 }
 
 const TrendingBillCard = ({ bill }: TrendingBillCardProps) => {
+	if (!bill.jurisdiction) {
+		return null;
+	}
+
 	const stateInfo = usStates.find(
 		(state) => state.name.toLowerCase() === bill.jurisdiction.name.toLowerCase()
 	);
