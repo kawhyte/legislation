@@ -211,7 +211,7 @@ const BillCardCompact = ({ bill }: BillCardProps) => {
 				</Dialog>
 			</CardContent>
       <CardFooter>
-        <div className="flex items-center justify-between w-full">
+        <div className="flex items-center justify-start w-full">
             <span className="text-xs text-slate-400">Official Sources</span>
             {bill.sources && bill.sources.length > 0 && (
                 <DropdownMenu>
