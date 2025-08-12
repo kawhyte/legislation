@@ -85,7 +85,7 @@ const Header = () => {
 				size='sm'
 				className='gap-2 text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all duration-200'>
 				<TrendingUp className='h-4 w-4 text-emerald-400' />
-				Trending
+				Trending Bills
 			</Button>
 
 			{/* Saved Bills with count - ADD onClick HERE */}
@@ -104,13 +104,13 @@ const Header = () => {
 			</Button>
 
 			{/* AI Insights */}
-			<Button
+			{/* <Button
 				variant='ghost'
 				size='sm'
 				className='gap-2 text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all duration-200'>
 				<Sparkles className='h-4 w-4 text-blue-400' />
 				AI Insights
-			</Button>
+			</Button> */}
 		</div>
 	);
 
@@ -194,12 +194,12 @@ const Header = () => {
 						)}
 					</Button>
 
-					<Button
+					{/* <Button
 						variant='ghost'
 						className='justify-start gap-3 text-slate-300 hover:text-white hover:bg-slate-800/50 p-4 col-span-2'>
 						<Sparkles className='h-4 w-4 text-blue-400' />
 						AI Insights
-					</Button>
+					</Button> */}
 				</div>
 			</div>
 		</div>

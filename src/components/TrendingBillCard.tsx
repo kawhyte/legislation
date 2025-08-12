@@ -23,6 +23,8 @@ const TrendingBillCard = ({ bill }: TrendingBillCardProps) => {
 		return null;
 	}
 
+
+
 	const stateInfo = usStates.find(
 		(state) => state.name.toLowerCase() === bill.jurisdiction.name.toLowerCase()
 	);

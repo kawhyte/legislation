@@ -58,7 +58,7 @@ const BillCardCompact = ({ bill }: BillCardProps) => {
 		maxLength: 150,
 		targetAge: "18-40",
 	});
-
+ console.log("My BILLs",bill)
 
 	console.log("My BILLs",bill.sources)
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -221,7 +221,7 @@ const BillCardCompact = ({ bill }: BillCardProps) => {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        {bill.sources.map((source, index) => (
+                        {bill.sources.filter(source => source.note !== 'API Details').map((source, index) => (
                             <DropdownMenuItem key={index} asChild>
                                 <a href={source.url} target="_blank" rel="noopener noreferrer">
                                     {source.note || getDomainFromUrl(source.url)}
