@@ -64,12 +64,6 @@ export const useBillSummary = (
     }
   }, [bill, maxLength, targetAge, cleanup]);
 
-  useEffect(() => {
-    // This effect provides a cleanup function that will be called by the component
-    // when it unmounts or when the dependencies of the effect in the parent component change.
-    return cleanup;
-  }, [cleanup]);
-
   return {
     summary,
     impacts,
