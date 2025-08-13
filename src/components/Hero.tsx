@@ -59,12 +59,12 @@ const HeroSection = ({
 				<div className="absolute inset-0 bg-gradient-to-br from-violet-950/20 via-blue-950/10 to-emerald-950/20" />
 				
 				{/* Animated orbs */}
-				<div className={`absolute top-1/4 left-1/4 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl transition-all duration-[3000ms] ease-out ${isLoaded ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
-				<div className={`absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl transition-all duration-[3000ms] delay-500 ease-out ${isLoaded ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
-				<div className={`absolute top-1/2 right-1/3 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl transition-all duration-[3000ms] delay-1000 ease-out ${isLoaded ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
+				<div className={`absolute top-1/4 left-1/4 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl transition-opacity duration-[3000ms] ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'} animate-blob-1`} />
+				<div className={`absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl transition-opacity duration-[3000ms] delay-500 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'} animate-blob-2`} />
+				<div className={`absolute top-1/2 right-1/3 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl transition-opacity duration-[3000ms] delay-1000 ease-out ${isLoaded ? 'opacity-100' : 'opacity-0'} animate-blob-3`} />
 				
 				{/* Subtle map background with soft edges */}
-				{mapUrl && (
+				{/* {mapUrl && (
 					<div className="absolute inset-0 opacity-5">
 						<img
 							src={mapUrl}
@@ -77,7 +77,7 @@ const HeroSection = ({
 						<div className="absolute inset-0 bg-gradient-to-b from-slate-950  via-transparent to-slate-950" />
 						<div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/60" />
 					</div>
-				)}
+				)} */}
 			</div>
 
 			{/* Main content */}
