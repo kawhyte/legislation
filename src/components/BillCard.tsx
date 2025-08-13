@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Sparkles, Link, Flame } from "lucide-react"; // Removed unused icons
+import { RefreshCw, Sparkles, Link, Flame, Calendar } from "lucide-react"; // Removed unused icons
 import BillProgressStepper from "./BillProgressStepper";
 import BookmarkButton from "./BookmarkButton";
 import { toSentenceCase } from "../lib/utils";
@@ -69,6 +69,7 @@ const BillCard = ({ bill, showProgressBar = true, showTrendingReason = false }: 
 		setIsModalOpen(true);
 	};
 
+	// console.log("BBB",bill);
 	const stateInfo = usStates.find(
 		(state) => state.name.toLowerCase() === bill?.jurisdiction?.name.toLowerCase()
 	);
@@ -210,45 +211,66 @@ const BillCard = ({ bill, showProgressBar = true, showTrendingReason = false }: 
 			</CardContent>
 
 			<CardFooter className=''>
-				<div className='flex items-center justify-start w-full -ml-2 -mt-4 -mb-2'>
-					{bill.sources && bill.sources.length > 0 && (
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button
-									variant='ghost'
-									size='sm'
-									className='text-xs text-slate-400 hover:text-slate-200'>
-									<Link className='h-3 w-3 mr-2' />
+				<div className='flex items-center justify-between w-full -ml-2 -mt-4 -mb-2'>
+					<div>
+						{bill.sources && bill.sources.length > 0 && (
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button
+										variant='ghost'
+										size='sm'
+										className='text-xs text-slate-400 hover:text-slate-200'>
+										<Link className='h-3 w-3 mr-2' />
 
-									{bill.sources?.length > 0 && (
-										<div className='flex items-center gap-1.5 text-xs text-slate-500'>
-											<span>
-												{bill.sources.length} Official Source
-												{bill.sources.length > 1 ? "s" : ""}
-											</span>
-										</div>
+										{bill.sources?.length > 0 && (
+											<div className='flex items-center gap-1.5 text-xs text-slate-500'>
+												<span>
+													{bill.sources.length} Official Source
+													{bill.sources.length > 1 ? "s" : ""}
+												</span>
+											</div>
+										)}
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent
+									align='start'
+									className='bg-slate-800 border-slate-700 text-slate-200'>
+									{bill.sources
+										.filter((source) => source.note !== "API Details")
+										.map((source, index) => (
+											<DropdownMenuItem key={index} asChild>
+												<a
+													href={source.url}
+													target='_blank'
+													rel='noopener noreferrer'
+													className='hover:bg-slate-700/50'>
+													{source.note || getDomainFromUrl(source.url)}
+												</a>
+											</DropdownMenuItem>
+										))}
+								</DropdownMenuContent>
+							</DropdownMenu>
+						)}
+					</div>
+
+					<div>
+						{bill.latest_action_date && (
+							<div className='flex items-center text-xs text-slate-400 mr-2'>
+								<Calendar className='h-3 w-3 mr-1.5 text-slate-500' />
+								<span className="mr-1">Last action on </span> 
+								<span>
+									{new Date(bill.latest_action_date).toLocaleDateString(
+										"en-US",
+										{
+											month: "short",
+											year: "numeric",
+											day: "numeric",
+										}
 									)}
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent
-								align='start'
-								className='bg-slate-800 border-slate-700 text-slate-200'>
-								{bill.sources
-									.filter((source) => source.note !== "API Details")
-									.map((source, index) => (
-										<DropdownMenuItem key={index} asChild>
-											<a
-												href={source.url}
-												target='_blank'
-												rel='noopener noreferrer'
-												className='hover:bg-slate-700/50'>
-												{source.note || getDomainFromUrl(source.url)}
-											</a>
-										</DropdownMenuItem>
-									))}
-							</DropdownMenuContent>
-						</DropdownMenu>
-					)}
+								</span>
+							</div>
+						)}
+					</div>
 				</div>
 			</CardFooter>
 		</Card>

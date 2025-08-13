@@ -135,7 +135,7 @@ const HeroSection = ({
 								</div>
 								
 								<p className='text-slate-400 mb-6 text-lg'>
-									Select your state to see live legislation and get AI summaries, and track bills that impact your community.
+									Decode any state bill with AI-powered summaries and real-time tracking.
 								</p>
 								
 								<div className="space-y-4 flex flex-row align-middle justify-center">
