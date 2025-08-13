@@ -51,7 +51,7 @@ const BillCard = ({ bill, showProgressBar = true, showTrendingReason = false }: 
 		cleanup,
 	} = useBillSummary(bill, {
 		maxLength: 150,
-		targetAge: "18-40",
+		targetAge: "30-40",
 	});
 
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -197,7 +197,7 @@ const BillCard = ({ bill, showProgressBar = true, showTrendingReason = false }: 
 						<DialogHeader>
 							<DialogTitle className='flex items-center gap-3'>
 								<Sparkles className='h-5 w-5 text-violet-400' />
-								<span className='text-xl'>
+								<span className='text-sm font-medium text-gray-400'>
 									Powered by AI to find what matters
 								</span>
 							</DialogTitle>

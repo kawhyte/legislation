@@ -106,7 +106,7 @@ const HeroSection = ({
 					</div>
 
 					{/* Features row */}
-					<div className={`flex flex-wrap justify-center gap-6 mb-16 transition-all duration-1000 delay-300 ease-out ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+					<div className={`md:flex flex-wrap justify-center hidden gap-6 mb-16 transition-all duration-1000 delay-300 ease-out ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
 						{features.map((feature, index) => (
 							<div key={index} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50">
 								<feature.icon className={`h-4 w-4 ${feature.color}`} />
@@ -135,7 +135,7 @@ const HeroSection = ({
 								</div>
 								
 								<p className='text-slate-400 mb-6 text-lg'>
-									Select your state to see live legislation, AI summaries, and track bills that impact your community.
+									Select your state to see live legislation and get AI summaries, and track bills that impact your community.
 								</p>
 								
 								<div className="space-y-4 flex flex-row align-middle justify-center">

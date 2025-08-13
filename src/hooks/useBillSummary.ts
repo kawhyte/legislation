@@ -11,7 +11,7 @@ export const useBillSummary = (
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const { maxLength = 150, targetAge = "18-40" } = options;
+  const { maxLength = 150, targetAge = "30-40" } = options;
   const geminiService = useRef(new GeminiService());
   const abortController = useRef<AbortController | null>(null);
 

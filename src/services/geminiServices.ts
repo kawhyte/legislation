@@ -154,17 +154,20 @@ export class GeminiService {
 
     try {
       const prompt = `
-        You are an expert at explaining complex legislation in simple terms.
-        Analyze the following bill information and provide:
-        1. A clear summary (maximum ${maxLength} characters).
-        2. Exactly 3 bullet points about the real-world impact if this bill becomes law.
-        
-        Guidelines:
-        - Write for people aged ${targetAge}.
-        - Use simple, everyday language.
-        - Focus on practical impacts.
-        - Start the summary with "This bill..." or "This law...".
-        
+        You are an AI assistant that's great at breaking down complicated legal stuff for anyone to understand.
+        Your goal is to explain the following bill in a way that's casual and engaging for your target audience.
+
+        Here's what you need to do:
+        1. Write a short summary (no more than ${maxLength} characters). Keep it clear and to the point.
+        2. List exactly 3 bullet points on how this could actually affect people's lives if it passes.
+
+        Tone and Style Guidelines:
+        - Your target audience is aged ${targetAge}.
+        - Be conversational and approachable, like you're explaining it to a smart friend.
+        - Ditch the legal jargon. Use simple, everyday language.
+        - Get straight to what matters. Why should they care?
+        - You can start the summary with "Here's the deal with this bill:" or something similarly casual, instead of the formal "This bill...".
+
         Format your response exactly like this:
         [Your summary here]
         
