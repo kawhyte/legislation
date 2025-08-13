@@ -3,8 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import BillGrid from "./components/BillGrid";
 import Header from "./components/Header";
 import  { type States } from "./components/JurisdictionSelector";
-
-import SectionHeader from "./components/SectionHeader";
 import Hero from "./components/Hero";
 import SavedBillsPage from "./components/SavedBillsPage";
 import TrendingBillsPage from "./components/TrendingBillsPage";
@@ -32,7 +30,7 @@ const HomePage = ({ selectedJurisdiction, setSelectedJurisdiction }: {
 			setSelectedJurisdiction={handleStateSelect}
 		/>
 		<main ref={resultsRef} className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
-			<SectionHeader jurisdiction={selectedJurisdiction} />
+			{/* <SectionHeader jurisdiction={selectedJurisdiction} /> */}
 			<BillGrid selectedJurisdiction={selectedJurisdiction} />
 		</main>
 	</>

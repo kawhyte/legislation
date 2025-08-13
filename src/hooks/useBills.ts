@@ -6,10 +6,10 @@ import { getPastDate } from "@/lib/utils";
 import type { Bill } from "@/types";
 
 // Keep existing date calculations - NO CHANGES to avoid breaking state queries
-const MonthAgo = getPastDate(4, 'months');
+const MonthAgo = getPastDate(5, 'months');
 
-const DaysAgo = getPastDate(280, 'days');
-const RecentForTrending = getPastDate(15, 'days'); // New: Only for trending
+const DaysAgo = getPastDate(90, 'days');
+const RecentForTrending = getPastDate(30, 'days'); // New: Only for trending
 
 const useBills = (selectedJurisdiction: States | null) => {
 	const params = useMemo(() => {

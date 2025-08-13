@@ -9,9 +9,9 @@ import {
 
 	Menu,
 	X,
-	Landmark,
 
 } from "lucide-react";
+import PrismIcon from "./icons/PrismIcon";
 import { useBookmarks } from "../contexts/BookmarkContext";
 
 import { useNavigate } from "react-router-dom";
@@ -41,8 +41,8 @@ const Header = () => {
   >
 			{/* Logo Icon */}
 			<div className='relative'>
-				<div className='flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-blue-500 shadow-lg'>
-					<Landmark className='h-5 w-5 text-white' />
+				<div className='flex items-center justify-center w-10 h-10 rounded-xl shadow-lg'>
+					<PrismIcon className='h-5 w-5 text-white' />
 				</div>
 				{/* Subtle glow effect */}
 				<div className='absolute inset-0 rounded-xl bg-gradient-to-br from-violet-500 to-blue-500 opacity-20 blur-sm -z-10' />
