@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Sparkles, FileText, Link, Flame } from "lucide-react"; // Removed unused icons
+import { RefreshCw, Sparkles, Link, Flame } from "lucide-react"; // Removed unused icons
 import BillProgressStepper from "./BillProgressStepper";
 import BookmarkButton from "./BookmarkButton";
 import { toSentenceCase } from "../lib/utils";
@@ -76,7 +76,7 @@ const BillCard = ({ bill, showProgressBar = true, showTrendingReason = false }: 
 	};
 
 	const stateInfo = usStates.find(
-		(state) => state.name.toLowerCase() === bill.jurisdiction.name.toLowerCase()
+		(state) => state.name.toLowerCase() === bill?.jurisdiction?.name.toLowerCase()
 	);
 	const flagUrl = stateInfo?.flagUrl || "https://placehold.co/32x24";
 	const flagAbbreviation = stateInfo?.abbreviation || "NA";
@@ -155,9 +155,9 @@ const BillCard = ({ bill, showProgressBar = true, showTrendingReason = false }: 
 				<div className='flex items-center justify-between'>
 					<div className='flex items-center gap-2 text-xs text-slate-400'>
 						<Avatar className='w-6 h-6 border border-slate-600 rounded-md'>
-							<AvatarImage src={flagUrl} alt={bill.jurisdiction.name} />
+							<AvatarImage src={flagUrl} alt={bill?.jurisdiction?.name} />
 							<AvatarFallback className='text-xs'>
-								{bill.jurisdiction.name.slice(0, 2).toUpperCase()}
+								{bill?.jurisdiction?.name.slice(0, 2).toUpperCase()}
 							</AvatarFallback>
 						</Avatar>
 						<span className='font-medium'>{flagAbbreviation}</span>

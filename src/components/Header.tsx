@@ -1,17 +1,16 @@
 import { useState, useEffect } from "react";
 import { ModeToggle } from "./ModeToggle";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
 import {
 	Search,
 	Bookmark,
 	TrendingUp,
-	User,
+
 	Menu,
 	X,
 	Landmark,
-	Sparkles,
+
 } from "lucide-react";
 import { useBookmarks } from "../contexts/BookmarkContext";
 
@@ -20,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 const Header = () => {
 	const [isScrolled, setIsScrolled] = useState(false);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-	const [searchQuery, setSearchQuery] = useState("");
+	
 
 	// Handle scroll effect
 	useEffect(() => {
@@ -54,7 +53,7 @@ const Header = () => {
 				<h1 className='text-xl font-bold bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent'>
 					LegisTrack
 				</h1>
-				<p className='text-xs text-slate-400 -mt-1'>Legislation Made Simple</p>
+				<p className='text-xs text-slate-400 -mt-0.5'>Legislation Made Simple</p>
 			</div>
 		</div>
 	);
