@@ -32,8 +32,6 @@ const Header = () => {
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
 
-	// Mock saved bills count - replace with actual data
-	const savedBillsCount = 12;
 	const { bookmarkCount } = useBookmarks();
 	const navigate = useNavigate();
 
@@ -61,61 +59,33 @@ const Header = () => {
 		</div>
 	);
 
-	const SearchBar = () => (
-		<div className='hidden md:flex relative max-w-md w-full'>
-			<div className='relative w-full'>
-				<Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400' />
-				<Input
-					type='text'
-					placeholder='Search bills, topics, or representatives...'
-					value={searchQuery}
-					onChange={(e) => setSearchQuery(e.target.value)}
-					className='pl-10 pr-4 py-2 bg-slate-800/50 border-slate-700/50 text-slate-200 placeholder:text-slate-500 focus:border-violet-500/50 focus:ring-violet-500/20 rounded-lg'
-				/>
-			</div>
-		</div>
-	);
-
-	const NavigationButtons = () => (
-		<div className='hidden lg:flex items-center gap-2'>
-			{/* Trending Bills */}
-			<Button
-				variant='ghost'
-				onClick={() => navigate('/trending')}
-				size='sm'
-				className='gap-2 text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all duration-200'>
-				<TrendingUp className='h-4 w-4 text-emerald-400' />
-				Trending Bills
-			</Button>
-
-			{/* Saved Bills with count - ADD onClick HERE */}
-			<Button
-				variant='ghost'
-				size='sm'
-				onClick={() => navigate("/saved")}
-				className='gap-2 text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all duration-200 relative'>
-				<Bookmark className='h-4 w-4 text-violet-400' />
-				Saved Bills
-				{bookmarkCount > 0 && (
-					<Badge className='absolute -top-1 -right-1 h-5 w-5 p-0 text-xs bg-violet-500 text-white border-0 flex items-center justify-center'>
-						{bookmarkCount > 9 ? "9+" : bookmarkCount}
-					</Badge>
-				)}
-			</Button>
-
-			{/* AI Insights */}
-			{/* <Button
-				variant='ghost'
-				size='sm'
-				className='gap-2 text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all duration-200'>
-				<Sparkles className='h-4 w-4 text-blue-400' />
-				AI Insights
-			</Button> */}
-		</div>
-	);
-
 	const UserActions = () => (
 		<div className='flex items-center gap-3'>
+			{/* Desktop Navigation */}
+			<div className='hidden lg:flex items-center gap-2'>
+				<Button
+					variant='ghost'
+					onClick={() => navigate('/trending')}
+					size='sm'
+					className='gap-2 text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all duration-200'>
+					<TrendingUp className='h-4 w-4 text-emerald-400' />
+					Trending Bills
+				</Button>
+				<Button
+					variant='ghost'
+					size='sm'
+					onClick={() => navigate("/saved")}
+					className='gap-2 text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all duration-200 relative'>
+					<Bookmark className='h-4 w-4 text-violet-400' />
+					Saved Bills
+					{bookmarkCount > 0 && (
+						<Badge className='absolute -top-1 -right-1 h-5 w-5 p-0 text-xs bg-violet-500 text-white border-0 flex items-center justify-center'>
+							{bookmarkCount > 9 ? "9+" : bookmarkCount}
+						</Badge>
+					)}
+				</Button>
+			</div>
+
 			{/* Mobile Search Toggle */}
 			<Button
 				variant='ghost'
@@ -126,14 +96,6 @@ const Header = () => {
 
 			{/* Mode Toggle */}
 			<ModeToggle />
-
-			{/* Profile/User Button */}
-			<Button
-				variant='ghost'
-				size='sm'
-				className='text-slate-400 hover:text-white hover:bg-slate-800/50 p-2'>
-				<User className='h-4 w-4' />
-			</Button>
 
 			{/* Mobile Menu Toggle */}
 			<Button
@@ -156,17 +118,6 @@ const Header = () => {
 				isMobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
 			}`}>
 			<div className='p-4 space-y-4'>
-				{/* Mobile Search */}
-				{/* <div className='md:hidden relative'>
-					<Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400' />
-					<Input
-						type='text'
-						placeholder='Search bills...'
-						value={searchQuery}
-						onChange={(e) => setSearchQuery(e.target.value)}
-						className='pl-10 pr-4 py-2 bg-slate-800/50 border-slate-700/50 text-slate-200 placeholder:text-slate-500 focus:border-violet-500/50 focus:ring-violet-500/20 rounded-lg w-full'
-					/>
-				</div> */}
 
 				{/* Mobile Navigation Links */}
 				<div className='grid grid-cols-2 gap-3'>
@@ -193,13 +144,6 @@ const Header = () => {
 							</Badge>
 						)}
 					</Button>
-
-					{/* <Button
-						variant='ghost'
-						className='justify-start gap-3 text-slate-300 hover:text-white hover:bg-slate-800/50 p-4 col-span-2'>
-						<Sparkles className='h-4 w-4 text-blue-400' />
-						AI Insights
-					</Button> */}
 				</div>
 			</div>
 		</div>
@@ -217,12 +161,6 @@ const Header = () => {
 					<div className='flex items-center justify-between h-16'>
 						{/* Logo */}
 						<Logo />
-
-						{/* Search Bar - Desktop */}
-						{/* <SearchBar /> */}
-
-						{/* Navigation Buttons - Desktop */}
-						<NavigationButtons />
 
 						{/* User Actions */}
 						<UserActions />
