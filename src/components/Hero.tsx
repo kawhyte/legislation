@@ -51,13 +51,6 @@ const HeroSection = ({
 		}
 	];
 
-	const quickActions = [
-		"Paid Family Leave",
-		"Healthcare Reform",
-		"Education Bills",
-		"Technology",
-		"Housing Policy"
-	];
 
 	return (
 		<div className='relative bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 overflow-hidden'>
@@ -156,25 +149,6 @@ const HeroSection = ({
 									
 								</div>
 							</div>
-						</div>
-					</div>
-
-					{/* Quick action tags */}
-					<div className={`mt-16 transition-all duration-1000 delay-700 ease-out ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
-						<div className='flex items-center justify-center flex-wrap gap-3 text-sm'>
-							<span className='font-medium text-slate-400'>
-								Popular bill topics:
-							</span>
-							{quickActions.map((tag, index) => (
-								<button
-									key={tag}
-									className={`px-4 py-2 rounded-full bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:border-violet-500/50 hover:text-violet-300 hover:bg-slate-700/50 transition-all duration-300 hover:scale-105 ${
-										index % 2 === 0 ? 'hover:shadow-violet-500/25' : 'hover:shadow-blue-500/25'
-									} hover:shadow-lg`}
-								>
-									{tag}
-								</button>
-							))}
 						</div>
 					</div>
 

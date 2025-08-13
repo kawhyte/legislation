@@ -10,7 +10,7 @@ import {
 	User,
 	Menu,
 	X,
-	Gavel,
+	Landmark,
 	Sparkles,
 } from "lucide-react";
 import { useBookmarks } from "../contexts/BookmarkContext";
@@ -43,7 +43,7 @@ const Header = () => {
 			{/* Logo Icon */}
 			<div className='relative'>
 				<div className='flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-blue-500 shadow-lg'>
-					<Gavel className='h-5 w-5 text-white' />
+					<Landmark className='h-5 w-5 text-white' />
 				</div>
 				{/* Subtle glow effect */}
 				<div className='absolute inset-0 rounded-xl bg-gradient-to-br from-violet-500 to-blue-500 opacity-20 blur-sm -z-10' />
