@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import type { Bill } from "../hooks/useBills";
+import { useEffect, useState } from "react";
 import usStates from "../data/usStates";
 import { useBillSummary } from "../hooks/useBillSummary";
 import {
@@ -30,12 +29,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-interface BillCardProps {
-	bill: Bill;
-	showProgressBar?: boolean;
-	showTrendingReason?: boolean;
-}
+import type { Bill, BillCardProps } from "@/types";
 
 const getDomainFromUrl = (url: string) => {
 	try {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { determineBillProgress } from '../utils/billProgress';
 import { Progress } from "@/components/ui/progress";
-import { type Bill } from '../hooks/useBills';
+import { type Bill } from '@/types';
 
 interface TinyBillProgressBarProps {
   bill: Bill;

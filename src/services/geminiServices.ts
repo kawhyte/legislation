@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import type { Bill } from '@/hooks/useBills'; // Import the Bill type
+import type { Bill } from '@/types'; // Import the Bill type
 
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
@@ -198,7 +198,6 @@ export class GeminiService {
   }
 
   clearExpiredCache(): void {
-    const now = Date.now();
     for (const [key, entry] of summaryCache.entries()) {
       if (!this.isCacheValid(entry)) {
         summaryCache.delete(key);

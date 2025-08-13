@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import BillGrid from "./components/BillGrid";
 import Header from "./components/Header";
 import  { type States } from "./components/JurisdictionSelector";
-import usStates from "./data/usStates";
+
 import SectionHeader from "./components/SectionHeader";
 import Hero from "./components/Hero";
 import SavedBillsPage from "./components/SavedBillsPage";

@@ -2,13 +2,13 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Bookmark, BookmarkCheck } from 'lucide-react';
 import { useBookmarks } from '../contexts/BookmarkContext';
-import type { Bill } from '../hooks/useBills';
+import type { Bill } from '@/types';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface BookmarkButtonProps {
   bill: Bill;
   variant?: 'default' | 'ghost' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'lg' | 'icon' | 'default';
   showText?: boolean;
   className?: string;
 }

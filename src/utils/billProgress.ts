@@ -47,7 +47,6 @@ export function determineBillProgress(bill: any): BillProgress {
   let hasFailureIndicator = false;
   let housePassageDate: string | undefined;
   let senatePassageDate: string | undefined;
-  let enactmentDate: string | undefined;
 
   // Process each action chronologically
   for (const action of sortedActions) {
@@ -79,7 +78,7 @@ export function determineBillProgress(bill: any): BillProgress {
 
     if (enactmentClassifications.some(cls => classifications.includes(cls)) ||
         enactmentKeywords.some(keyword => description.includes(keyword))) {
-      enactmentDate = action.date;
+      
       stages.enacted.completed = true;
       stages.enacted.date = action.date;
       // If enacted, both chambers must have passed

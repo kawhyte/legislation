@@ -1,7 +1,7 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, Minus, Zap, CheckCircle2, ShieldCheck, XCircle } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
-import { type MomentumAnalysis } from '../utils/billMomentum';
+import type { MomentumAnalysis } from '@/types';
 
 interface MomentumBadgeProps {
   momentum: MomentumAnalysis;

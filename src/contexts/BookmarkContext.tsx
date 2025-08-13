@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import type { Bill } from '../hooks/useBills';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import type { Bill } from '@/types';
 
 // Replace the SAMPLE_BILLS array with this complete version:
 const SAMPLE_BILLS: Bill[] = [
@@ -7,101 +8,33 @@ const SAMPLE_BILLS: Bill[] = [
     id: "sample-1",
     title: "Clean Energy Infrastructure Development Act",
     identifier: "HB-2024-1234",
-    jurisdiction: { name: "California", id: "ca" },
+    jurisdiction: { name: "California", id: "ca", classification: "state" },
     status: "In Committee",
+    introduced: "2024-01-15",
     latest_action_date: "2024-07-15",
-    sources: ["California State Legislature"],
+    first_action_date: "2024-01-15",
+    last_action_date: "2024-07-15",
+    house_passage_date: "",
+    senate_passage_date: "",
+    enacted_date: "",
+    sources: [{note: "California State Legislature", url: ""}],
     subject: ["Energy", "Environment"]
   },
   {
     id: "sample-2", 
     title: "Education Funding Reform Bill",
     identifier: "SB-2024-5678",
-    jurisdiction: { name: "Texas", id: "tx" },
+    jurisdiction: { name: "Texas", id: "tx", classification: "state" },
     status: "Passed House",
+    introduced: "2024-02-10",
     latest_action_date: "2024-07-20",
-    sources: ["Texas Legislature"],
+    first_action_date: "2024-02-10",
+    last_action_date: "2024-07-20",
+    house_passage_date: "2024-07-20",
+    senate_passage_date: "",
+    enacted_date: "",
+    sources: [{note: "Texas Legislature", url: ""}],
     subject: ["Education", "Budget"]
-  },
-  {
-    id: "sample-3",
-    title: "Healthcare Accessibility Enhancement Act",
-    identifier: "AB-2024-9101",
-    jurisdiction: { name: "New York", id: "ny" },
-    status: "Under Review",
-    latest_action_date: "2024-07-18",
-    sources: ["NY State Assembly"],
-    subject: ["Healthcare", "Public Health"]
-  },
-  {
-    id: "sample-4",
-    title: "Small Business Tax Relief Act",
-    identifier: "HB-2024-2468",
-    jurisdiction: { name: "Florida", id: "fl" },
-    status: "Passed Senate",
-    latest_action_date: "2024-07-22",
-    sources: ["Florida Legislature"],
-    subject: ["Economy", "Taxation"]
-  },
-  {
-    id: "sample-5",
-    title: "Affordable Housing Development Initiative",
-    identifier: "SB-2024-1357",
-    jurisdiction: { name: "Washington", id: "wa" },
-    status: "In Committee",
-    latest_action_date: "2024-07-12",
-    sources: ["Washington State Legislature"],
-    subject: ["Housing", "Urban Development"]
-  },
-  {
-    id: "sample-6",
-    title: "Digital Privacy Protection Act",
-    identifier: "AB-2024-7890",
-    jurisdiction: { name: "Massachusetts", id: "ma" },
-    status: "Under Review",
-    latest_action_date: "2024-07-25",
-    sources: ["Massachusetts General Court"],
-    subject: ["Technology", "Privacy"]
-  },
-  {
-    id: "sample-7",
-    title: "Rural Broadband Expansion Bill",
-    identifier: "HB-2024-3456",
-    jurisdiction: { name: "Montana", id: "mt" },
-    status: "Passed House",
-    latest_action_date: "2024-07-14",
-    sources: ["Montana Legislature"],
-    subject: ["Technology", "Rural Development"]
-  },
-  {
-    id: "sample-8",
-    title: "Mental Health Funding Increase Act",
-    identifier: "SB-2024-4567",
-    jurisdiction: { name: "Oregon", id: "or" },
-    status: "In Committee",
-    latest_action_date: "2024-07-19",
-    sources: ["Oregon Legislative Assembly"],
-    subject: ["Healthcare", "Mental Health"]
-  },
-  {
-    id: "sample-9",
-    title: "Renewable Energy Tax Credit Extension",
-    identifier: "HB-2024-8901",
-    jurisdiction: { name: "Colorado", id: "co" },
-    status: "Passed Senate",
-    latest_action_date: "2024-07-21",
-    sources: ["Colorado General Assembly"],
-    subject: ["Energy", "Taxation"]
-  },
-  {
-    id: "sample-10",
-    title: "Public Transportation Modernization Act",
-    identifier: "AB-2024-2345",
-    jurisdiction: { name: "Illinois", id: "il" },
-    status: "Under Review",
-    latest_action_date: "2024-07-17",
-    sources: ["Illinois General Assembly"],
-    subject: ["Transportation", "Infrastructure"]
   }
 ];
 

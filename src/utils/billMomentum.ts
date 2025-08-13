@@ -1,15 +1,6 @@
 // utils/billMomentum.ts
 
-import { type Bill } from "@/hooks/useBills";
-
-// Expanded momentum levels to capture the full lifecycle
-export type MomentumLevel = "Enacted" | "Passed" | "High" | "Medium" | "Low" | "Stalled" | "None";
-
-export interface MomentumAnalysis {
-  level: MomentumLevel;
-  score: number;
-  reasons: string[];
-}
+import type { Bill, MomentumAnalysis } from "@/types";
 
 /**
  * Analyzes bill momentum based on its entire lifecycle.

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
-import {  MapPin, Sparkles, TrendingUp, Users, Zap } from "lucide-react";
+import {  MapPin, Sparkles, TrendingUp, Users } from "lucide-react";
 import StateSelector, { type States } from "./JurisdictionSelector";
 import usStates from "@/data/usStates";
 
@@ -15,7 +15,7 @@ const HeroSection = ({
 	selectedJurisdiction,
 	setSelectedJurisdiction,
 }: HeroSectionProps) => {
-	const [mapLoading, setMapLoading] = useState(true);
+	
 	const [isLoaded, setIsLoaded] = useState(false);
 
 	const currentData =
@@ -27,7 +27,6 @@ const HeroSection = ({
 	const mapUrl = `https://maps.geoapify.com/v1/staticmap?style=osm-bright-grey&width=1200&height=800&center=lonlat:${currentData?.coords.lon},${currentData?.coords.lat}&zoom=${currentData?.zoom}&apiKey=${geoapifyApiKey}`;
 
 	useEffect(() => {
-		setMapLoading(true);
 		// Add entrance animation trigger
 		const timer = setTimeout(() => setIsLoaded(true), 100);
 		return () => clearTimeout(timer);
@@ -71,8 +70,7 @@ const HeroSection = ({
 							src={mapUrl}
 							alt={`Map of ${selectedJurisdiction?.name}`}
 							className='w-full h-full object-cover'
-							onLoad={() => setMapLoading(false)}
-							onError={() => setMapLoading(false)}
+							
 						/>
 					
 						<div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-transparent to-slate-950" />

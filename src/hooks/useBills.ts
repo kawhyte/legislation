@@ -1,69 +1,13 @@
-// hooks/useBills.ts - Safe backward-compatible fix for trending bills
-
 import type { States } from "@/components/JurisdictionSelector";
 import useData from "./useData";
 import { useMemo } from "react";
-import { analyzeBillMomentum, type MomentumAnalysis } from "../utils/billMomentum";
+import { analyzeBillMomentum } from "../utils/billMomentum";
 import { getPastDate } from "@/lib/utils";
-
-interface Jurisdiction {
-	id: string;
-	name: string;
-	classification: string;
-}
-
-interface Organization {
-	id: string;
-	name: string;
-	classification: 'lower' | 'upper' | string;
-}
-  
-interface Action {
-	id: string;
-	organization: Organization;
-	description: string;
-	date: string;
-	classification: string[];
-	order: number;
-}
-
-interface Source {
-  note: string;
-  url: string;
-}
-
-interface Abstract {
-  abstract: string;
-  note: string;
-  date: string;
-}
-
-export interface Bill {
-	id: string;
-	title: string;
-	introduced: string;
-	status: string;
-	summary?: string;
-	sources: Source[];
-	jurisdiction?: Jurisdiction;
-	latest_action?: string;
-	identifier: string;
-	latest_action_date: string;
-	first_action_date: string;
-	last_action_date: string;
-	subject: string[];
-	house_passage_date: string;
-	senate_passage_date: string;
-	enacted_date: string;
-	actions?: Action[];
-	abstracts?: Abstract[];
-	momentum?: MomentumAnalysis;
-	trendingReason?: string;
-}
+import type { Bill } from "@/types";
 
 // Keep existing date calculations - NO CHANGES to avoid breaking state queries
 const MonthAgo = getPastDate(4, 'months');
-const OneYearAgo = getPastDate(12, 'months');
+
 const DaysAgo = getPastDate(280, 'days');
 const RecentForTrending = getPastDate(15, 'days'); // New: Only for trending
 

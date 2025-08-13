@@ -1,20 +1,6 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { GeminiService } from '../services/geminiServices';
-import type { Bill } from './useBills'; // Import the Bill type
-
-interface UseBillSummaryOptions {
-  maxLength?: number;
-  targetAge?: string;
-}
-
-interface UseBillSummaryReturn {
-  summary: string | null;
-  impacts: string[] | null;
-  isLoading: boolean;
-  error: string | null;
-  generateSummary: () => void;
-  cleanup: () => void;
-}
+import type { Bill, UseBillSummaryOptions, UseBillSummaryReturn } from '@/types';
 
 export const useBillSummary = (
   bill: Bill,
@@ -55,9 +41,14 @@ export const useBillSummary = (
         setImpacts(result.impacts);
       }
     } catch (err) {
-      if (err.name !== 'AbortError') {
-        console.error('[useBillSummary] Error in generateSummary:', err);
-        setError(err instanceof Error ? err.message : 'Failed to generate summary');
+      if (err instanceof Error) {
+        if (err.name !== 'AbortError') {
+          console.error('[useBillSummary] Error in generateSummary:', err);
+          setError(err.message);
+        }
+      } else {
+        console.error('[useBillSummary] Unexpected error in generateSummary:', err);
+        setError('An unexpected error occurred');
       }
     } finally {
       setIsLoading(false);

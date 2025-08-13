@@ -17,17 +17,17 @@ import {
 const SavedBillsPage: React.FC = () => {
   const { bookmarkedBills, clearAllBookmarks, bookmarkCount } = useBookmarks();
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const filterStatus = 'all';
   const [sortBy, setSortBy] = useState<'date' | 'title' | 'state'>('date');
 
   // Filter and search logic
   const filteredBills = bookmarkedBills.filter(bill => {
     const matchesSearch = bill.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          bill.identifier.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         bill.jurisdiction.name.toLowerCase().includes(searchQuery.toLowerCase());
+                         (bill.jurisdiction?.name ?? "").toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesFilter = filterStatus === 'all' || 
-                         bill.status?.toLowerCase().includes(filterStatus.toLowerCase());
+                         (bill.status ?? "").toLowerCase().includes((filterStatus as string).toLowerCase());
     
     return matchesSearch && matchesFilter;
   });
@@ -38,7 +38,7 @@ const SavedBillsPage: React.FC = () => {
       case 'title':
         return a.title.localeCompare(b.title);
       case 'state':
-        return a.jurisdiction.name.localeCompare(b.jurisdiction.name);
+        return (a.jurisdiction?.name ?? "").localeCompare(b.jurisdiction?.name ?? "");
       case 'date':
       default:
         return new Date(b.latest_action_date || '').getTime() - 
