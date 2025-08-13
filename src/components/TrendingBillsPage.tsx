@@ -1,6 +1,6 @@
 import React from 'react';
 import useBills from '../hooks/useBills';
-import TrendingBillCard from './TrendingBillCard';
+import BillCard from './BillCard';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import BillCardSkeleton from './BillCardSkeleton';
@@ -35,7 +35,7 @@ const TrendingBillsPage: React.FC = () => {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {data.map((bill) => (
-          <TrendingBillCard key={bill.id} bill={bill} />
+          <BillCard key={bill.id} bill={bill} showProgressBar={false} showTrendingReason={true} />
         ))}
       </div>
     );
