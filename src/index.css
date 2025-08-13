@@ -43,24 +43,36 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+
+  --background: oklch(100% 0 0); /* Pure white */
+  --foreground: oklch(14.5% 0.042 264.695); /* Very dark blue/purple */
+
+  --card: oklch(100% 0 0); /* Pure white */
+  --card-foreground: oklch(14.5% 0.042 264.695); /* Very dark blue/purple */
+
+  --popover: oklch(100% 0 0); /* Pure white */
+  --popover-foreground: oklch(14.5% 0.042 264.695); /* Very dark blue/purple */
+
+  --primary: oklch(30% 0.05 260); /* A darker blue/purple for primary actions */
+  --primary-foreground: oklch(98% 0.003 247.858); /* Light gray for text on primary */
+
+  --secondary: oklch(96% 0.007 247.896); /* Light gray */
+  --secondary-foreground: oklch(20.8% 0.042 265.755); /* Dark blue/purple */
+
+  --muted: oklch(98% 0.003 247.858); /* Very light gray */
+  --muted-foreground: oklch(55.4% 0.046 257.417); /* Medium gray */
+
+  --accent: oklch(96% 0.007 247.896); /* Light gray */
+  --accent-foreground: oklch(20.8% 0.042 265.755); /* Dark blue/purple */
+
+  --destructive: oklch(57.7% 0.245 27.325); /* Red */
+  --destructive-foreground: oklch(98% 0.003 247.858); /* Light gray for text on destructive */
+
+  --border: oklch(92.9% 0.013 255.508); /* Light gray */
+  --input: oklch(92.9% 0.013 255.508); /* Light gray */
+  --ring: oklch(70.4% 0.04 256.788); /* Medium gray */
+
+  /* Chart and sidebar colors can remain as they are, or be adjusted if needed */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);

@@ -2,7 +2,7 @@ import React from 'react';
 import { Gavel, CheckCircle2, Circle, Clock, XCircle } from 'lucide-react';
 import { determineBillProgress } from '../utils/billProgress';
 import { formatDate } from '../lib/utils';
-import type { Bill, BillProgressStepperProps } from '@/types';
+import type {  BillProgressStepperProps } from '@/types';
 
 const BillProgressStepper: React.FC<BillProgressStepperProps> = ({ bill, className = "" }) => {
   const progress = determineBillProgress(bill);

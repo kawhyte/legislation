@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useEffect, useState } from "react";
 import {  MapPin, Sparkles, TrendingUp, Users } from "lucide-react";
 import StateSelector, { type States } from "./JurisdictionSelector";
@@ -91,8 +91,8 @@ const HeroSection = ({
 						</div>
 						 */}
 						<h1 className='text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-br from-white via-slate-200 to-slate-400 bg-clip-text text-transparent leading-[0.9] tracking-tight mb-6'>
-							Track US
-							<br />
+							{/* Track US */}
+							
 							<span className="bg-gradient-to-r from-violet-400 via-blue-400 to-emerald-400 bg-clip-text text-transparent">
 								Legislation
 							</span>
@@ -101,8 +101,7 @@ const HeroSection = ({
 						</h1>
 						
 						<p className='max-w-2xl mx-auto text-xl text-slate-300 mb-12 leading-relaxed'>
-							Stay informed on the bills shaping your future. Get AI-powered summaries, 
-							real-time updates, and clear explanations of complex legislation.
+							Understand the laws shaping your life. Decode complex state legislation with AI-powered summaries, real-time bill tracking, and clear explanations.
 						</p>
 					</div>
 

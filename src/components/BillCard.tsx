@@ -29,7 +29,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Bill, BillCardProps } from "@/types";
+import type {  BillCardProps } from "@/types";
 
 const getDomainFromUrl = (url: string) => {
 	try {
