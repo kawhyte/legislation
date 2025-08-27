@@ -27,25 +27,32 @@ const MomentumBadge: React.FC<MomentumBadgeProps> = ({ momentum, className = "" 
         return {
           icon: Flame,
           text: "High Momentum",
-          className: "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20 hover:bg-fuchsia-500/20"
+          className: "bg-gray-500/10 text-gray-600 border-gray-500/20 hover:bg-gray-500/20"
+          // className: "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20 hover:bg-fuchsia-500/20"
         };
       case "medium":
         return {
           icon: TrendingUp,
           text: "Steady Momentum",
-          className: "bg-blue-500/10 text-blue-400 border-blue-500/20 hover:bg-blue-500/20"
+          className: "bg-gray-500/10 text-gray-600 border-gray-500/20 hover:bg-gray-500/20"
+
+          // className: "bg-blue-500/10 text-blue-400 border-blue-500/20 hover:bg-blue-500/20"
         };
       case "low":
         return {
           icon: TrendingDown,
           text: "Slow Momentum",
-          className: "bg-slate-500/10 text-slate-400 border-slate-500/20 hover:bg-slate-500/20"
+                    className: "bg-gray-500/10 text-gray-600 border-gray-500/20 hover:bg-gray-500/20"
+
+          // className: "bg-slate-500/10 text-slate-400 border-slate-500/20 hover:bg-slate-500/20"
         };
       case "stalled":
         return {
           icon: XCircle,
           text: "Stalled or Failed",
-          className: "bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20"
+                    className: "bg-gray-500/10 text-gray-600 border-gray-500/20 hover:bg-gray-500/20"
+
+          // className: "bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20"
         };
       default:
         return {

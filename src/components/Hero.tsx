@@ -53,7 +53,7 @@ const HeroSection = ({ setSelectedJurisdiction }: HeroSectionProps) => {
 					</div>
 
 					{/* Popular Topics Section */}
-					<div className="text-left">
+					{/* <div className="text-left">
 						<span className='font-medium text-left text-muted-foreground mr-2'>
 							Popular topics:
 						</span>
@@ -66,7 +66,7 @@ const HeroSection = ({ setSelectedJurisdiction }: HeroSectionProps) => {
 								/>
 							))}
 						</div>
-					</div>
+					</div> */}
 				</div>
 			</div>
 		</div>

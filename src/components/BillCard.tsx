@@ -9,6 +9,8 @@ import {
 	CardTitle,
 	CardFooter,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +22,7 @@ import {
 	ArrowUp,
 	ArrowDown,
 	Zap,
+	
 } from "lucide-react";
 import BillProgressStepper from "./BillProgressStepper";
 import BookmarkButton from "./BookmarkButton";
@@ -40,6 +43,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { BillCardProps } from "@/types";
+import VoteByParty from "./VoteByParty";
 
 const getDomainFromUrl = (url: string) => {
 	try {
@@ -167,7 +171,7 @@ const BillCard = ({
 	};
 
 	return (
-		<Card className=' bg-muted border hover:border-border/80 hover:shadow-lg transition-all duration-300 flex flex-col h-full'>
+		<Card className=' border hover:border-border/80 hover:shadow-lg transition-all duration-300 flex flex-col h-full'>
 			<CardHeader className='p-4 space-y-1'>
 				{/* --- TOP LINE METADATA --- */}
 				<div className='flex items-center justify-between'>
@@ -235,30 +239,11 @@ const BillCard = ({
 					</Dialog>
 				</div>
 			</CardContent>
-			<div className='w-full px-5'>
-				<label className='text-sm  font-mono  text-foreground/80 block mb-2'>
-					Votes by Party
-				</label>
-				<div className='flex flex-wrap items-center gap-2'>
-					{/* Democrat Pill */}
-					<div className='flex items-center gap-2.5 px-2 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-200'>
-						<span className='font-bold text-xs'>DEM</span>
-						<span className='font-semibold text-sm'>{democratVotes}</span>
-					</div>
-
-					{/* Republican Pill */}
-					<div className='flex items-center gap-2.5 px-2 py-1 rounded-full bg-red-50 text-red-800 border border-red-200'>
-						<span className='font-bold text-xs'>REP</span>
-						<span className='font-semibold text-sm'>{republicanVotes}</span>
-					</div>
-
-					{/* Other Pill */}
-					<div className='flex items-center gap-2.5 px-2 py-1 rounded-full bg-gray-100 text-gray-800 border border-gray-200'>
-						<span className='font-bold text-xs'>OTHER</span>
-						<span className='font-semibold text-sm'>{otherVotes}</span>
-					</div>
-				</div>
-			</div>
+			<VoteByParty
+				democratVotes={democratVotes}
+				republicanVotes={republicanVotes}
+				otherVotes={otherVotes}
+			/>
 
 			{showFooter && (
 				<CardFooter className='p-4 pt-2'>
