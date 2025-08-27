@@ -1,32 +1,26 @@
+// src/components/Header.tsx
 import { useState, useEffect } from "react";
-import { ModeToggle } from "./ModeToggle";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import {
 	Search,
 	Bookmark,
 	TrendingUp,
-
 	Menu,
 	X,
-
 } from "lucide-react";
 import PrismIcon from "./icons/PrismIcon";
 import { useBookmarks } from "../contexts/BookmarkContext";
-
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
 	const [isScrolled, setIsScrolled] = useState(false);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	
-
-	// Handle scroll effect
 	useEffect(() => {
 		const handleScroll = () => {
-			setIsScrolled(window.scrollY > 20);
+			setIsScrolled(window.scrollY > 10);
 		};
-
 		window.addEventListener("scroll", handleScroll);
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
@@ -35,144 +29,104 @@ const Header = () => {
 	const navigate = useNavigate();
 
 	const Logo = () => (
-		 <div 
-    className="flex items-center gap-3 cursor-pointer" 
-    onClick={() => navigate('/')}
-  >
-			{/* Logo Icon */}
-			<div className='relative'>
-				<div className='flex items-center justify-center w-10 h-10 rounded-xl shadow-lg'>
-					<PrismIcon className='h-5 w-5 text-white' />
-				</div>
-				{/* Subtle glow effect */}
-				<div className='absolute inset-0 rounded-xl bg-gradient-to-br from-violet-500 to-blue-500 opacity-20 blur-sm -z-10' />
+		<div 
+			className="flex items-center gap-2 cursor-pointer" 
+			onClick={() => navigate('/')}
+		>
+			<div className='flex items-center justify-center w-8 h-8 rounded-lg bg-primary'>
+				<PrismIcon className='h-4 w-4 text-primary-foreground' />
 			</div>
-
-			{/* Logo Text */}
-			<div className='hidden sm:block'>
-				<h1 className='text-xl font-bold bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent'>
-					LegisTrack
-				</h1>
-				<p className='text-xs text-slate-400 -mt-0.5'>Legislation Made Simple</p>
-			</div>
+			<span className='text-lg font-bold text-foreground'>LegisTrack</span>
 		</div>
 	);
 
-	const UserActions = () => (
-		<div className='flex items-center gap-3'>
-			{/* Desktop Navigation */}
-			<div className='hidden lg:flex items-center gap-2'>
-				<Button
-					variant='ghost'
-					onClick={() => navigate('/trending')}
-					size='sm'
-					className='gap-2 text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all duration-200'>
-					<TrendingUp className='h-4 w-4 text-emerald-400' />
-					Trending Bills
-				</Button>
-				<Button
-					variant='ghost'
-					size='sm'
-					onClick={() => navigate("/saved")}
-					className='gap-2 text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all duration-200 relative'>
-					<Bookmark className='h-4 w-4 text-violet-400' />
-					Saved Bills
-					{bookmarkCount > 0 && (
-						<Badge className='absolute -top-1 -right-1 h-5 w-5 p-0 text-xs bg-violet-500 text-white border-0 flex items-center justify-center'>
-							{bookmarkCount > 9 ? "9+" : bookmarkCount}
-						</Badge>
-					)}
-				</Button>
-			</div>
-
-			{/* Mobile Search Toggle */}
+	const DesktopNav = () => (
+		<nav className="hidden lg:flex items-center gap-4">
 			<Button
 				variant='ghost'
-				size='sm'
-				className='md:hidden text-slate-400 hover:text-white hover:bg-slate-800/50'>
-				<Search className='h-4 w-4' />
+				onClick={() => navigate('/trending')}
+				className='text-muted-foreground hover:text-foreground'
+			>
+				Trending Bills
 			</Button>
-
-			{/* Mode Toggle */}
-			<ModeToggle />
-
-			{/* Mobile Menu Toggle */}
 			<Button
 				variant='ghost'
-				size='sm'
-				className='lg:hidden text-slate-400 hover:text-white hover:bg-slate-800/50'
-				onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-				{isMobileMenuOpen ? (
-					<X className='h-4 w-4' />
-				) : (
-					<Menu className='h-4 w-4' />
+				onClick={() => navigate("/saved")}
+				className='text-muted-foreground hover:text-foreground relative'
+			>
+				Saved Bills
+				{bookmarkCount > 0 && (
+					<Badge className='absolute -top-1 -right-1 h-5 w-5 p-0 text-xs bg-primary text-primary-foreground border-2 border-background flex items-center justify-center'>
+						{bookmarkCount > 9 ? "9+" : bookmarkCount}
+					</Badge>
 				)}
+			</Button>
+		</nav>
+	);
+
+	const UserActions = () => (
+		<div className='flex items-center gap-2'>
+			<Button variant="ghost" className="hidden sm:inline-flex text-muted-foreground hover:text-foreground">
+				Log In
+			</Button>
+			<Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+				Sign Up
+			</Button>
+			<Button
+				variant='ghost'
+				size='icon'
+				className='lg:hidden text-muted-foreground'
+				onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+			>
+				{isMobileMenuOpen ? <X className='h-5 w-5' /> : <Menu className='h-5 w-5' />}
 			</Button>
 		</div>
 	);
 
 	const MobileMenu = () => (
 		<div
-			className={`lg:hidden absolute top-full left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-slate-700/50 transition-all duration-300 ${
-				isMobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
-			}`}>
-			<div className='p-4 space-y-4'>
-
-				{/* Mobile Navigation Links */}
-				<div className='grid grid-cols-2 gap-3'>
-					<Button
-						variant='ghost'
-						onClick={() => navigate('/trending')}
-						className='justify-start gap-3 text-slate-300 hover:text-white hover:bg-slate-800/50 p-4'>
-						<TrendingUp className='h-4 w-4 text-emerald-400' />
-						Trending Bills
-					</Button>
-
-					<Button
-						variant='ghost'
-						onClick={() => {
-							navigate("/saved");
-							setIsMobileMenuOpen(false); // Close mobile menu
-						}}
-						className='justify-start gap-3 text-slate-300 hover:text-white hover:bg-slate-800/50 p-4 relative'>
-						<Bookmark className='h-4 w-4 text-violet-400' />
-						Saved Bills
-						{bookmarkCount > 0 && (
-							<Badge className='ml-auto h-5 w-5 p-0 text-xs bg-violet-500 text-white border-0 flex items-center justify-center'>
-								{bookmarkCount > 9 ? "9+" : bookmarkCount}
-							</Badge>
-						)}
-					</Button>
-				</div>
+			className={`lg:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border transition-all duration-300 ease-in-out ${
+				isMobileMenuOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-4"
+			}`}
+		>
+			<div className='p-4 space-y-2'>
+				<Button
+					variant='ghost'
+					onClick={() => { navigate('/trending'); setIsMobileMenuOpen(false); }}
+					className='w-full justify-start gap-3 text-base py-6'
+				>
+					<TrendingUp className='h-4 w-4' />
+					Trending Bills
+				</Button>
+				<Button
+					variant='ghost'
+					onClick={() => { navigate("/saved"); setIsMobileMenuOpen(false); }}
+					className='w-full justify-start gap-3 text-base py-6'
+				>
+					<Bookmark className='h-4 w-4' />
+					Saved Bills
+				</Button>
 			</div>
 		</div>
 	);
 
 	return (
-		<>
-			<header
-				className={`sticky top-0 z-50 transition-all duration-300 ${
-					isScrolled
-						? "bg-slate-900/80 backdrop-blur-xl border-b border-slate-700/50 shadow-lg shadow-slate-900/20"
-						: "bg-slate-900/60 backdrop-blur-sm border-b border-slate-800/50"
-				}`}>
-				<div className='container mx-auto px-4 sm:px-6 lg:px-8'>
-					<div className='flex items-center justify-between h-16'>
-						{/* Logo */}
-						<Logo />
-
-						{/* User Actions */}
-						<UserActions />
-					</div>
+		<header
+			className={`sticky top-0 z-50 transition-all duration-300 ${
+				isScrolled
+					? "bg-background/80 backdrop-blur-lg border-b border-border shadow-sm"
+					: "bg-background/0 border-b border-transparent"
+			}`}
+		>
+			<div className='container mx-auto px-4 sm:px-6 lg:px-8'>
+				<div className='flex items-center justify-between h-16'>
+					<Logo />
+					<DesktopNav />
+					<UserActions />
 				</div>
-
-				{/* Mobile Menu */}
-				<MobileMenu />
-			</header>
-
-			{/* Spacer to prevent content jump when header becomes sticky */}
-			<div className='h-0' />
-		</>
+			</div>
+			<MobileMenu />
+		</header>
 	);
 };
 

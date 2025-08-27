@@ -1,3 +1,4 @@
+// src/types/index.ts
 
 
 // From useBills.ts
@@ -83,20 +84,6 @@ export interface BillCardProps {
 export interface BillProgressStepperProps {
   bill: Bill;
   className?: string;
-}
-
-// From ThemeProvider.tsx
-export type Theme = "dark" | "light" | "system"
-
-export type ThemeProviderProps = {
-  children: React.ReactNode
-  defaultTheme?: Theme
-  storageKey?: string
-}
-
-export type ThemeProviderState = {
-  theme: Theme
-  setTheme: (theme: Theme) => void
 }
 
 // From billMomentum.ts

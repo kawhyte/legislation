@@ -28,7 +28,7 @@ const JurisdictionSelector = ({ onSelectJurisdiction }: Props) => {
 	const [selectedValue, setSelectedValue] = useState<string>('');
 
 	return (
-		<div className='w-sm p-4'>
+		<div className='w-sm py-4 pr-4'>
 			<Select
 				value={selectedValue}
 				onValueChange={(value) => {
@@ -39,22 +39,22 @@ const JurisdictionSelector = ({ onSelectJurisdiction }: Props) => {
 						onSelectJurisdiction(selectedState);
 					}
 				}}>
-				<SelectTrigger className='w-full bg-white '>
-					<SelectValue placeholder='Select a State'>
-						{selectedValue ? (
-							<div className='flex items-center gap-2'>
-								<img
-									src={data.find((opt) => opt.name === selectedValue)?.flagUrl}
-									alt={`${selectedValue} flag`}
-									className='w-5 h-auto rounded-sm' // Smaller flag for trigger
-								/>
-								<span>{selectedValue}</span>
-							</div>
-						) : (
-							"Select an option" // Placeholder when nothing is selected
-						)}
-					</SelectValue>
-				</SelectTrigger>
+		<SelectTrigger className='w-full bg-white text-base py-6 px-4'>
+    <SelectValue placeholder='Select your state to see relevant bills...'>
+        {selectedValue ? (
+            <div className='flex items-center gap-2'>
+                <img
+                    src={data.find((opt) => opt.name === selectedValue)?.flagUrl}
+                    alt={`${selectedValue} flag`}
+                    className='w-5 h-auto rounded-sm' // Smaller flag for trigger
+                />
+                <span>{selectedValue}</span>
+            </div>
+        ) : (
+            "Select your state to see relevant bills..." // Updated placeholder
+        )}
+    </SelectValue>
+</SelectTrigger>
 
 				<SelectContent>
 					<SelectGroup>
