@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, Minus, Zap, CheckCircle2, ShieldCheck, XCircle } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Flame, CheckCircle2, ShieldCheck, XCircle } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import type { MomentumAnalysis } from '@/types';
 
@@ -25,7 +25,7 @@ const MomentumBadge: React.FC<MomentumBadgeProps> = ({ momentum, className = "" 
         };
       case "high":
         return {
-          icon: Zap,
+          icon: Flame,
           text: "High Momentum",
           className: "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20 hover:bg-fuchsia-500/20"
         };

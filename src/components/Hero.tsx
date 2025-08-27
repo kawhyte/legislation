@@ -15,7 +15,7 @@ const HeroSection = ({ setSelectedJurisdiction }: HeroSectionProps) => {
 		{ name: "Education", color: "#DDE2FF" },
 		{ name: "Technology", color: "#DDFFEC" },
 		{ name: "Housing Policy", color: "#FFF5DD" },
-		// { name: "Environment", color: "#FFDDDD" },
+		{ name: "Environment", color: "#FFDDDD" },
 	];
 
 	return (
