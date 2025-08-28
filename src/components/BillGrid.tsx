@@ -1,9 +1,12 @@
-import { Wind } from "lucide-react";
+import React from "react";
 import useBills from "../hooks/useBills";
 import BillCard from "./BillCard";
 import BillCardSkeleton from "./BillCardSkeleton";
 import type { States } from "./JurisdictionSelector";
 import SectionHeader from "./SectionHeader";
+import animationData from "../assets/Tumbleweed Rolling.json";
+
+const Lottie = React.lazy(() => import("lottie-react"));
 
 interface Props {
 	selectedJurisdiction: States | null;
@@ -16,7 +19,6 @@ const BillGrid = ({ selectedJurisdiction, selectedTopic }: Props) => {
 		selectedTopic
 	);
 
-
 	const skeletons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 	const hasData = !isLoading && data && data.length > 0;
@@ -28,7 +30,13 @@ const BillGrid = ({ selectedJurisdiction, selectedTopic }: Props) => {
 
 			{noData && (
 				<div className='flex flex-col items-center justify-center text-center py-24 bg-slate-800 border border-slate-700/50 rounded-2xl mt-6'>
-					<Wind className='w-16 h-16 text-slate-500 mb-4' />
+					<React.Suspense fallback={<div>Loading...</div>}>
+						<Lottie
+							animationData={animationData}
+							loop={true}
+							className='w-48 h-48'
+						/>
+					</React.Suspense>
 					<h3 className='text-3xl font-bold text-slate-100 mb-2'>
 						Tumbleweeds...
 					</h3>
