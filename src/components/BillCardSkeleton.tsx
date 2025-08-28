@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton componen
 
 const BillCardSkeleton = () => {
 	return (
-		<Card className='w-full'>
+        <Card className='bg-card border-border w-full'>
 			<CardHeader className='flex flex-row items-center gap-3 space-y-0 pb-2'>
 				{/* Avatar Skeleton */}
 				<Skeleton className='h-8 w-8 rounded-full' />
