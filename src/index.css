@@ -32,6 +32,12 @@
   --color-primary-hover: var(--primary-hover);
   --color-footer: var(--footer);
   --color-footer-foreground: var(--footer-foreground);
+
+
+--color-info: var(--info);
+--color-info-foreground: var(--info-foreground);
+--color-warning: var(--warning);
+--color-warning-foreground: var(--warning-foreground);
 }
 
 /* 🎨 Anthropic.com Inspired Light Theme */
@@ -87,7 +93,22 @@
   --accent: oklch(96.7% 0.01 96);              /* Use for: Subtle hover states on list items or navigation links. */
   --accent-foreground: oklch(23% 0.004 258);   /* Use for: Text on top of accent backgrounds. */
 
+
+
+
+
+
+  /* Add these inside your :root { ... } block */
+--info: oklch(65% 0.15 240);                /* A pleasant, readable blue */
+--info-foreground: oklch(45% 0.15 240);      /* A darker blue for text on info backgrounds */
+--warning: oklch(75% 0.18 85);               /* A noticeable but not jarring amber/yellow */
+--warning-foreground: oklch(50% 0.18 85);    /* Darker amber for text */
   /*
+
+
+
+
+  
   |--------------------------------------------------------------------------
   | Site-Specific Sections
   |--------------------------------------------------------------------------

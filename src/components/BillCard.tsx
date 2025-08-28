@@ -126,7 +126,7 @@ const BillCard = ({
 					<Button
 						variant='outline'
 						onClick={generateSummary}
-						className='border-destructive/30 text-destructive hover:bg-destructive/10'>
+						className='text-destructive border-destructive/50 hover:bg-destructive/10'>
 						<RefreshCw className='h-4 w-4 mr-2' />
 						Retry Analysis
 					</Button>
@@ -137,28 +137,24 @@ const BillCard = ({
 		if (summary) {
 			return (
 				<div className='space-y-4 p-1'>
-					<div className='bg-accent/50 border border-border rounded-lg p-4'>
+					<div className='bg-muted border border-border rounded-lg p-4'>
 						<p className='text-base text-foreground leading-relaxed'>
 							{summary}
 						</p>
 					</div>
 
 					{impacts && impacts.length > 0 && (
-						<div className='bg-blue-500/10 border border-blue-500/20 rounded-lg p-4'>
-							<p className='text-sm font-bold text-blue-600 mb-3'>
-								Potential Impact if Passed
-							</p>
-							<div className='space-y-3'>
-								{impacts.map((impact, i) => (
-									<div key={i} className='flex items-start gap-3'>
-										<div className='w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 flex-shrink-0'></div>
-										<p className='text-sm text-foreground/80 leading-relaxed'>
-											{impact}
-										</p>
-									</div>
-								))}
-							</div>
-						</div>
+						<div className='bg-info/10 border border-info/20 rounded-lg p-4'>
+                            <p className='text-sm font-bold text-info-foreground mb-3'>Potential Impact if Passed</p>
+                            <div className='space-y-3'>
+                                {impacts.map((impact, i) => (
+                                    <div key={i} className='flex items-start gap-3'>
+                                        <div className='w-1.5 h-1.5 bg-info rounded-full mt-1.5 flex-shrink-0'></div>
+                                        <p className='text-sm text-foreground/80 leading-relaxed'>{impact}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
 					)}
 				</div>
 			);
@@ -167,8 +163,7 @@ const BillCard = ({
 	};
 
 	return (
-		<Card className=' border hover:border-border/80 hover:shadow-lg transition-all duration-300 flex flex-col h-full'>
-			<CardHeader className='p-4 space-y-1'>
+<Card className='bg-card border-border hover:border-border/80 hover:shadow-lg transition-all duration-300 flex flex-col h-full'>			<CardHeader className='p-4 space-y-1'>
 				{/* --- TOP LINE METADATA --- */}
 				<div className='flex items-center justify-between'>
 					<div className='flex items-center gap-2 text-xs text-muted-foreground'>
@@ -197,7 +192,7 @@ const BillCard = ({
 				{/* --- SECONDARY METADATA --- */}
 				<div className='flex justify-start items-center gap-2'>
 					{showTrendingReason && bill.trendingReason && (
-						<div className='flex items-center gap-2 text-amber-600/90 flex-shrink min-w-0 mr-2'>
+                        <div className='flex items-center gap-2 text-warning flex-shrink min-w-0 mr-2'>
 							<Zap className='h-4 w-4 flex-shrink-0 ' />
 							<span className='capitalize font-medium truncate text-sm'>
 								{bill.trendingReason}
@@ -259,11 +254,11 @@ const BillCard = ({
 											</span>
 										</Button>
 									</DropdownMenuTrigger>
-									<DropdownMenuContent align='start'>
+                                    <DropdownMenuContent align='start' className="bg-popover text-popover-foreground border-border">
 										{bill.sources
 											.filter((source) => source.note !== "API Details")
 											.map((source, index) => (
-												<DropdownMenuItem key={index} asChild>
+                                                <DropdownMenuItem key={index} asChild className="hover:bg-accent focus:bg-accent">
 													<a
 														href={source.url}
 														target='_blank'
