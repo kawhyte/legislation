@@ -165,7 +165,7 @@ const BillCard = ({
 	return (
 <Card className='bg-card border-border hover:border-border/80 hover:shadow-lg transition-all duration-300 flex flex-col h-full'>			<CardHeader className='p-4 space-y-1'>
 				{/* --- TOP LINE METADATA --- */}
-				<div className='flex items-center justify-between'>
+				<div className='flex items-start justify-between'>
 					<div className='flex items-center gap-2 text-xs text-muted-foreground'>
 						<Avatar className='w-6 h-6 border border-border rounded-md'>
 							<AvatarImage src={flagUrl} alt={bill?.jurisdiction?.name} />
@@ -179,26 +179,29 @@ const BillCard = ({
 						<span>•</span>
 						<span className='font-mono'>{bill.identifier}</span>
 					</div>
-					<TooltipProvider>
-						<BookmarkButton bill={bill} />
-					</TooltipProvider>
+				<div className='flex flex-row items-start gap-2'>
+    {showTrendingReason &&
+        bill.trendingReason &&
+        bill.trendingReason !== "Recent Activity" && (
+            // UPDATED: Replaced hardcoded amber-* colors with the theme's semantic "warning" color
+            <div className='flex items-center gap-1.5 text-xs font-semibold bg-warning/10 text-warning px-2 py-1 rounded-full border border-warning/20'>
+                <Zap className='h-3 w-3' />
+                <span className='capitalize'>{bill.trendingReason}</span>
+            </div>
+        )}
+    <TooltipProvider>
+        <BookmarkButton bill={bill} />
+    </TooltipProvider>
+</div>
 				</div>
 
 				{/* --- BILL TITLE (PRIMARY) --- */}
-				<CardTitle className='text-base font-semibold line-clamp-3 h-12 text-foreground leading-snug'>
+				<CardTitle className='text-base font-semibold line-clamp-3 h-12 text-foreground leading-snug pt-1'>
 					{toSentenceCase(bill.title)}
 				</CardTitle>
 
 				{/* --- SECONDARY METADATA --- */}
 				<div className='flex justify-start items-center gap-2'>
-					{showTrendingReason && bill.trendingReason && (
-                        <div className='flex items-center gap-2 text-warning flex-shrink min-w-0 mr-2'>
-							<Zap className='h-4 w-4 flex-shrink-0 ' />
-							<span className='capitalize font-medium truncate text-sm'>
-								{bill.trendingReason}
-							</span>
-						</div>
-					)}
 					{bill.momentum && <MomentumBadge momentum={bill.momentum} />}
 				</div>
 			</CardHeader>
