@@ -10,7 +10,7 @@ interface Topic {
 
 const topics: Topic[] = [
   { name: "Technology", value: "ai", icon: BrainCircuit },
-  { name: "Housing", value: "crime", icon: Gavel },
+  { name: "Housing@", value: "crime", icon: Gavel },
   { name: "Healthcare", value: "healthcare", icon: HeartPulse },
   { name: "Education", value: "education", icon: GraduationCap },
   { name: "Environment", value: "environment", icon: Leaf },

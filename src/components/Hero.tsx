@@ -7,6 +7,7 @@ const Lottie = React.lazy(() => import('lottie-react'));
 
 interface HeroSectionProps {
 	setSelectedJurisdiction: (jurisdiction: States | null) => void;
+	selectedJurisdiction: States | null;
 	selectedTopic: string | null;
 	setSelectedTopic: (topic: string | null) => void;
 }
