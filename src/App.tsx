@@ -46,14 +46,15 @@ const HomePage = ({
 			<main
 				ref={resultsRef}
 				className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
-				{/* <SectionHeader jurisdiction={selectedJurisdiction} /> */}
-				<BillGrid
-					selectedJurisdiction={selectedJurisdiction}
-					selectedTopic={selectedTopic}
-				/>
+				{selectedJurisdiction ? (
+					<BillGrid
+						selectedJurisdiction={selectedJurisdiction}
+						selectedTopic={selectedTopic}
+					/>
+				) : (
+					<TrendingBillsPage />
+				)}
 			</main>
-			<TrendingBillsPage />
-
 			<WhyItMatters />
 		</>
 	);
