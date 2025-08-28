@@ -4,9 +4,9 @@ import BillGrid from "./components/BillGrid";
 import Header from "./components/Header";
 import { type States } from "./components/JurisdictionSelector";
 import Hero from "./components/Hero";
-import SavedBillsPage from "./components/SavedBillsPage";
-import TrendingBillsPage from "./components/TrendingBillsPage";
-import WhyItMatters from "./components/WhyItMatters";
+import SavedBillsPage from "./pages/SavedBillsPage";
+import TrendingBillsPage from "./pages/TrendingBillsPage";
+import WhyItMatters from "./pages/WhyItMatters";
 import WhyThisMattersPage from "./pages/WhyThisMattersPage"; // Import the new page
 
 const HomePage = ({
@@ -56,7 +56,7 @@ const HomePage = ({
 					<TrendingBillsPage />
 				)}
 			</main>
-			<WhyItMatters />
+			{/* <WhyItMatters /> */}
 		</>
 	);
 };

@@ -1,9 +1,9 @@
 import React from 'react';
 import useBills from '../hooks/useBills';
-import BillCard from './BillCard';
+import BillCard from '../components/BillCard';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import BillCardSkeleton from './BillCardSkeleton';
+import BillCardSkeleton from '../components/BillCardSkeleton';
 
 
 
