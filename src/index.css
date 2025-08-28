@@ -34,6 +34,9 @@
   --color-footer-foreground: var(--footer-foreground);
 
 
+  --color-success: var(--success);
+--color-success-foreground: var(--success-foreground);
+
 --color-info: var(--info);
 --color-info-foreground: var(--info-foreground);
 --color-warning: var(--warning);
@@ -94,7 +97,8 @@
   --accent-foreground: oklch(23% 0.004 258);   /* Use for: Text on top of accent backgrounds. */
 
 
-
+--success: oklch(75% 0.2 150);              /* A clear, positive green */
+--success-foreground: oklch(55% 0.2 150);   /* A darker green for text */
 
 
 
