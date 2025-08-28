@@ -11,9 +11,13 @@ import WhyItMatters from "./components/WhyItMatters";
 const HomePage = ({
 	selectedJurisdiction,
 	setSelectedJurisdiction,
+	selectedTopic,
+	setSelectedTopic,
 }: {
 	selectedJurisdiction: States | null;
 	setSelectedJurisdiction: (state: States | null) => void;
+	selectedTopic: string | null;
+	setSelectedTopic: (topic: string | null) => void;
 }) => {
 	const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -36,12 +40,17 @@ const HomePage = ({
 			<Hero
 				selectedJurisdiction={selectedJurisdiction}
 				setSelectedJurisdiction={handleStateSelect}
+				selectedTopic={selectedTopic}
+				setSelectedTopic={setSelectedTopic}
 			/>
 			<main
 				ref={resultsRef}
 				className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
 				{/* <SectionHeader jurisdiction={selectedJurisdiction} /> */}
-				<BillGrid selectedJurisdiction={selectedJurisdiction} />
+				<BillGrid
+					selectedJurisdiction={selectedJurisdiction}
+					selectedTopic={selectedTopic}
+				/>
 			</main>
 			<TrendingBillsPage />
 
@@ -53,6 +62,7 @@ const HomePage = ({
 const App = () => {
 	const [selectedJurisdiction, setSelectedJurisdiction] =
 		useState<States | null>(null);
+	const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
 
 	return (
 		<Router>
@@ -65,6 +75,8 @@ const App = () => {
 							<HomePage
 								selectedJurisdiction={selectedJurisdiction}
 								setSelectedJurisdiction={setSelectedJurisdiction}
+								selectedTopic={selectedTopic}
+								setSelectedTopic={setSelectedTopic}
 							/>
 						}
 					/>

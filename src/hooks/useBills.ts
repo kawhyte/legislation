@@ -11,7 +11,7 @@ const MonthAgo = getPastDate(5, 'months');
 const DaysAgo = getPastDate(90, 'days');
 const RecentForTrending = getPastDate(30, 'days'); // New: Only for trending
 
-const useBills = (selectedJurisdiction: States | null) => {
+const useBills = (selectedJurisdiction: States | null, selectedTopic: string | null) => {
 	const params = useMemo(() => {
 		const baseParams: Record<string, string | number | string[]> = {
 			sort: 'updated_desc',
@@ -26,6 +26,9 @@ const useBills = (selectedJurisdiction: States | null) => {
 			baseParams.jurisdiction = selectedJurisdiction.name;
 			baseParams.created_since = MonthAgo;
 			baseParams.per_page = 20;
+			if (selectedTopic) {
+				baseParams.q = selectedTopic;
+			}
 		} else {
 			// FIXED: API requires either 'jurisdiction' or 'q' parameter
 			console.log('[useBills] Fetching trending bills - API requires q parameter...');
@@ -35,13 +38,13 @@ const useBills = (selectedJurisdiction: States | null) => {
 			
 			// REQUIRED: Provide a simple, broad query that should return results
 			// Using OR syntax (most APIs support this)
-            baseParams.q = 'artificial intelligence';
+            baseParams.q = selectedTopic || 'artificial intelligence';
 			
 			console.log('[useBills] Trending query params:', baseParams);
 		}
 		
 		return baseParams;
-	}, [selectedJurisdiction]);
+	}, [selectedJurisdiction, selectedTopic]);
 
 	const { data: rawData, error, isLoading } = useData<Bill>(
 		"/bills",

@@ -1,22 +1,17 @@
 import React, { Suspense } from "react";
 import StateSelector, { type States } from "./JurisdictionSelector";
-import TopicButton from "./TopicButton";
+import TopicSelector from "./TopicSelector"; // Import TopicSelector
 import animationData from "../assets/friends.json";
 
 const Lottie = React.lazy(() => import('lottie-react'));
 
 interface HeroSectionProps {
 	setSelectedJurisdiction: (jurisdiction: States | null) => void;
+	selectedTopic: string | null;
+	setSelectedTopic: (topic: string | null) => void;
 }
 
-const HeroSection = ({ setSelectedJurisdiction }: HeroSectionProps) => {
-	const topicsWithColors = [
-		{ name: "Healthcare", color: "#FFDDF4" },
-		{ name: "Education", color: "#DDE2FF" },
-		{ name: "Technology", color: "#DDFFEC" },
-		{ name: "Housing Policy", color: "#FFF5DD" },
-		{ name: "Environment", color: "#FFDDDD" },
-	];
+const HeroSection = ({ setSelectedJurisdiction, selectedTopic, setSelectedTopic }: HeroSectionProps) => {
 
 	return (
 		<div className='relative bg-slate-50 overflow-hidden'>
@@ -37,8 +32,9 @@ const HeroSection = ({ setSelectedJurisdiction }: HeroSectionProps) => {
 								real-time bill tracking, and clear explanations.
 							</p>
 
-							<div className='max-w-4xl mx-auto mb-6'>
+							<div className='max-w-4xl mx-auto mb-6 flex flex-col md:flex-row gap-4'>
 								<StateSelector onSelectJurisdiction={setSelectedJurisdiction} />
+								<TopicSelector selectedTopic={selectedTopic} onTopicSelect={setSelectedTopic} />
 							</div>
 						</div>
 						<div>
@@ -51,22 +47,6 @@ const HeroSection = ({ setSelectedJurisdiction }: HeroSectionProps) => {
 							</Suspense>
 						</div>
 					</div>
-
-					{/* Popular Topics Section */}
-					{/* <div className="text-left">
-						<span className='font-medium text-left text-muted-foreground mr-2'>
-							Popular topics:
-						</span>
-						<div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-4'>
-							{topicsWithColors.map((topic) => (
-								<TopicButton
-									key={topic.name}
-									topic={topic.name}
-									color={topic.color}
-								/>
-							))}
-						</div>
-					</div> */}
 				</div>
 			</div>
 		</div>

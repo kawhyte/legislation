@@ -1,5 +1,7 @@
 // utils/billProgress.ts
 
+import type { Bill } from "@/types";
+
 export type ProgressStage = "Introduced" | "House" | "Senate" | "Enacted";
 export type BillStatus = "Passed" | "Failed" | "In Progress";
 
@@ -25,7 +27,7 @@ export interface BillProgress {
  * Determines bill progress stage and status based on OpenStates API data
  * This function analyzes action classifications and descriptions to determine accurate progress
  */
-export function determineBillProgress(bill: any): BillProgress {
+export function determineBillProgress(bill: Bill): BillProgress {
   const stages = {
     introduced: { completed: false, date: undefined as string | undefined },
     house: { completed: false, date: undefined as string | undefined },
@@ -57,12 +59,11 @@ export function determineBillProgress(bill: any): BillProgress {
     // Check for failure indicators
     const failureKeywords = [
       "died", "failed", "rejected", "withdrawn", "indefinitely postponed",
-      "tabled", "killed", "vetoed", "do not pass"
+      "tabled", "killed", "vetoed"
     ];
     
     if (failureKeywords.some(keyword => description.includes(keyword))) {
       hasFailureIndicator = true;
-      continue;
     }
 
     // Check for enactment (final step)
@@ -73,7 +74,8 @@ export function determineBillProgress(bill: any): BillProgress {
       "became law",
       "enacted",
       "approved by governor",
-      "signed into law"
+      "signed into law",
+      "veto override"
     ];
 
     if (enactmentClassifications.some(cls => classifications.includes(cls)) ||
@@ -86,25 +88,28 @@ export function determineBillProgress(bill: any): BillProgress {
       stages.senate.completed = true;
       if (!housePassageDate) housePassageDate = action.date;
       if (!senatePassageDate) senatePassageDate = action.date;
-      continue;
+      
+      hasFailureIndicator = false; // Enactment overrides any prior failure
     }
 
     // Check for chamber passage
     if (classifications.includes("passage")) {
       if (orgClassification === "lower" || description.includes("assembly")) {
         // House/Assembly passage
-        if (!housePassageDate) {
+        if (!housePassageDate) { // Record first passage date
           housePassageDate = action.date;
-          stages.house.completed = true;
           stages.house.date = action.date;
         }
+        stages.house.completed = true; // Mark as completed on any passage
+        hasFailureIndicator = false; // Passage overrides prior failure
       } else if (orgClassification === "upper" || description.includes("senate")) {
         // Senate passage
-        if (!senatePassageDate) {
+        if (!senatePassageDate) { // Record first passage date
           senatePassageDate = action.date;
-          stages.senate.completed = true;
           stages.senate.date = action.date;
         }
+        stages.senate.completed = true; // Mark as completed on any passage
+        hasFailureIndicator = false; // Passage overrides prior failure
       }
     }
 
@@ -116,15 +121,17 @@ export function determineBillProgress(bill: any): BillProgress {
       if (orgClassification === "lower" || description.includes("assembly")) {
         if (!housePassageDate) {
           housePassageDate = action.date;
-          stages.house.completed = true;
           stages.house.date = action.date;
         }
+        stages.house.completed = true;
+        hasFailureIndicator = false;
       } else if (orgClassification === "upper" || description.includes("senate")) {
         if (!senatePassageDate) {
           senatePassageDate = action.date;
-          stages.senate.completed = true;
           stages.senate.date = action.date;
         }
+        stages.senate.completed = true;
+        hasFailureIndicator = false;
       }
     }
   }
@@ -148,12 +155,18 @@ export function determineBillProgress(bill: any): BillProgress {
   let status: BillStatus = "In Progress";
   let description = `Currently in ${currentStage.toLowerCase()} stage`;
 
-  if (hasFailureIndicator) {
-    status = "Failed";
-    description = `Failed during ${currentStage.toLowerCase()} stage`;
-  } else if (stages.enacted.completed) {
+  if (stages.enacted.completed) {
     status = "Passed";
     description = "Enacted into law";
+  } else if (hasFailureIndicator) {
+    status = "Failed";
+    let failureStage: ProgressStage = 'House';
+    if (currentStage === 'House') {
+      failureStage = 'Senate';
+    } else if (currentStage === 'Senate') {
+      failureStage = 'Enacted';
+    }
+    description = `Failed during ${failureStage.toLowerCase()} stage`;
   } else if (stages.senate.completed && !stages.enacted.completed) {
     description = "Passed both chambers, awaiting governor's action";
   }

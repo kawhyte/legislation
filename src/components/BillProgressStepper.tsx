@@ -1,95 +1,119 @@
 import React from 'react';
-import { Gavel, CheckCircle2, Circle, Clock, XCircle } from 'lucide-react';
+import { Gavel, Check, X } from 'lucide-react';
 import { determineBillProgress } from '../utils/billProgress';
-import { formatDate } from '../lib/utils';
-import type {  BillProgressStepperProps } from '@/types';
+import type { BillProgressStepperProps } from '@/types';
 
 const BillProgressStepper: React.FC<BillProgressStepperProps> = ({ bill, className = "" }) => {
   const progress = determineBillProgress(bill);
-  
-  const dates = {
-    introduced: progress.stages.introduced.date || bill.first_action_date,
-    house: progress.stages.house.date,
-    senate: progress.stages.senate.date, 
-    enacted: progress.stages.enacted.date
-  };
+ console.log("Bill", bill)
+console.log("Progress", progress)
 
-  const stages = [
-    { key: 'introduced', label: 'Introduced', date: dates.introduced, completed: progress.stages.introduced.completed },
-    { key: 'house', label: 'House', date: dates.house, completed: progress.stages.house.completed },
-    { key: 'senate', label: 'Senate', date: dates.senate, completed: progress.stages.senate.completed },
-    { key: 'enacted', label: 'Enacted', date: dates.enacted, completed: progress.stages.enacted.completed }
+  
+  const originalStages = [
+    { key: 'introduced', label: 'Introduced' },
+    { key: 'house', label: 'House' },
+    { key: 'senate', label: 'Senate' }, 
+    { key: 'enacted', label: 'Enacted' }
   ];
 
-  const getStageIcon = (completed: boolean, isActive: boolean, isFailureStage: boolean) => {
-    if (isFailureStage) {
-      return <XCircle className="h-5 w-5 text-red-400" />;
-    }
-    if (completed) {
-      return <CheckCircle2 className="h-5 w-5 text-emerald-400" />;
-    }
-    if (isActive) {
-      return <Clock className="h-5 w-5 text-violet-400 animate-pulse" />;
-    }
-    return <Circle className="h-5 w-5 text-slate-600" />;
-  };
+  const stages = originalStages.map((stageKey) => {
+    const stageProgress = progress.stages[stageKey.key as keyof typeof progress.stages];
+    const isActive = progress.current.stage === stageProgress.label && !stageProgress.completed;
+    const isFailed = progress.current.status === 'Failed' && progress.current.stage === stageProgress.label;
 
-  const currentStageIndex = stages.findIndex(stage => !stage.completed);
+    let status: 'Completed' | 'In Progress' | 'Pending' | 'Failed' = 'Pending';
+    if (isFailed) {
+      status = 'Failed';
+    } else if (stageProgress.completed) {
+      status = 'Completed';
+    } else if (isActive) {
+      status = 'In Progress';
+    }
+
+    return { ...stageKey, status };
+  });
+
+  let lastCompletedIndex = -1;
+  stages.forEach((s, i) => {
+    if (s.status === 'Completed') lastCompletedIndex = i;
+  });
+
+  let progressWidth = '0%';
+  if (lastCompletedIndex === stages.length - 1) {
+    progressWidth = '100%';
+  } else if (lastCompletedIndex !== -1) {
+    progressWidth = `${(lastCompletedIndex / (stages.length - 1)) * 100}%`;
+  }
+  
+  const statusDotColor = {
+    "Failed": "bg-red-500",
+    "Passed": "bg-emerald-600",
+    "In Progress": "bg-blue-600"
+  }[progress.current.status] ?? "bg-gray-400";
 
   return (
-    <div className={`bg-slate-100/30 border border-slate-600/30 rounded-lg p-4 ${className}`}>
-      <div className='flex items-center gap-2 mb-4'>
-        <Gavel className='h-4 w-4 text-slate-700' />
-        <span className='text-sm font-medium text-slate-700'>Progress</span>
+    <div className={`bg-slate-100/30 border border-slate-600/30 rounded-lg p-3 ${className}`}>
+      <div className='flex items-center gap-2 mb-3'>
+        <Gavel className='h-3.5 w-3.5 text-slate-700' />
+        <span className='text-xs font-medium text-slate-700'>Progress</span>
       </div>
       
-      {/* --- Horizontal Stepper UI Starts Here --- */}
       <div className="relative">
-        {/* The horizontal line connecting the steps */}
-        <div className="absolute left-0 right-0 top-[9px] h-0.5 w-full bg-slate-700" aria-hidden="true"></div>
+        <div className="absolute top-3 left-0 w-full h-0.5 bg-slate-300" aria-hidden="true" />
+        <div 
+          className="absolute top-3 left-0 h-0.5 bg-emerald-600" 
+          style={{ width: progressWidth }} 
+          aria-hidden="true" 
+        />
 
-        <div className="grid grid-cols-4">
+        <div className="relative flex justify-between">
+          {/* FIX 1: Added 'index' to the map function arguments */}
           {stages.map((stage, index) => {
-            const isActive = index === currentStageIndex;
-            const isFailureStage = progress.current.status === 'Failed' && progress.current.stage === stage.label;
-
-            const stageTextColor = isFailureStage
-              ? 'text-red-400'
-              : stage.completed
-                ? 'text-emerald-400'
-                : isActive
-                  ? 'text-violet-400'
-                  : 'text-slate-400';
+            const isCompleted = stage.status === 'Completed';
+            const isInProgress = stage.status === 'In Progress';
+            const isFailed = stage.status === 'Failed';
             
+            const colors = {
+              completed: 'text-emerald-600',
+              inProgress: 'text-blue-600',
+              pending: 'text-slate-500',
+              failed: 'text-red-500'
+            };
+            
+            const statusColor = isFailed ? colors.failed : isCompleted ? colors.completed : isInProgress ? colors.inProgress : colors.pending;
+
             return (
-              <div key={stage.key} className="relative flex flex-col items-center gap-2">
-                {/* Icon Circle - positioned over the connecting line */}
-                <div className="z-10 flex h-5 w-5 items-center justify-center rounded-full bg-slate-900">
-                  {getStageIcon(stage.completed, isActive, isFailureStage)}
+              <div key={stage.key} className="flex flex-col items-center">
+                <div className={`
+                  w-6 h-6 rounded-full flex items-center justify-center
+                  ${isFailed ? 'bg-red-500' : ''}
+                  ${isCompleted ? 'bg-emerald-600' : ''}
+                  ${isInProgress ? 'bg-white border-2 border-blue-600' : ''}
+                  ${stage.status === 'Pending' ? 'bg-slate-300' : ''}
+                `}>
+                  {isFailed && <X className="w-3.5 h-3.5 text-white" />}
+                  {isCompleted && <Check className="w-3.5 h-3.5 text-white" />}
+                  {isInProgress && <div className="w-2 h-2 rounded-full bg-blue-600"></div>}
                 </div>
                 
-                {/* Stage Label and Date */}
-                <div className="text-center">
-                  <div className={`text-xs font-medium leading-tight ${stageTextColor}`}>
-                    {stage.label}
-                  </div>
-                  <div className='text-[.65rem] text-slate-600 mt-0.5'>
-                    {stage.date ? formatDate(stage.date) : "—"}
-                  </div>
+                <div className="text-center mt-1.5">
+                  <p className="text-[9px] text-slate-500 tracking-wider font-medium">STEP {index + 1}</p>
+                  <p className="text-[11px] font-semibold text-slate-800">{stage.label}</p>
+                  <p className={`text-[10px] font-medium ${statusColor}`}>{stage.status}</p>
                 </div>
               </div>
             );
           })}
         </div>
       </div>
-      {/* --- Horizontal Stepper UI Ends Here --- */}
 
       {progress.current.description && (
-        <div className="mt-4 pt-3 border-t border-slate-700/50">
+        <div className="mt-3 pt-2 border-t border-slate-700/50">
           <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${progress.current.status === 'Failed' ? 'bg-red-400' : 'bg-violet-400 animate-pulse'}`}></div>
-            <p className="text-xs text-slate-700">
+            <div className={`w-2 h-2 rounded-full ${statusDotColor}`}></div>
+            <p className="text-[11px] text-slate-700">
               {progress.current.description}
+           
             </p>
           </div>
         </div>
