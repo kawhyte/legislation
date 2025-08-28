@@ -27,7 +27,7 @@ const TopicSelector: React.FC<TopicSelectorProps> = ({ selectedTopic, onTopicSel
   return (
     <div className='flex-1'>
       <Select onValueChange={(value) => onTopicSelect(value === "all" ? null : value)} value={selectedTopic || "all"}>
-        <SelectTrigger className="w-full bg-white text-base py-6 px-4">
+        <SelectTrigger className="w-full text-base py-6 px-4 bg-card border border-border">
           <SelectValue placeholder="Select a topic">
             {selectedTopicData ? (
               <div className="flex items-center">
@@ -39,12 +39,12 @@ const TopicSelector: React.FC<TopicSelectorProps> = ({ selectedTopic, onTopicSel
             )}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Topics</SelectItem>
+        <SelectContent className="bg-popover text-popover-foreground border-border">
+          <SelectItem value="all" className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">All Topics</SelectItem>
           {topics.map(topic => {
             const Icon = topic.icon;
             return (
-              <SelectItem key={topic.value} value={topic.value}>
+              <SelectItem key={topic.value} value={topic.value} className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
                 <div className="flex items-center">
                   <Icon className="w-6 h-6 mr-2" />
                   <span>{topic.name}</span>

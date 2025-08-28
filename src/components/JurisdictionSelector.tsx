@@ -39,7 +39,7 @@ const JurisdictionSelector = ({ onSelectJurisdiction }: Props) => {
 						onSelectJurisdiction(selectedState);
 					}
 				}}>
-		<SelectTrigger className='w-full bg-white text-base py-6 px-4'>
+		<SelectTrigger className='w-full text-base py-6 px-4 bg-card border-border'>
     <SelectValue placeholder='Select your state to see relevant bills...'>
         {selectedValue ? (
             <div className='flex items-center gap-2'>
@@ -56,11 +56,14 @@ const JurisdictionSelector = ({ onSelectJurisdiction }: Props) => {
     </SelectValue>
 </SelectTrigger>
 
-				<SelectContent>
+				<SelectContent className="bg-popover text-popover-foreground border-border">
 					<SelectGroup>
 						<SelectLabel>States</SelectLabel>
 						{data.map((option) => (
-							<SelectItem key={option.abbreviation} value={option.name}>
+							<SelectItem key={option.abbreviation} value={option.name}
+							
+							className='flex items-center gap-2 hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground'
+							>
 								<img
 									src={option.flagUrl}
 									alt={`${option.name} flag`}

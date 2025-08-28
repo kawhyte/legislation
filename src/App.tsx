@@ -36,7 +36,7 @@ const HomePage = ({
 	};
 
 	return (
-		<>
+		<div className="bg-background text-foreground">
 			<Hero
 				selectedJurisdiction={selectedJurisdiction}
 				setSelectedJurisdiction={handleStateSelect}
@@ -56,7 +56,7 @@ const HomePage = ({
 				)}
 			</main>
 			{/* <WhyItMatters /> */}
-		</>
+		</div>
 	);
 };
 
