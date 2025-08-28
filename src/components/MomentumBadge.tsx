@@ -10,55 +10,49 @@ interface MomentumBadgeProps {
 
 const MomentumBadge: React.FC<MomentumBadgeProps> = ({ momentum, className = "" }) => {
   const getMomentumConfig = (level: string) => {
+    // UPDATED: All hardcoded colors have been replaced with your theme's semantic variables.
     switch (level.toLowerCase()) {
       case "enacted":
         return {
           icon: ShieldCheck,
           text: "Enacted/Became Law",
-          className: "bg-green-500/10 text-green-400 border-green-500/20 hover:bg-green-500/20"
+          className: "bg-success/10 text-success border-success/20 hover:bg-success/20"
         };
       case "passed":
         return {
           icon: CheckCircle2,
           text: "Passed Both Chambers",
-          className: "bg-sky-500/10 text-sky-400 border-sky-500/20 hover:bg-sky-500/20"
+          className: "bg-info/10 text-info border-info/20 hover:bg-info/20"
         };
       case "high":
         return {
           icon: Flame,
           text: "High Momentum",
-          className: "bg-gray-500/10 text-gray-600 border-gray-500/20 hover:bg-gray-500/20"
-          // className: "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20 hover:bg-fuchsia-500/20"
+          className: "bg-accent text-accent-foreground border-border hover:bg-muted"
         };
       case "medium":
         return {
           icon: TrendingUp,
           text: "Steady Momentum",
-          className: "bg-gray-500/10 text-gray-600 border-gray-500/20 hover:bg-gray-500/20"
-
-          // className: "bg-blue-500/10 text-blue-400 border-blue-500/20 hover:bg-blue-500/20"
+          className: "bg-accent text-accent-foreground border-border hover:bg-muted"
         };
       case "low":
         return {
           icon: TrendingDown,
           text: "Slow Momentum",
-                    className: "bg-gray-500/10 text-gray-600 border-gray-500/20 hover:bg-gray-500/20"
-
-          // className: "bg-slate-500/10 text-slate-400 border-slate-500/20 hover:bg-slate-500/20"
+          className: "bg-accent text-accent-foreground border-border hover:bg-muted"
         };
       case "stalled":
         return {
           icon: XCircle,
           text: "Stalled or Failed",
-                    className: "bg-gray-500/10 text-gray-600 border-gray-500/20 hover:bg-gray-500/20"
-
-          // className: "bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20"
+          className: "bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/20"
         };
       default:
         return {
           icon: Minus,
           text: "NA",
-          className: "bg-slate-500/10 text-slate-400 border-slate-500/20 hover:bg-slate-500/20"
+          className: "bg-muted text-muted-foreground border-border"
         };
     }
   };

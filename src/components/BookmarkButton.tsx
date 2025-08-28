@@ -16,7 +16,7 @@ interface BookmarkButtonProps {
 const BookmarkButton: React.FC<BookmarkButtonProps> = ({ 
   bill, 
   variant = 'ghost', 
-  size = 'icon', // Default to icon size for compact cards
+  size = 'icon',
   showText = false,
   className = ""
 }) => {
@@ -34,11 +34,12 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     }
   };
 
+  // UPDATED: Replaced hardcoded colors with theme variables
   const getBookmarkStyles = () => {
     if (bookmarked) {
-      return "text-yellow-400 hover:text-yellow-300 bg-yellow-400/10 border-yellow-400/20";
+      return "text-warning hover:text-warning/90 bg-warning/10 border-warning/20";
     }
-    return "text-slate-400 hover:text-yellow-400 hover:bg-yellow-400/10 border-transparent hover:border-yellow-400/20";
+    return "text-muted-foreground hover:text-warning hover:bg-warning/10 border-transparent hover:border-warning/20";
   };
 
   const tooltipText = bookmarked ? "Remove from saved" : "Save for later";
@@ -65,7 +66,8 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
             )}
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
+        {/* UPDATED: Themed the tooltip content to match other popovers */}
+        <TooltipContent className="bg-popover text-popover-foreground border-border">
           <p>{tooltipText}</p>
         </TooltipContent>
       </Tooltip>

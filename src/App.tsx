@@ -55,7 +55,7 @@ const HomePage = ({
 					<TrendingBillsPage />
 				)}
 			</main>
-			{/* <WhyItMatters /> */}
+			{/* <Footer /> */}
 		</div>
 	);
 };
