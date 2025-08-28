@@ -8,6 +8,7 @@ import {
 	TrendingUp,
 	Menu,
 	X,
+	Lightbulb, // Import Lightbulb icon
 } from "lucide-react";
 import PrismIcon from "./icons/PrismIcon";
 import { useBookmarks } from "../contexts/BookmarkContext";
@@ -61,6 +62,13 @@ const Header = () => {
 					</Badge>
 				)}
 			</Button>
+			<Button
+				variant='ghost'
+				onClick={() => navigate("/why-this-matters")}
+				className='text-muted-foreground hover:text-foreground'
+			>
+				Why This Matters
+			</Button>
 		</nav>
 	);
 
@@ -105,6 +113,14 @@ const Header = () => {
 				>
 					<Bookmark className='h-4 w-4' />
 					Saved Bills
+				</Button>
+				<Button
+					variant='ghost'
+					onClick={() => { navigate("/why-this-matters"); setIsMobileMenuOpen(false); }}
+					className='w-full justify-start gap-3 text-base py-6'
+				>
+					<Lightbulb className='h-4 w-4' />
+					Why This Matters
 				</Button>
 			</div>
 		</div>

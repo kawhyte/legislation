@@ -27,7 +27,7 @@ const BillGrid = ({ selectedJurisdiction, selectedTopic }: Props) => {
 			{error && <div>{error}</div>}
 
 			{noData && (
-				<div className='flex flex-col items-center justify-center text-center py-24 bg-slate-800/50 border border-slate-700/50 rounded-2xl mt-6'>
+				<div className='flex flex-col items-center justify-center text-center py-24 bg-slate-800 border border-slate-700/50 rounded-2xl mt-6'>
 					<Wind className='w-16 h-16 text-slate-500 mb-4' />
 					<h3 className='text-3xl font-bold text-slate-100 mb-2'>
 						Tumbleweeds...

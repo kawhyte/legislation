@@ -7,6 +7,7 @@ import Hero from "./components/Hero";
 import SavedBillsPage from "./components/SavedBillsPage";
 import TrendingBillsPage from "./components/TrendingBillsPage";
 import WhyItMatters from "./components/WhyItMatters";
+import WhyThisMattersPage from "./pages/WhyThisMattersPage"; // Import the new page
 
 const HomePage = ({
 	selectedJurisdiction,
@@ -83,6 +84,7 @@ const App = () => {
 					/>
 					<Route path='/saved' element={<SavedBillsPage />} />
 					<Route path='/trending' element={<TrendingBillsPage />} />
+					<Route path='/why-this-matters' element={<WhyThisMattersPage />} />
 				</Routes>
 			</div>
 		</Router>
