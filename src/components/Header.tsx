@@ -44,10 +44,10 @@ const Header = () => {
 		<nav className="hidden lg:flex items-center gap-4">
 			<Button
 				variant='ghost'
-				onClick={() => navigate('/trending')}
+				onClick={() => navigate('/')}
 				className='text-muted-foreground hover:text-foreground'
 			>
-				Trending Bills
+				Home
 			</Button>
 			<Button
 				variant='ghost'
@@ -92,11 +92,11 @@ const Header = () => {
 			<div className='p-4 space-y-2'>
 				<Button
 					variant='ghost'
-					onClick={() => { navigate('/trending'); setIsMobileMenuOpen(false); }}
+					onClick={() => { navigate('/'); setIsMobileMenuOpen(false); }}
 					className='w-full justify-start gap-3 text-base py-6'
 				>
 					<TrendingUp className='h-4 w-4' />
-					Trending Bills
+					Home
 				</Button>
 				<Button
 					variant='ghost'

@@ -37,10 +37,10 @@ const BillProgressStepper: React.FC<BillProgressStepperProps> = ({ bill, classNa
   const currentStageIndex = stages.findIndex(stage => !stage.completed);
 
   return (
-    <div className={`bg-slate-800/30 border border-slate-600/30 rounded-lg p-4 ${className}`}>
+    <div className={`bg-slate-100/30 border border-slate-600/30 rounded-lg p-4 ${className}`}>
       <div className='flex items-center gap-2 mb-4'>
-        <Gavel className='h-4 w-4 text-slate-400' />
-        <span className='text-sm font-medium text-slate-300'>Progress</span>
+        <Gavel className='h-4 w-4 text-slate-700' />
+        <span className='text-sm font-medium text-slate-700'>Progress</span>
       </div>
       
       {/* --- Horizontal Stepper UI Starts Here --- */}
@@ -64,7 +64,7 @@ const BillProgressStepper: React.FC<BillProgressStepperProps> = ({ bill, classNa
             return (
               <div key={stage.key} className="relative flex flex-col items-center gap-2">
                 {/* Icon Circle - positioned over the connecting line */}
-                <div className="z-10 flex h-5 w-5 items-center justify-center rounded-full bg-slate-800">
+                <div className="z-10 flex h-5 w-5 items-center justify-center rounded-full bg-slate-900">
                   {getStageIcon(stage.completed, isActive, isFailureStage)}
                 </div>
                 
@@ -73,7 +73,7 @@ const BillProgressStepper: React.FC<BillProgressStepperProps> = ({ bill, classNa
                   <div className={`text-xs font-medium leading-tight ${stageTextColor}`}>
                     {stage.label}
                   </div>
-                  <div className='text-[.65rem] text-slate-500 mt-0.5'>
+                  <div className='text-[.65rem] text-slate-600 mt-0.5'>
                     {stage.date ? formatDate(stage.date) : "—"}
                   </div>
                 </div>
@@ -88,7 +88,7 @@ const BillProgressStepper: React.FC<BillProgressStepperProps> = ({ bill, classNa
         <div className="mt-4 pt-3 border-t border-slate-700/50">
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${progress.current.status === 'Failed' ? 'bg-red-400' : 'bg-violet-400 animate-pulse'}`}></div>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-700">
               {progress.current.description}
             </p>
           </div>

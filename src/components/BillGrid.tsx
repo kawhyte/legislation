@@ -45,7 +45,7 @@ const BillGrid = ({ selectedJurisdiction }:Props) => {
 					{isLoading &&
 						skeletons.map((skeleton) => <BillCardSkeleton key={skeleton} />)}
 					{hasData && data.map((bill) => (
-						<BillCard key={bill.id} bill={bill} />
+						<BillCard key={bill.id} bill={bill} showSource={true} showVotes={false} />
 					))}
 				</div>
 			</div>

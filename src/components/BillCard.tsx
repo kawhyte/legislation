@@ -9,7 +9,7 @@ import {
 	CardTitle,
 	CardFooter,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -17,10 +17,7 @@ import {
 	RefreshCw,
 	Sparkles,
 	Link,
-	Flame,
 	Calendar,
-	ArrowUp,
-	ArrowDown,
 	Zap,
 	
 } from "lucide-react";
@@ -58,7 +55,9 @@ const getDomainFromUrl = (url: string) => {
 const BillCard = ({
 	bill,
 	showProgressBar = true,
-	showFooter = false,
+	showVotes = false,
+	showSource = false,
+	
 	showTrendingReason = false,
 }: BillCardProps) => {
 	const {
@@ -76,10 +75,7 @@ const BillCard = ({
 	const democratVotes = 102;
 	const republicanVotes = 88;
 	const otherVotes = 12;
-	const totalVotes = democratVotes + republicanVotes + otherVotes;
-	const demPercent = (democratVotes / totalVotes) * 100;
-	const repPercent = (republicanVotes / totalVotes) * 100;
-	const otherPercent = (otherVotes / totalVotes) * 100;
+	
 
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -239,13 +235,13 @@ const BillCard = ({
 					</Dialog>
 				</div>
 			</CardContent>
-			<VoteByParty
+			{showVotes && <VoteByParty
 				democratVotes={democratVotes}
 				republicanVotes={republicanVotes}
 				otherVotes={otherVotes}
-			/>
+			/>}
 
-			{showFooter && (
+			{showSource && (
 				<CardFooter className='p-4 pt-2'>
 					<div className='flex items-center justify-between w-full'>
 						<div>
