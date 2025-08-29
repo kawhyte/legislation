@@ -9,7 +9,7 @@ import {
     X,
     Lightbulb,
 } from "lucide-react";
-import PrismIcon from "./icons/PrismIcon";
+
 import { useBookmarks } from "../contexts/BookmarkContext";
 import { useNavigate } from "react-router-dom";
 
@@ -33,8 +33,10 @@ const Header = () => {
             className="flex items-center gap-2 cursor-pointer" 
             onClick={() => navigate('/')}
         >
-            <div className='flex items-center justify-center w-8 h-8 rounded-lg bg-primary'>
-                <PrismIcon className='h-4 w-4 text-primary-foreground' />
+            <div className='flex items-center justify-center w-8 h-8 rounded-lg'>
+                {/* <PrismIcon className='h-4 w-4 text-primary-foreground' /> */}
+<img src="./favicon.png"/>
+
             </div>
             <span className='text-lg font-bold text-foreground'>LegisTrack</span>
         </div>
