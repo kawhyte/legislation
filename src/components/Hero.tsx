@@ -1,7 +1,8 @@
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import StateSelector, { type States } from "./JurisdictionSelector";
 import TopicSelector from "./TopicSelector"; // Import TopicSelector
 import animationData from "../assets/friends.json";
+import { Button } from "./ui/button";
 
 const Lottie = React.lazy(() => import("lottie-react"));
 
@@ -18,11 +19,21 @@ const HeroSection = ({
 	selectedTopic,
 	setSelectedTopic,
 }: HeroSectionProps) => {
+	const [localJurisdiction, setLocalJurisdiction] = useState<States | null>(
+		selectedJurisdiction
+	);
+	const [localTopic, setLocalTopic] = useState<string | null>(selectedTopic);
+
 	useEffect(() => {
-		if (!selectedJurisdiction) {
-			setSelectedTopic(null);
+		if (!localJurisdiction) {
+			setLocalTopic(null);
 		}
-	}, [selectedJurisdiction, setSelectedTopic]);
+	}, [localJurisdiction]);
+
+	const handleSearch = () => {
+		setSelectedJurisdiction(localJurisdiction);
+		setSelectedTopic(localTopic);
+	};
 
 	return (
 		<div className='relative  overflow-hidden'>
@@ -46,22 +57,29 @@ const HeroSection = ({
 							<div className='max-w-4xl mx-auto mb-6 flex flex-col gap-8 border border-border bg-card px-4 md:px-6 py-8 md:py-12 rounded-3xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300'>
 								{/* Text Block */}
 								<div className='text-center'>
-								   <p className="text-xl md:text-2xl font-medium text-foreground">
+									<p className='text-xl md:text-2xl font-medium text-foreground'>
 										Select your state and a topic to see a real-time feed of
 										relevant bills.
 									</p>
 								</div>
 
 								{/* Selector Wrapper */}
-								<div className='flex flex-col xl:flex-row gap-4'>
+								<div className='flex flex-col lg:flex-row gap-4 lg:items-end'>
 									<StateSelector
-										onSelectJurisdiction={setSelectedJurisdiction}
+										selectedJurisdiction={localJurisdiction}
+										onSelectJurisdiction={setLocalJurisdiction}
 									/>
 									<TopicSelector
-										selectedTopic={selectedTopic}
-										onTopicSelect={setSelectedTopic}
-										disabled={!selectedJurisdiction}
+										selectedTopic={localTopic}
+										onTopicSelect={setLocalTopic}
+										disabled={!localJurisdiction}
 									/>
+									<Button
+										onClick={handleSearch}
+										size='lg'
+										className='w-full lg:w-auto flex-shrink-0'>
+										Search Bills
+									</Button>
 								</div>
 							</div>
 						</div>
