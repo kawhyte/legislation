@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import StateSelector, { type States } from "./JurisdictionSelector";
 import TopicSelector from "./TopicSelector"; // Import TopicSelector
 import animationData from "../assets/friends.json";
@@ -14,9 +14,16 @@ interface HeroSectionProps {
 
 const HeroSection = ({
 	setSelectedJurisdiction,
+	selectedJurisdiction,
 	selectedTopic,
 	setSelectedTopic,
 }: HeroSectionProps) => {
+	useEffect(() => {
+		if (!selectedJurisdiction) {
+			setSelectedTopic(null);
+		}
+	}, [selectedJurisdiction, setSelectedTopic]);
+
 	return (
 		<div className='relative  overflow-hidden'>
 			{/* Main content */}
@@ -53,6 +60,7 @@ const HeroSection = ({
 									<TopicSelector
 										selectedTopic={selectedTopic}
 										onTopicSelect={setSelectedTopic}
+										disabled={!selectedJurisdiction}
 									/>
 								</div>
 							</div>

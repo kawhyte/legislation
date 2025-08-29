@@ -4,20 +4,10 @@ import BillCard from '../components/BillCard';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import BillCardSkeleton from '../components/BillCardSkeleton';
+import { isBillTrending } from '@/utils/isBillTrending';
 
-
-
-	const quickActions = [
-		"Paid Family Leave",
-		"Healthcare Reform",
-		"Education Bills",
-		"Technology",
-		"Housing Policy"
-	];
- 
 const TrendingBillsPage: React.FC = () => {
-  // Later, you can add filters for "trending"
-  const { data, error, isLoading } = useBills(null);
+  const { data, error, isLoading } = useBills(null, null);
 
   const renderContent = () => {
     if (isLoading) {
@@ -42,10 +32,20 @@ const TrendingBillsPage: React.FC = () => {
       );
     }
 
+    const trendingBills = data?.filter(isBillTrending) ?? [];
+
+    if (trendingBills.length === 0) {
+      return (
+        <div className="text-center py-10">
+          <p className="text-slate-500">No trending bills at the moment. Check back later!</p>
+        </div>
+      );
+    }
+
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {data.slice(0, 9).map((bill) => (
-          <BillCard key={bill.id} bill={bill} showProgressBar={false} showTrendingReason={true} />
+        {trendingBills.slice(0, 9).map((bill) => (
+          <BillCard key={bill.id} bill={bill} showSource={false} showProgressBar={false} showTrendingReason={true} />
         ))}
       </div>
     );
@@ -56,31 +56,11 @@ const TrendingBillsPage: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            Legislative Bills Trending  Around The USA
+            Legislative Bills Trending Around The USA
           </h1>
           <p className="text-slate-500">
-            Bills that's currently gaining momentum nationwide.
+            Bills that are currently gaining momentum nationwide.
           </p>
-
-					{/* Quick action tags */}
-					{/* <div className={'mb-20 transition-all duration-1000 delay-700 ease-out  opacity-100 translate-y-8'}>
-						<div className='flex items-center justify-start flex-wrap gap-3 text-sm'>
-							<span className='font-medium text-slate-400'>
-								Popular bill topics:
-							</span>
-							{quickActions.map((tag, index) => (
-								<button
-									key={tag}
-									className={`px-4 py-2 rounded-full bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:border-violet-500/50 hover:text-violet-300 hover:bg-slate-700/50 transition-all duration-300 hover:scale-105 ${
-										index % 2 === 0 ? 'hover:shadow-violet-500/25' : 'hover:shadow-blue-500/25'
-									} hover:shadow-lg`}
-								>
-									{tag}
-								</button>
-							))}
-						</div>
-					</div> */}
-
         </div>
 
         {renderContent()}
