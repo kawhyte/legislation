@@ -31,7 +31,7 @@ const isBillTrending = (bill: Bill): boolean => {
 	// Criterion 2: High sponsorship and recent action
 	const lastActionDate = actionDates.length > 0 ? actionDates[0] : null;
 	if (lastActionDate) {
-		const twentyDaysAgo = new Date(getPastDate(20, 'days'));
+		const twentyDaysAgo = new Date(getPastDate(10, 'days'));
 		if (lastActionDate > twentyDaysAgo) {
 			const sponsorCount = bill.sponsorships?.length || 0;
 			const jurisdictionName = bill.jurisdiction?.name;
@@ -55,11 +55,15 @@ const isBillTrending = (bill: Bill): boolean => {
 
 	// Criterion 3: Close vote
 	if (bill.votes) {
+		const tenDaysAgo = new Date(getPastDate(10, 'days'));
 		for (const vote of bill.votes) {
-			const yesCount = vote.counts.find(c => c.option === 'yes')?.value || 0;
-			const noCount = vote.counts.find(c => c.option === 'no')?.value || 0;
-			if ((yesCount > 0 || noCount > 0) && Math.abs(yesCount - noCount) <= 3) {
-				return true;
+			const voteDate = new Date(vote.date);
+			if (voteDate > tenDaysAgo) {
+				const yesCount = vote.counts.find(c => c.option === 'yes')?.value || 0;
+				const noCount = vote.counts.find(c => c.option === 'no')?.value || 0;
+				if ((yesCount > 0 || noCount > 0) && Math.abs(yesCount - noCount) <= 3) {
+					return true;
+				}
 			}
 		}
 	}

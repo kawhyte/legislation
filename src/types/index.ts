@@ -1,4 +1,4 @@
-import { Sponsorship } from './index';
+
 // src/types/index.ts
 
 
@@ -59,6 +59,7 @@ export interface Vote {
     motion_text: string;
     organization: Organization;
     counts: VoteCount[];
+	date: string;
 }
 
 export interface Bill {
