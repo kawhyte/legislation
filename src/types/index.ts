@@ -1,3 +1,4 @@
+import { Sponsorship } from './index';
 // src/types/index.ts
 
 
@@ -34,6 +35,32 @@ export interface Abstract {
   date: string;
 }
 
+export interface Sponsorship {
+    id: string;
+    person: {
+        id: string;
+        name: string;
+    };
+    organization: {
+        id: string;
+        name: string;
+    };
+    primary: boolean;
+    type: string;
+}
+
+export interface VoteCount {
+    option: 'yes' | 'no' | 'other';
+    value: number;
+}
+
+export interface Vote {
+    id: string;
+    motion_text: string;
+    organization: Organization;
+    counts: VoteCount[];
+}
+
 export interface Bill {
 	id: string;
 	title: string;
@@ -56,6 +83,8 @@ export interface Bill {
 	abstracts?: Abstract[];
 	momentum?: MomentumAnalysis;
 	trendingReason?: string;
+	sponsorships?: Sponsorship[];
+	votes?: Vote[];
 }
 
 // From useBillSummary.ts

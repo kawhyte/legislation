@@ -69,6 +69,7 @@ const BillGrid = ({ selectedJurisdiction, selectedTopic }: Props) => {
                                 bill={bill}
                                 showSource={true}
                                 showVotes={false}
+                                showTrendingReason={true}
                             />
                         ))}
                 </div>

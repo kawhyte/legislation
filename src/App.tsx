@@ -50,6 +50,7 @@ const HomePage = ({
 					<BillGrid
 						selectedJurisdiction={selectedJurisdiction}
 						selectedTopic={selectedTopic}
+						
 					/>
 				) : (
 					<TrendingBillsPage />
