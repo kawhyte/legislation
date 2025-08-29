@@ -21,7 +21,7 @@ const isBillTrending = (bill: Bill): boolean => {
 
 	// Criterion 1: Speed of actions
     if (actionDates.length >= 2) {
-        const twentyDaysAgo = getPastDate(20, 'days');
+        const twentyDaysAgo = getPastDate(14, 'days');
         const recentActions = actionDates.filter(d => d > new Date(twentyDaysAgo));
         if (recentActions.length >= 2) {
             return true;
@@ -31,7 +31,7 @@ const isBillTrending = (bill: Bill): boolean => {
 	// Criterion 2: High sponsorship and recent action
 	const lastActionDate = actionDates.length > 0 ? actionDates[0] : null;
 	if (lastActionDate) {
-		const twentyDaysAgo = new Date(getPastDate(10, 'days'));
+		const twentyDaysAgo = new Date(getPastDate(5, 'days'));
 		if (lastActionDate > twentyDaysAgo) {
 			const sponsorCount = bill.sponsorships?.length || 0;
 			const jurisdictionName = bill.jurisdiction?.name;
@@ -55,7 +55,7 @@ const isBillTrending = (bill: Bill): boolean => {
 
 	// Criterion 3: Close vote
 	if (bill.votes) {
-		const tenDaysAgo = new Date(getPastDate(10, 'days'));
+		const tenDaysAgo = new Date(getPastDate(5, 'days'));
 		for (const vote of bill.votes) {
 			const voteDate = new Date(vote.date);
 			if (voteDate > tenDaysAgo) {

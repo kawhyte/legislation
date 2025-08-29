@@ -44,7 +44,7 @@ const TrendingBillsPage: React.FC = () => {
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {data.slice(0, 6).map((bill) => (
+        {data.slice(0, 9).map((bill) => (
           <BillCard key={bill.id} bill={bill} showProgressBar={false} showTrendingReason={true} />
         ))}
       </div>
@@ -54,12 +54,12 @@ const TrendingBillsPage: React.FC = () => {
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
+        <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            Trending Bills with AI Insights
+            Legislative Bills Trending  Around The USA
           </h1>
           <p className="text-slate-500">
-            Legislation that's currently gaining momentum nationwide.
+            Bills that's currently gaining momentum nationwide.
           </p>
 
 					{/* Quick action tags */}

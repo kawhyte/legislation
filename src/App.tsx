@@ -45,7 +45,7 @@ const HomePage = ({
 			/>
 			<main
 				ref={resultsRef}
-				className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
+				className='container mx-auto px-4 sm:px-6 lg:px-8 py-6'>
 				{selectedJurisdiction ? (
 					<BillGrid
 						selectedJurisdiction={selectedJurisdiction}
