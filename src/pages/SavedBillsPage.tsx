@@ -68,26 +68,22 @@ const SavedBillsPage: React.FC = () => {
 
 	if (bookmarkCount === 0) {
 		return (
-		<div className='min-h-screen bg-background'>
-                <div className='container mx-auto px-4 py-8'>
-                    <div className='text-center py-16'>
-                        <div className='flex justify-center mb-6'>
-                            <div className='w-20 h-20 bg-muted rounded-full flex items-center justify-center'>
+			<div className='min-h-screen bg-background'>
+				<div className='container mx-auto px-4 py-8'>
+					<div className='text-center py-16'>
+						<div className='flex justify-center mb-6'>
+							<div className='w-20 h-20 bg-muted rounded-full flex items-center justify-center'>
 								<Bookmark className='h-10 w-10 text-slate-600' />
 							</div>
 						</div>
-                        <h2 className='text-2xl font-bold text-foreground mb-4'>
+						<h2 className='text-2xl font-bold text-foreground mb-4'>
 							No Saved Bills Yet
 						</h2>
-                        <p className='text-muted-foreground mb-8 max-w-md mx-auto'>
+						<p className='text-muted-foreground mb-8 max-w-md mx-auto'>
 							Start bookmarking bills that interest you to keep track of
 							important legislation.
 						</p>
-						<Button
-							onClick={() => window.history.back()}
-							>
-							Browse Bills
-						</Button>
+						<Button onClick={() => window.history.back()}>Browse Bills</Button>
 					</div>
 				</div>
 			</div>
@@ -95,18 +91,18 @@ const SavedBillsPage: React.FC = () => {
 	}
 
 	return (
-<div className='min-h-screen bg-background'>			
-	<div className='container mx-auto px-4 py-8'>
+		<div className='min-h-screen bg-background'>
+			<div className='container mx-auto px-4 py-8'>
 				{/* Header */}
 				<div className='mb-8'>
 					<div className='flex items-center justify-between mb-6'>
 						<div>
-                            <h1 className='text-3xl font-bold text-foreground mb-2'>
+							<h1 className='text-3xl font-bold text-foreground mb-2'>
 								Saved Bills
 							</h1>
-							 <p className='text-muted-foreground'>
-								You have {bookmarkCount} bill{bookmarkCount !== 1 ? "s" : ""} saved for
-								later review
+							<p className='text-muted-foreground'>
+								You have {bookmarkCount} bill{bookmarkCount !== 1 ? "s" : ""}{" "}
+								saved for later
 							</p>
 						</div>
 						<Button
@@ -122,7 +118,7 @@ const SavedBillsPage: React.FC = () => {
 					<div className='flex flex-col md:flex-row gap-4'>
 						{/* Search */}
 						<div className='relative flex-1'>
-                            <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+							<Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground' />
 							<Input
 								type='text'
 								placeholder='Search saved bills...'
@@ -133,26 +129,36 @@ const SavedBillsPage: React.FC = () => {
 						</div>
 
 						{/* Sort */}
-						  <div className='flex gap-2'>
-                            {/* NOTE: This sorting logic with variants is already theme-aware. No changes needed. */}
-                            <Button variant={sortBy === "date" ? "secondary" : "outline"} size='sm' onClick={() => setSortBy("date")} className='gap-2'>
-                                <Calendar className='h-4 w-4' /> Date
-                            </Button>
-                            <Button variant={sortBy === "title" ? "secondary" : "outline"} size='sm' onClick={() => setSortBy("title")} className='gap-2'>
-                                <SortAsc className='h-4 w-4' /> Title
-                            </Button>
-                            <Button variant={sortBy === "state" ? "secondary" : "outline"} size='sm' onClick={() => setSortBy("state")} className='gap-2'>
-                                <MapPin className='h-4 w-4' /> State
-                            </Button>
-                        </div>
+						<div className='flex gap-2'>
+							{/* NOTE: This sorting logic with variants is already theme-aware. No changes needed. */}
+							<Button
+								variant={sortBy === "date" ? "secondary" : "outline"}
+								size='sm'
+								onClick={() => setSortBy("date")}
+								className='gap-2'>
+								<Calendar className='h-4 w-4' /> Date
+							</Button>
+							<Button
+								variant={sortBy === "title" ? "secondary" : "outline"}
+								size='sm'
+								onClick={() => setSortBy("title")}
+								className='gap-2'>
+								<SortAsc className='h-4 w-4' /> Title
+							</Button>
+							<Button
+								variant={sortBy === "state" ? "secondary" : "outline"}
+								size='sm'
+								onClick={() => setSortBy("state")}
+								className='gap-2'>
+								<MapPin className='h-4 w-4' /> State
+							</Button>
+						</div>
 					</div>
 
 					{/* Results count */}
 					{searchQuery && (
 						<div className='mt-4'>
-							<Badge
-								variant='outline'
-								>
+							<Badge variant='outline'>
 								{sortedBills.length} result{sortedBills.length !== 1 ? "s" : ""}{" "}
 								found
 							</Badge>
@@ -169,14 +175,11 @@ const SavedBillsPage: React.FC = () => {
 					</div>
 				) : (
 					<div className='text-center py-16'>
-						 <div className='text-muted-foreground mb-4'>
+						<div className='text-muted-foreground mb-4'>
 							<Filter className='h-12 w-12 mx-auto mb-4' />
 							No bills match your search criteria
 						</div>
-						<Button
-							onClick={() => setSearchQuery("")}
-							variant='outline'
-							>
+						<Button onClick={() => setSearchQuery("")} variant='outline'>
 							Clear Search
 						</Button>
 					</div>

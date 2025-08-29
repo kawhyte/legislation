@@ -34,6 +34,13 @@
   --color-footer-foreground: var(--footer-foreground);
 
 
+ /* NEW: Add the new theme variables here */
+  --color-pastel-beige: var(--pastel-beige);
+  --color-pastel-green: var(--pastel-green);
+  --color-pastel-lavender: var(--pastel-lavender);
+
+
+
   --color-success: var(--success);
 --color-success-foreground: var(--success-foreground);
 
@@ -120,6 +127,14 @@
   */
   --footer: oklch(18% 0.003 260);              /* CUSTOM: Use for: The background of the site footer. */
   --footer-foreground: oklch(76% 0.004 260);   /* CUSTOM: Use for: The text color in the site footer. */
+
+
+ /* NEW: Pastel Palette Additions */
+  --pastel-beige: oklch(89.8% 0.019 96.2);    /* A warm, sandy beige for content cards or callouts. */
+  --pastel-green: oklch(84.4% 0.032 165.7);   /* A muted, earthy green for secondary content. */
+  --pastel-lavender: oklch(85.8% 0.038 285.8);  /* A soft, dusty lavender for tertiary accents. */
+
+
 }
 
 
