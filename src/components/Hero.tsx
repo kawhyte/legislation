@@ -54,7 +54,7 @@ const HeroSection = ({
 								real-time bill tracking, and clear explanations.
 							</p>
 
-							<div className='max-w-4xl mx-auto mb-6 flex flex-col gap-8 border border-border bg-card px-4 md:px-6 py-8 md:py-12 rounded-3xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300'>
+							<div className='max-w-5xl mx-auto mb-6 flex flex-col gap-8 border border-border bg-card px-4 md:px-6 py-8 md:py-12 rounded-3xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300'>
 								{/* Text Block */}
 								<div className='text-center'>
 									<p className='text-xl md:text-2xl font-medium text-foreground'>
@@ -64,22 +64,28 @@ const HeroSection = ({
 								</div>
 
 								{/* Selector Wrapper */}
-								<div className='flex flex-col lg:flex-row gap-4 lg:items-end'>
-									<StateSelector
-										selectedJurisdiction={localJurisdiction}
-										onSelectJurisdiction={setLocalJurisdiction}
-									/>
-									<TopicSelector
-										selectedTopic={localTopic}
-										onTopicSelect={setLocalTopic}
-										disabled={!localJurisdiction}
-									/>
-									<Button
-										onClick={handleSearch}
-										size='lg'
-										className='w-full lg:w-auto flex-shrink-0'>
-										Search Bills
-									</Button>
+								<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end'>
+									<div className='md:col-span-1 lg:col-span-1'>
+										<StateSelector
+											selectedJurisdiction={localJurisdiction}
+											onSelectJurisdiction={setLocalJurisdiction}
+										/>
+									</div>
+									<div className='md:col-span-1 lg:col-span-1'>
+										<TopicSelector
+											selectedTopic={localTopic}
+											onTopicSelect={setLocalTopic}
+											disabled={!localJurisdiction}
+										/>
+									</div>
+									<div className='md:col-span-2 lg:col-span-1'>
+										<Button
+											onClick={handleSearch}
+											size='lg'
+											className='w-full'>
+											Search Bills
+										</Button>
+									</div>
 								</div>
 							</div>
 						</div>

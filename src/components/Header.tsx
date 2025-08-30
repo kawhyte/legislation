@@ -38,7 +38,7 @@ const Header = () => {
 <img src="./favicon.png"/>
 
             </div>
-            <span className='text-lg font-bold text-foreground'>LegisTrack</span>
+            <span className='text-lg font-bold text-foreground'>Billhound</span>
         </div>
     );
 
