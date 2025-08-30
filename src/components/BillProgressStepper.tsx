@@ -17,8 +17,8 @@ const BillProgressStepper: React.FC<BillProgressStepperProps> = ({ bill, classNa
 
   const stages = originalStages.map((stageKey) => {
     const stageProgress = progress.stages[stageKey.key as keyof typeof progress.stages];
-    const isActive = progress.current.stage === stageProgress.label && !stageProgress.completed;
-    const isFailed = progress.current.status === 'Failed' && progress.current.stage === stageProgress.label;
+    const isActive = progress.current.stage === stageKey.label && !stageProgress.completed;
+    const isFailed = progress.current.status === 'Failed' && progress.current.stage === stageKey.label;
 
     let status: 'Completed' | 'In Progress' | 'Pending' | 'Failed' = 'Pending';
     if (isFailed) {

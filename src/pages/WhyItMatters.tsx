@@ -1,6 +1,6 @@
 // src/components/WhyItMatters.tsx
 import { Handshake, Vote, School } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 const WhyItMatters = () => {
 	const points = [
