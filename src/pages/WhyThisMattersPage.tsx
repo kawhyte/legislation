@@ -1,6 +1,7 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
 
+
 const lawImpact = [
 	{
 		id: 1,
