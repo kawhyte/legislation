@@ -1,5 +1,4 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 const lawImpact = [
@@ -162,11 +161,11 @@ const WhyThisMattersPage: React.FC = () => {
 						effective citizen.
 					</p>
 
-					<Button
+					{/* <Button
 						size='lg'
 						className='bg-primary-foreground text-primary font-bold py-3 px-8 rounded-full hover:bg-primary-foreground/90 transition-transform transform hover:scale-105'>
 						Start Tracking Bills
-					</Button>
+					</Button> */}
 				</section>
 			</main>
 		</div>
