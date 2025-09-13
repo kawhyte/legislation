@@ -20,9 +20,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a React legislation tracking application built with:
 - **Frontend**: React 19, TypeScript, Vite, React Router
 - **Styling**: TailwindCSS v4 with Radix UI components
-- **State Management**: React Context (BookmarkContext for bill bookmarks)
+- **Authentication**: Firebase Auth for user authentication (email/password + social providers)
+- **Database**: Firebase Firestore for user data and saved bills
+- **State Management**: React Context (UserContext for user state and saved bills)
 - **External APIs**: OpenStates API v3 for legislation data, Google Gemini AI for bill summaries
-- **Data Storage**: localStorage for bookmarks
 
 ### Key Architectural Patterns
 
@@ -37,11 +38,18 @@ This is a React legislation tracking application built with:
 
 **Routing Structure**:
 - `/` - Homepage with Hero section and either jurisdiction-specific bills or trending bills
-- `/saved` - User's bookmarked bills
+- `/sign-in` - User authentication (Firebase Auth with email/password and social providers)
+- `/sign-up` - User registration (Firebase Auth with email/password and social providers)
+- `/profile-setup` - Profile setup for new users (state selection, display name)
+- `/saved` - User's saved bills (protected route)
 - `/trending` - National trending legislation  
 - `/why-this-matters` - Educational content page
 
 ### Key Features
+
+**User Authentication**: Firebase Auth-powered user registration, login, and profile management with support for email/password and social providers (Google, GitHub)
+
+**Profile Setup**: New users select their state and display name for personalized experience
 
 **Bill Tracking**: Real-time momentum analysis with custom `MomentumLevel` scoring system based on legislative actions and timing
 
@@ -49,7 +57,9 @@ This is a React legislation tracking application built with:
 
 **AI Summaries**: Gemini AI generates casual, accessible summaries and impact analysis for bills with intelligent caching
 
-**Bookmark System**: Persistent bill bookmarking with localStorage and React Context
+**Persistent Bill Saving**: Authenticated users can save bills to Firestore with full offline access to bill data
+
+**Personalized Homepage**: Authenticated users see bills from their selected state by default
 
 **Responsive Design**: Mobile-first TailwindCSS implementation with custom animations
 
@@ -58,6 +68,12 @@ This is a React legislation tracking application built with:
 Required environment variables:
 - `VITE_OPENSTATES_API_KEY` - OpenStates API key for legislation data
 - `VITE_GEMINI_API_KEY` - Google Gemini API key for AI summaries
+- `VITE_FIREBASE_API_KEY` - Firebase API key
+- `VITE_FIREBASE_AUTH_DOMAIN` - Firebase auth domain (usually `your_project_id.firebaseapp.com`)
+- `VITE_FIREBASE_PROJECT_ID` - Firebase project ID
+- `VITE_FIREBASE_STORAGE_BUCKET` - Firebase storage bucket (usually `your_project_id.appspot.com`)
+- `VITE_FIREBASE_MESSAGING_SENDER_ID` - Firebase messaging sender ID
+- `VITE_FIREBASE_APP_ID` - Firebase app ID
 
 ## Import Aliases
 
@@ -65,10 +81,18 @@ Required environment variables:
 
 ## Development Notes
 
+**Authentication Flow**: Users are redirected to profile setup after registration, then to their personalized homepage
+
+**Protected Routes**: `/saved` and `/profile-setup` require authentication; unauthenticated users redirected to sign-in
+
+**Data Architecture**: User preferences and saved bills stored in Firestore with clean DTO structure separate from Firebase Auth user objects
+
+**Firestore Security**: Uses Firebase Auth user ID as document ID for user data; saved bills stored in subcollections
+
 **Rate Limiting**: Gemini service has 4-second delays between requests to avoid API limits
 
 **Caching**: AI summaries cached for 24 hours to reduce API calls and improve performance
 
 **Error Handling**: Fallback UI components and graceful degradation for API failures
 
-**Data Persistence**: Bookmarks persist in localStorage with error handling for quota limits
+**State Management**: UserContext manages Firebase Auth state, user preferences, and saved bills with real-time updates

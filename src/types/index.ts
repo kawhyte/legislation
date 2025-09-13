@@ -127,3 +127,61 @@ export interface MomentumAnalysis {
   score: number;
   reasons: string[];
 }
+
+// User Management Types
+export interface UserPreferences {
+  userId: string;
+  displayName: string;
+  selectedState: string; // State abbreviation (e.g., "CA", "TX")
+  profileSetupCompleted: boolean;
+  createdAt: string; // ISO string
+  updatedAt: string; // ISO string
+}
+
+// DTO for creating/updating user preferences (excludes auto-generated fields)
+export interface CreateUserPreferencesDTO {
+  displayName: string;
+  selectedState: string;
+}
+
+export interface UpdateUserPreferencesDTO {
+  displayName?: string;
+  selectedState?: string;
+  profileSetupCompleted?: boolean;
+}
+
+// Saved Bill Types
+export interface SavedBill {
+  id: string; // Document ID in Firestore
+  userId: string;
+  billId: string; // OpenStates bill ID
+  billData: Bill; // Full bill object for offline access
+  savedAt: string; // ISO string
+  notes?: string; // User's personal notes about the bill
+}
+
+// DTO for saving a bill (excludes auto-generated fields)
+export interface SaveBillDTO {
+  billId: string;
+  billData: Bill;
+  notes?: string;
+}
+
+// User context types
+export interface UserContextType {
+  // User preferences
+  userPreferences: UserPreferences | null;
+  isLoadingPreferences: boolean;
+  updateUserPreferences: (preferences: UpdateUserPreferencesDTO) => Promise<void>;
+  completeProfileSetup: (preferences: CreateUserPreferencesDTO) => Promise<void>;
+  
+  // Saved bills
+  savedBills: SavedBill[];
+  isLoadingSavedBills: boolean;
+  saveBill: (billData: SaveBillDTO) => Promise<void>;
+  removeSavedBill: (billId: string) => Promise<void>;
+  isBillSaved: (billId: string) => boolean;
+  
+  // Auth state helpers
+  isProfileSetupRequired: boolean;
+}

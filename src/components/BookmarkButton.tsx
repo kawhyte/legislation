@@ -1,7 +1,8 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Bookmark, BookmarkCheck } from 'lucide-react';
-import { useBookmarks } from '../contexts/BookmarkContext';
+import { useUserData } from '../contexts/UserContext';
+import { useUser } from '@/hooks/useAuth';
 import type { Bill } from '@/types';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -20,17 +21,32 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
   showText = false,
   className = ""
 }) => {
-  const { isBookmarked, addBookmark, removeBookmark } = useBookmarks();
-  const bookmarked = isBookmarked(bill.id);
+  const { isBillSaved, saveBill, removeSavedBill } = useUserData();
+  const { isSignedIn } = useUser();
+  const bookmarked = isBillSaved(bill.id);
 
-  const handleBookmarkToggle = (e: React.MouseEvent) => {
+  const handleBookmarkToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    if (bookmarked) {
-      removeBookmark(bill.id);
-    } else {
-      addBookmark(bill);
+    // Redirect to sign in if not authenticated
+    if (!isSignedIn) {
+      window.location.href = '/sign-in';
+      return;
+    }
+    
+    try {
+      if (bookmarked) {
+        await removeSavedBill(bill.id);
+      } else {
+        await saveBill({
+          billId: bill.id,
+          billData: bill
+        });
+      }
+    } catch (error) {
+      console.error('Error toggling bill save status:', error);
+      // Could show a toast notification here
     }
   };
 

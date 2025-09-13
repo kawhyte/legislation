@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useBookmarks } from "../contexts/BookmarkContext";
+import { useUserData } from "../contexts/UserContext";
 import BillCard from "@/components/BillCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,13 +15,16 @@ import {
 } from "lucide-react";
 
 const SavedBillsPage: React.FC = () => {
-	const { bookmarkedBills, clearAllBookmarks, bookmarkCount } = useBookmarks();
+	const { savedBills, removeSavedBill } = useUserData();
 	const [searchQuery, setSearchQuery] = useState("");
 	const filterStatus = "all";
 	const [sortBy, setSortBy] = useState<"date" | "title" | "state">("date");
 
+	// Extract bill data from savedBills for filtering and sorting
+	const bills = savedBills.map(savedBill => savedBill.billData);
+
 	// Filter and search logic
-	const filteredBills = bookmarkedBills.filter((bill) => {
+	const filteredBills = bills.filter((bill) => {
 		const matchesSearch =
 			bill.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			bill.identifier.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -49,6 +52,12 @@ const SavedBillsPage: React.FC = () => {
 				);
 			case "date":
 			default:
+				// For saved bills, we can also sort by savedAt date
+				const savedBillA = savedBills.find(sb => sb.billId === a.id);
+				const savedBillB = savedBills.find(sb => sb.billId === b.id);
+				if (savedBillA && savedBillB) {
+					return new Date(savedBillB.savedAt).getTime() - new Date(savedBillA.savedAt).getTime();
+				}
 				return (
 					new Date(b.latest_action_date || "").getTime() -
 					new Date(a.latest_action_date || "").getTime()
@@ -56,17 +65,24 @@ const SavedBillsPage: React.FC = () => {
 		}
 	});
 
-	const handleClearAll = () => {
+	const handleClearAll = async () => {
 		if (
 			window.confirm(
 				"Are you sure you want to remove all saved bills? This action cannot be undone."
 			)
 		) {
-			clearAllBookmarks();
+			try {
+				const clearPromises = savedBills.map(savedBill => 
+					removeSavedBill(savedBill.billId)
+				);
+				await Promise.all(clearPromises);
+			} catch (error) {
+				console.error('Error clearing all bills:', error);
+			}
 		}
 	};
 
-	if (bookmarkCount === 0) {
+	if (savedBills.length === 0) {
 		return (
 			<div className='min-h-screen bg-background'>
 				<div className='container mx-auto px-4 py-8'>
@@ -101,7 +117,7 @@ const SavedBillsPage: React.FC = () => {
 								Saved Bills
 							</h1>
 							<p className='text-muted-foreground'>
-								You have {bookmarkCount} bill{bookmarkCount !== 1 ? "s" : ""}{" "}
+								You have {savedBills.length} bill{savedBills.length !== 1 ? "s" : ""}{" "}
 								saved for later
 							</p>
 						</div>
