@@ -5,13 +5,14 @@ import BillGrid from "./components/BillGrid";
 import Header from "./components/Header";
 import { type States } from "./components/JurisdictionSelector";
 import Hero from "./components/Hero";
-import SavedBillsPage from "./pages/SavedBillsPage";
+import DashboardPage from "./pages/DashboardPage";
 import TrendingBillsPage from "./pages/TrendingBillsPage";
 import WhyThisMattersPage from "./pages/WhyThisMattersPage";
 import ProfileSetupPage from "./pages/ProfileSetupPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import { UserProvider, useUserData } from "./contexts/UserContext";
+import { Toaster } from "@/components/ui/sonner";
 import usStates from "./data/usStates";
 
 const HomePage = ({
@@ -194,11 +195,11 @@ const AppRoutes = () => {
 					}
 				/>
 				<Route
-					path='/saved'
+					path='/dashboard'
 					element={
 						<ProtectedRoute>
 							<ProfileSetupChecker>
-								<SavedBillsPage />
+								<DashboardPage />
 							</ProfileSetupChecker>
 						</ProtectedRoute>
 					}
@@ -213,6 +214,7 @@ const App = () => {
 		<Router>
 			<UserProvider>
 				<AppRoutes />
+				<Toaster />
 			</UserProvider>
 		</Router>
 	);

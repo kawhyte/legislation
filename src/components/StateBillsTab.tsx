@@ -15,7 +15,7 @@ import {
 	GraduationCap,
 	Leaf,
 	Clock,
-	LucideIcon,
+	type LucideIcon,
 } from "lucide-react";
 import usStates from "../data/usStates";
 import type { States } from "./JurisdictionSelector";

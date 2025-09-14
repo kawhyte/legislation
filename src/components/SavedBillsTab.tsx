@@ -4,6 +4,7 @@ import BillCard from "@/components/BillCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 import {
 	Search,
 	Bookmark,
@@ -66,21 +67,31 @@ const SavedBillsTab: React.FC = () => {
 		}
 	});
 
-	const handleClearAll = async () => {
-		if (
-			window.confirm(
-				"Are you sure you want to remove all saved bills? This action cannot be undone."
-			)
-		) {
-			try {
-				const clearPromises = savedBills.map(savedBill => 
-					removeSavedBill(savedBill.billId)
-				);
-				await Promise.all(clearPromises);
-			} catch (error) {
-				console.error('Error clearing all bills:', error);
-			}
-		}
+	const handleClearAll = () => {
+		toast.error("Are you sure you want to remove all saved bills? This action cannot be undone.", {
+			action: {
+				label: "Delete All",
+				onClick: async () => {
+					try {
+						const clearPromises = savedBills.map(savedBill => 
+							removeSavedBill(savedBill.billId)
+						);
+						await Promise.all(clearPromises);
+						toast.success(`Successfully removed ${savedBills.length} saved bills`);
+					} catch (error) {
+						console.error('Error clearing all bills:', error);
+						toast.error("Failed to remove saved bills. Please try again.");
+					}
+				}
+			},
+			cancel: {
+				label: "Cancel",
+				onClick: () => {
+					// Toast automatically dismisses
+				}
+			},
+			duration: 10000, // 10 seconds timeout
+		});
 	};
 
 	if (savedBills.length === 0) {
@@ -122,7 +133,7 @@ const SavedBillsTab: React.FC = () => {
 						variant='outline'
 						className='text-destructive border-destructive/50 hover:bg-destructive/10'>
 						<Trash2 className='h-4 w-4 mr-2' />
-						Clear All
+						Remove All
 					</Button>
 				</div>
 

@@ -1,7 +1,6 @@
 // src/components/Header.tsx
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import {
@@ -32,7 +31,7 @@ const Header = () => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    const { savedBills, userPreferences } = useUserData();
+    const { userPreferences } = useUserData();
     const { isSignedIn, user } = useUser();
     const navigate = useNavigate();
 
@@ -63,16 +62,11 @@ const Header = () => {
             {isSignedIn && (
                 <Button
                     variant='ghost'
-                    onClick={() => navigate("/saved")}
+                    onClick={() => navigate("/dashboard")}
                     // UPDATED: Added hover:bg-accent for consistency
-                    className='text-muted-foreground hover:text-foreground hover:bg-accent relative'
+                    className='text-muted-foreground hover:text-foreground hover:bg-accent'
                 >
-                    Saved Bills
-                    {savedBills.length > 0 && (
-                        <Badge className='absolute -top-1 -right-1 h-5 w-5 p-0 text-xs bg-primary text-primary-foreground border-2 border-background flex items-center justify-center'>
-                            {savedBills.length > 9 ? "9+" : savedBills.length}
-                        </Badge>
-                    )}
+                    Dashboard
                 </Button>
             )}
             <Button
@@ -127,14 +121,9 @@ const Header = () => {
                                 </div>
                             </div>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => navigate('/saved')}>
+                            <DropdownMenuItem onClick={() => navigate('/dashboard')}>
                                 <Bookmark className="mr-2 h-4 w-4" />
-                                <span>Saved Bills</span>
-                                {savedBills.length > 0 && (
-                                    <Badge className="ml-auto h-5 w-5 p-0 text-xs">
-                                        {savedBills.length > 9 ? "9+" : savedBills.length}
-                                    </Badge>
-                                )}
+                                <span>Dashboard</span>
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => navigate('/profile-setup')}>
                                 <Settings className="mr-2 h-4 w-4" />
@@ -196,17 +185,12 @@ const Header = () => {
                 {isSignedIn && (
                     <Button
                         variant='ghost'
-                        onClick={() => { navigate("/saved"); setIsMobileMenuOpen(false); }}
+                        onClick={() => { navigate("/dashboard"); setIsMobileMenuOpen(false); }}
                         // UPDATED: Added text and hover styles
                         className='w-full justify-start gap-3 text-base py-6 text-foreground hover:bg-accent'
                     >
                         <Bookmark className='h-4 w-4' />
-                        Saved Bills
-                        {savedBills.length > 0 && (
-                            <Badge className="ml-auto h-5 w-5 p-0 text-xs">
-                                {savedBills.length > 9 ? "9+" : savedBills.length}
-                            </Badge>
-                        )}
+                        Dashboard
                     </Button>
                 )}
                 <Button

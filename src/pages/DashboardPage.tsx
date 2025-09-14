@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useUserData } from "../contexts/UserContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import SavedBillsTab from "../components/SavedBillsTab";
 import StateBillsTab from "../components/StateBillsTab";
 import ExploreBillsTab from "../components/ExploreBillsTab";
 
-const SavedBillsPage: React.FC = () => {
-	const { userPreferences } = useUserData();
+const DashboardPage: React.FC = () => {
+	const { userPreferences, savedBills } = useUserData();
 	const [activeTab, setActiveTab] = useState("saved");
 
 	// Get user's state name for display
@@ -44,7 +45,14 @@ const SavedBillsPage: React.FC = () => {
 				{/* Tabs */}
 				<Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
 					<TabsList className="grid w-full grid-cols-3 mb-8">
-						<TabsTrigger value="saved">Saved Bills</TabsTrigger>
+						<TabsTrigger value="saved" className="flex items-center gap-2">
+							Saved Bills
+							{savedBills.length > 0 && (
+								<Badge className='h-5 px-2 text-xs bg-primary text-primary-foreground'>
+									{savedBills.length}
+								</Badge>
+							)}
+						</TabsTrigger>
 						<TabsTrigger value="state">Bills from {userStateName}</TabsTrigger>
 						<TabsTrigger value="explore">Explore Bills</TabsTrigger>
 					</TabsList>
@@ -66,4 +74,4 @@ const SavedBillsPage: React.FC = () => {
 	);
 };
 
-export default SavedBillsPage;
+export default DashboardPage;
