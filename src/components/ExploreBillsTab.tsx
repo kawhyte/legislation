@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { type States } from "./JurisdictionSelector";
-import Hero from "./Hero";
+import SimpleHero from "./SimpleHero";
 import BillGrid from "./BillGrid";
 
 const ExploreBillsTab: React.FC = () => {
@@ -34,9 +34,9 @@ const ExploreBillsTab: React.FC = () => {
 				</p>
 			</div>
 
-			{/* Hero Search */}
+			{/* Simple Hero Search */}
 			<div className="mb-8">
-				<Hero
+				<SimpleHero
 					selectedJurisdiction={selectedJurisdiction}
 					setSelectedJurisdiction={handleStateSelect}
 					selectedTopic={selectedTopic}
