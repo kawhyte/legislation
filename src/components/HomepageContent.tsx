@@ -5,7 +5,6 @@ import {
 	Search, 
 	Sparkles, 
 	Bell, 
-	Users,
 	HelpCircle,
 	CheckCircle
 } from "lucide-react";
@@ -153,9 +152,7 @@ const HomepageContent = () => {
 
 					{/* Central stat with large number */}
 					<div className="text-center mb-16">
-						<div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-2xl mb-6 mx-auto">
-							<Users className="h-10 w-10 text-primary" />
-						</div>
+						
 						<div className="text-6xl sm:text-7xl lg:text-8xl font-bold text-primary mb-4">
 							10,000+
 						</div>
@@ -264,7 +261,7 @@ const HomepageContent = () => {
 			</section>
 
 			{/* Stay Informed, Stay Empowered Section */}
-			<section className="py-20 sm:py-24 lg:py-32 bg-primary/10">
+			<section className="py-20 sm:py-24 lg:py-32 bg-wellness-yellow">
 				<div className="container mx-auto px-4">
 					<div className="text-center max-w-5xl mx-auto space-y-8">
 						<h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
