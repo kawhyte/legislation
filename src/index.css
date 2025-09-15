@@ -28,113 +28,119 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* We can also add the custom variables to the theme if you want utility classes for them */
+  /* Enhanced variables for utility classes */
   --color-primary-hover: var(--primary-hover);
   --color-footer: var(--footer);
   --color-footer-foreground: var(--footer-foreground);
 
+  /* Headspace Wellness Palette for Utility Classes */
+  --color-wellness-pink: var(--wellness-pink);
+  --color-wellness-purple: var(--wellness-purple);
+  --color-wellness-green: var(--wellness-green);
+  --color-wellness-yellow: var(--wellness-yellow);
 
- /* NEW: Add the new theme variables here */
-  --color-pastel-beige: var(--pastel-beige);
-  --color-pastel-green: var(--pastel-green);
-  --color-pastel-lavender: var(--pastel-lavender);
-
-
-
+  /* Status & Feedback Colors */
   --color-success: var(--success);
---color-success-foreground: var(--success-foreground);
-
---color-info: var(--info);
---color-info-foreground: var(--info-foreground);
---color-warning: var(--warning);
---color-warning-foreground: var(--warning-foreground);
+  --color-success-foreground: var(--success-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  
+  /* Additional utility colors */
+  --color-muted: var(--muted);
 }
 
-/* 🎨 Anthropic.com Inspired Light Theme */
+/* 🎨 Headspace-Inspired Wellness Color System */
 :root {
-  --radius: 0.5rem;
+  --radius: 0.75rem; /* Slightly more rounded for a softer, friendlier feel */
 
   /*
   |--------------------------------------------------------------------------
   | Base & Text Colors
   |--------------------------------------------------------------------------
-  | Used for the overall page layout and default text.
+  | Core colors for backgrounds and text, inspired by Headspace's calming palette
   */
-  --background: oklch(99.1% 0.006 96);        /* Use for: Main page background (body tag). A warm, off-white. */
-  --foreground: oklch(23% 0.004 258);         /* Use for: Default text color. A very dark, near-black gray. */
-  --muted-foreground: oklch(46% 0.005 260);    /* Use for: Lighter text for descriptions, captions, etc. */
+  --background: #F9F4F2;                       /* Use for: Main page background. Headspace's signature warm cream */
+  --foreground: #2D2C2B;                       /* Use for: Primary text color. Headspace's deep charcoal */
+  --muted-foreground: #63605D;                 /* Use for: Secondary text, captions, descriptions */
 
   /*
   |--------------------------------------------------------------------------
-  | Components & Surfaces
+  | Components & Surfaces  
   |--------------------------------------------------------------------------
-  | Colors for component backgrounds like cards, modals, and popovers.
+  | Card backgrounds, modals, and elevated surfaces
   */
-  --card: oklch(100% 0 0);                     /* Use for: Card backgrounds, modals, sidebars. Pure white. */
-  --card-foreground: oklch(23% 0.004 258);    /* Use for: Text content within cards. */
-  --popover: oklch(100% 0 0);                  /* Use for: Popovers, dropdown menus. */
-  --popover-foreground: oklch(23% 0.004 258); /* Use for: Text within popovers. */
+  --card: #FFFFFF;                             /* Use for: Card backgrounds, modals, clean surfaces */
+  --card-foreground: #2D2C2B;                 /* Use for: Text content within cards */
+  --popover: #FFFFFF;                          /* Use for: Dropdown menus, tooltips, popovers */
+  --popover-foreground: #2D2C2B;              /* Use for: Text within popovers */
 
   /*
   |--------------------------------------------------------------------------
   | Buttons & Interactive Elements
   |--------------------------------------------------------------------------
-  | The main action colors for your application.
+  | Primary actions and interactive components
   */
-  --primary: oklch(18% 0.003 260);             /* Use for: Primary buttons ('Sign Up'). Near-black. */
-  --primary-foreground: oklch(100% 0 0);       /* Use for: Text on primary buttons. Pure white. */
-  --primary-hover: oklch(33% 0.004 260);       /* CUSTOM: Use for: The hover state of primary buttons. A dark gray. */
+  --primary: #0061EF;                          /* Use for: Primary CTAs, main action buttons. Headspace blue */
+  --primary-foreground: #FFFFFF;               /* Use for: Text on primary buttons */
+  --primary-hover: #0040EA;                    /* Use for: Hover state of primary buttons */
 
-  --secondary: oklch(96.7% 0.01 96);           /* Use for: Secondary buttons or info boxes. A subtle beige. */
-  --secondary-foreground: oklch(35% 0.004 260);/* Use for: Text on secondary elements. */
+  --secondary: #E2DED9;                        /* Use for: Secondary buttons, subtle backgrounds */
+  --secondary-foreground: #44423F;             /* Use for: Text on secondary elements */
 
-  --destructive: oklch(60% 0.22 25);           /* Use for: Destructive actions ('Delete'). */
-  --destructive-foreground: oklch(100% 0 0);   /* Use for: Text on destructive buttons. */
+  --destructive: #FF6B6B;                      /* Use for: Delete, remove, destructive actions */
+  --destructive-foreground: #FFFFFF;           /* Use for: Text on destructive buttons */
+
+  /*
+  |--------------------------------------------------------------------------
+  | Accent Colors - Headspace Wellness Palette
+  |--------------------------------------------------------------------------
+  | Therapeutic colors for different states and emotions
+  */
+  --accent: #FFF7F2;                           /* Use for: Subtle hover states, light backgrounds */
+  --accent-foreground: #2D2C2B;               /* Use for: Text on accent backgrounds */
+  
+  --wellness-pink: #FFA1CC;                    /* Use for: Gentle highlights, positive states */
+  --wellness-purple: #3B197F;                  /* Use for: Focus states, meditation themes */
+  --wellness-green: #02873E;                   /* Use for: Success states, growth indicators */
+  --wellness-yellow: #FFCE00;                  /* Use for: Attention, mindfulness cues */
 
   /*
   |--------------------------------------------------------------------------
   | Borders, Lines & States
   |--------------------------------------------------------------------------
-  | For separating content, form inputs, and focus states.
+  | Subtle separators and form elements
   */
-  --border: oklch(91.8% 0.006 98);             /* Use for: Borders on cards, inputs, and horizontal lines (<hr>). */
-  --input: oklch(100% 0 0);                    /* Use for: Background of form inputs. Uses --border for its border. */
-  --ring: oklch(46% 0.005 260);                /* Use for: Focus rings on interactive elements. A visible mid-gray. */
-  --accent: oklch(96.7% 0.01 96);              /* Use for: Subtle hover states on list items or navigation links. */
-  --accent-foreground: oklch(23% 0.004 258);   /* Use for: Text on top of accent backgrounds. */
+  --border: #E2DED9;                           /* Use for: Card borders, dividers, form borders */
+  --input: #FFFFFF;                            /* Use for: Form input backgrounds */
+  --ring: #0061EF;                             /* Use for: Focus rings, active states */
 
-
---success: oklch(75% 0.2 150);              /* A clear, positive green */
---success-foreground: oklch(55% 0.2 150);   /* A darker green for text */
-
-
-
-  /* Add these inside your :root { ... } block */
---info: oklch(65% 0.15 240);                /* A pleasant, readable blue */
---info-foreground: oklch(45% 0.15 240);      /* A darker blue for text on info backgrounds */
---warning: oklch(75% 0.18 85);               /* A noticeable but not jarring amber/yellow */
---warning-foreground: oklch(50% 0.18 85);    /* Darker amber for text */
   /*
-
-
-
-
-  
   |--------------------------------------------------------------------------
-  | Site-Specific Sections
+  | Status & Feedback Colors
   |--------------------------------------------------------------------------
-  | Custom variables for specific parts of the layout, like the footer.
+  | User feedback and system states
   */
-  --footer: oklch(18% 0.003 260);              /* CUSTOM: Use for: The background of the site footer. */
-  --footer-foreground: oklch(76% 0.004 260);   /* CUSTOM: Use for: The text color in the site footer. */
+  --success: #02873E;                          /* Use for: Success messages, completed states */
+  --success-foreground: #FFFFFF;               /* Use for: Text on success backgrounds */
 
+  --info: #0061EF;                             /* Use for: Information alerts, helpful tips */
+  --info-foreground: #FFFFFF;                  /* Use for: Text on info backgrounds */
 
- /* NEW: Pastel Palette Additions */
-  --pastel-beige: oklch(89.8% 0.019 96.2);    /* A warm, sandy beige for content cards or callouts. */
-  --pastel-green: oklch(84.4% 0.032 165.7);   /* A muted, earthy green for secondary content. */
-  --pastel-lavender: oklch(85.8% 0.038 285.8);  /* A soft, dusty lavender for tertiary accents. */
+  --warning: #FFCE00;                          /* Use for: Warning states, important notices */
+  --warning-foreground: #2D2C2B;               /* Use for: Text on warning backgrounds */
 
+  /*
+  |--------------------------------------------------------------------------
+  | Specialized UI Areas
+  |--------------------------------------------------------------------------
+  | Site-specific sections and components
+  */
+  --footer: #2D2C2B;                           /* Use for: Footer background */
+  --footer-foreground: #F9F4F2;                /* Use for: Footer text */
 
+  --muted: #F0EBE8;                            /* Use for: Disabled states, subtle backgrounds */
 }
 
 

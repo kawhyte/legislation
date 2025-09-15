@@ -59,21 +59,24 @@ const howItWorksSteps = [
 		icon: Search,
 		title: "Search Bills",
 		description: "Select your state and topics to find relevant legislation. Our database covers all 50 states with real-time updates.",
-		color: "text-blue-600"
+		color: "text-primary",
+		bgColor: "bg-primary/10"
 	},
 	{
 		step: "2", 
 		icon: Sparkles,
 		title: "Get AI Summaries",
 		description: "Receive clear, concise summaries powered by AI. No more reading through pages of complex legal jargon.",
-		color: "text-purple-600"
+		color: "text-wellness-purple",
+		bgColor: "bg-wellness-purple/10"
 	},
 	{
 		step: "3",
 		icon: Bell,
 		title: "Stay Updated",
 		description: "Track bill progress and receive notifications when legislation you care about moves through the process.",
-		color: "text-green-600"
+		color: "text-wellness-green",
+		bgColor: "bg-wellness-green/10"
 	}
 ];
 
@@ -148,7 +151,7 @@ const QuoteIcon = () => (
 
 const HomepageContent = () => {
 	return (
-		<div className="bg-background">
+		<div className="bg-white">
 			{/* How It Works Section */}
 			<section className="py-20 sm:py-24 lg:py-32">
 				<div className="container mx-auto px-4">
@@ -165,8 +168,10 @@ const HomepageContent = () => {
 						{howItWorksSteps.map((item, index) => {
 							const Icon = item.icon;
 							return (
-								<Card key={index} className="bg-card border-border p-8 sm:p-10 text-center hover:shadow-lg transition-shadow">
-									<Icon className={`h-12 w-12 sm:h-14 sm:w-14 ${item.color} mx-auto mb-6`} />
+								<Card key={index} className="bg-card border-border p-8 sm:p-10 text-center hover:shadow-lg transition-all hover:-translate-y-1">
+									<div className={`w-16 h-16 sm:w-20 sm:h-20 ${item.bgColor} rounded-2xl flex items-center justify-center mx-auto mb-6`}>
+										<Icon className={`h-8 w-8 sm:h-10 sm:w-10 ${item.color}`} />
+									</div>
 									<h3 className="text-xl sm:text-2xl font-semibold text-foreground mb-4">
 										{item.title}
 									</h3>
@@ -196,9 +201,11 @@ const HomepageContent = () => {
 						{coverageStats.map((stat, index) => {
 							const Icon = stat.icon;
 							return (
-								<Card key={index} className="bg-card border-border p-8 sm:p-10 text-center">
-									<Icon className="h-12 w-12 sm:h-14 sm:w-14 text-primary mx-auto mb-6" />
-									<div className="text-3xl sm:text-4xl font-bold text-foreground mb-3">
+								<Card key={index} className="bg-card border-border p-8 sm:p-10 text-center hover:bg-accent/50 transition-all">
+									<div className="w-16 h-16 sm:w-20 sm:h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+										<Icon className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
+									</div>
+									<div className="text-3xl sm:text-4xl font-bold text-primary mb-3">
 										{stat.number}
 									</div>
 									<div className="font-semibold text-foreground mb-4 text-lg sm:text-xl">
@@ -290,15 +297,19 @@ const HomepageContent = () => {
 					
 					<div className="grid md:grid-cols-2 gap-8 sm:gap-10 max-w-6xl mx-auto">
 						{faqData.map((faq, index) => (
-							<Card key={index} className="bg-card border-border p-8 sm:p-10">
+							<Card key={index} className="bg-card border-border p-8 sm:p-10 hover:border-primary/20 transition-all">
 								<div className="flex items-start gap-4 mb-6">
-									<HelpCircle className="h-6 w-6 text-primary mt-0.5 flex-shrink-0" />
+									<div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+										<HelpCircle className="h-5 w-5 text-primary" />
+									</div>
 									<h3 className="font-semibold text-foreground text-lg sm:text-xl">
 										{faq.question}
 									</h3>
 								</div>
 								<div className="flex items-start gap-4">
-									<CheckCircle className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+									<div className="w-10 h-10 bg-wellness-green/10 rounded-xl flex items-center justify-center flex-shrink-0">
+										<CheckCircle className="h-5 w-5 text-wellness-green" />
+									</div>
 									<p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
 										{faq.answer}
 									</p>

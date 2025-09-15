@@ -6,9 +6,9 @@ import { CheckCircle } from "lucide-react";
 
 const Lottie = React.lazy(() => import("lottie-react"));
 
-interface HeroSectionProps {}
 
-const HeroSection = ({}: HeroSectionProps) => {
+
+const HeroSection = () => {
 
 	return (
 		<div className='relative overflow-hidden'>
@@ -52,14 +52,14 @@ const HeroSection = ({}: HeroSectionProps) => {
 
 							{/* Call-to-Action Buttons */}
 							<div className='flex flex-col sm:flex-row gap-6 justify-center md:justify-start'>
-								<Button asChild size='lg' className='px-8 py-4'>
+								<Button asChild size='lg' className='px-8 py-4 bg-primary hover:bg-primary-hover text-primary-foreground shadow-lg hover:shadow-xl transition-all'>
 									<Link to='/sign-up'>
 										Get Started Free
 									</Link>
 								</Button>
-								<Button asChild variant='outline' size='lg' className='px-8 py-4 border-2 border-border bg-background'>
+								<Button asChild variant='outline' size='lg' className='px-8 py-4 border-2 border-border bg-card hover:bg-wellness-pink/20 transition-all'>
 									<Link to='/dashboard'>
-										View Demo Without An Account
+										Explore Demo
 									</Link>
 								</Button>
 							</div>

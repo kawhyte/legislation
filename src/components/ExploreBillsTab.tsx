@@ -35,7 +35,7 @@ const ExploreBillsTab: React.FC = () => {
 			</div>
 
 			{/* Friendly Getting Started Guide */}
-			<div className="bg-muted/50 border-l-4 border-primary p-6 rounded-r-lg">
+			<div className="bg-accent border-l-4 border-primary p-6 rounded-r-lg hover:bg-accent/80 transition-all">
 				<div className="space-y-3">
 					<h3 className="text-lg font-semibold text-foreground">
 						New here? Here's how to get started:
@@ -54,8 +54,8 @@ const ExploreBillsTab: React.FC = () => {
 							<span>Click "Search Bills" to see real-time legislation from that state</span>
 						</p>
 					</div>
-					<div className="mt-4 p-3 bg-accent rounded-lg">
-						<p className="text-sm text-accent-foreground">
+					<div className="mt-4 p-3 bg-wellness-yellow/20 border border-wellness-yellow/30 rounded-lg">
+						<p className="text-sm text-foreground">
 							💡 <strong>Pro tip:</strong> Start with "All Topics" to see the most results, then narrow down by topic if you want to focus on specific areas like healthcare, education, or housing.
 						</p>
 					</div>

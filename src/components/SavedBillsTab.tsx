@@ -137,14 +137,14 @@ const SavedBillsTab: React.FC<SavedBillsTabProps> = ({ onSwitchToExplore }) => {
 						<Button
 							onClick={onSwitchToExplore}
 							variant='default'
-							className='bg-primary hover:bg-primary/90'>
+							className='bg-primary hover:bg-primary-hover text-primary-foreground shadow-md hover:shadow-lg'>
 							<Plus className='h-4 w-4 mr-2' />
 							Add More Bills
 						</Button>
 						<Button
 							onClick={handleClearAll}
 							variant='outline'
-							className='text-destructive border-destructive/50 hover:bg-destructive/10'>
+							className='text-destructive border-destructive/50 hover:bg-destructive/10 hover:border-destructive transition-all'>
 							<Trash2 className='h-4 w-4 mr-2' />
 							Remove All
 						</Button>
@@ -152,7 +152,7 @@ const SavedBillsTab: React.FC<SavedBillsTabProps> = ({ onSwitchToExplore }) => {
 				</div>
 
 				{/* Enhanced Search and Filters Section */}
-				<div className='bg-muted/50 border border-border rounded-lg p-6 space-y-6'>
+				<div className='bg-accent border border-border rounded-lg p-6 space-y-6 hover:bg-accent/80 transition-all'>
 					<div className="flex items-center gap-3">
 						
 						<h3 className="text-lg font-semibold text-foreground">Search & Filter Your Bills</h3>

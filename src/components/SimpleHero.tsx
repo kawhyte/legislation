@@ -35,7 +35,7 @@ const SimpleHero = ({
 	return (
 		<div className="w-full">
 			{/* Enhanced selector card with better CTA */}
-			<div className='w-full flex flex-col gap-8 border border-border bg-card px-6 md:px-8 py-8 md:py-10 rounded-2xl shadow-lg hover:shadow-xl transition-shadow'>
+			<div className='w-full flex flex-col gap-8 border border-border bg-card px-6 md:px-8 py-8 md:py-10 rounded-2xl shadow-lg hover:shadow-xl hover:border-primary/20 transition-all'>
 				{/* Enhanced Text Block */}
 				<div className='text-center space-y-4'>
 					<h3 className='text-xl md:text-2xl font-bold text-foreground'>
@@ -70,7 +70,7 @@ const SimpleHero = ({
 						<Button
 							onClick={handleSearch}
 							size='lg'
-							className='w-full py-4 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-md hover:shadow-lg transition-all'>
+							className='w-full py-4 text-lg font-semibold bg-primary hover:bg-primary-hover text-primary-foreground shadow-md hover:shadow-lg transition-all'>
 							Search Bills
 						</Button>
 					</div>
