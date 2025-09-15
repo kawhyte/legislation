@@ -1,12 +1,12 @@
 import React from 'react';
 import useBills from '../hooks/useBills';
-import BillCard from '../components/BillCard';
+import BillCard from './BillCard';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import BillCardSkeleton from '../components/BillCardSkeleton';
+import BillCardSkeleton from './BillCardSkeleton';
 import { isBillTrending } from '@/utils/isBillTrending';
 
-const TrendingBillsPage: React.FC = () => {
+const TrendingBillsTab: React.FC = () => {
   const { data, error, isLoading } = useBills(null, null);
 
   const renderContent = () => {
@@ -37,14 +37,14 @@ const TrendingBillsPage: React.FC = () => {
     if (trendingBills.length === 0) {
       return (
         <div className="text-center py-10">
-          <p className="text-slate-500">No trending bills at the moment. Check back later!</p>
+          <p className="text-muted-foreground">No trending bills at the moment. Check back later!</p>
         </div>
       );
     }
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {trendingBills.slice(0, 20).map((bill) => (
+        {trendingBills.slice(0, 9).map((bill) => (
           <BillCard key={bill.id} bill={bill} showSource={false} showProgressBar={false} showTrendingReason={true} />
         ))}
       </div>
@@ -52,21 +52,19 @@ const TrendingBillsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            Legislative Bills Trending Around The USA
-          </h1>
-          <p className="text-slate-500">
-            Bills that are currently gaining momentum nationwide.
-          </p>
-        </div>
-
-        {renderContent()}
+    <div>
+      <div className="mb-8 text-center">
+        <h2 className="text-2xl font-bold text-foreground mb-2">
+          Legislative Bills Trending Around The USA
+        </h2>
+        <p className="text-muted-foreground">
+          Bills that are currently gaining momentum nationwide.
+        </p>
       </div>
+
+      {renderContent()}
     </div>
   );
 };
 
-export default TrendingBillsPage;
+export default TrendingBillsTab;

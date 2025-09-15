@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import SavedBillsTab from "../components/SavedBillsTab";
 import StateBillsTab from "../components/StateBillsTab";
 import ExploreBillsTab from "../components/ExploreBillsTab";
+import TrendingBillsTab from "../components/TrendingBillsTab";
 
 const DashboardPage: React.FC = () => {
 	const { userPreferences, savedBills } = useUserData();
@@ -33,18 +34,18 @@ const DashboardPage: React.FC = () => {
 		<div className='min-h-screen bg-background'>
 			<div className='container mx-auto px-4 py-12'>
 				{/* Header */}
-				<div className='mb-12 space-y-4'>
+				{/* <div className='mb-12 space-y-4'>
 					<h1 className='text-3xl sm:text-4xl font-bold text-foreground'>
 						Dashboard
 					</h1>
 					<p className='text-lg text-muted-foreground'>
 						Track legislation, explore bills, and stay informed
 					</p>
-				</div>
+				</div> */}
 
 				{/* Tabs */}
 				<Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-					<TabsList className="grid w-full grid-cols-3 mb-12">
+					<TabsList className="grid w-full grid-cols-4 mb-12 [&>[data-state=active]]:bg-wellness-yellow [&>[data-state=active]]:text-foreground">
 							<TabsTrigger value="state">Bills from {userStateName}</TabsTrigger>
 						<TabsTrigger value="saved" className="flex items-center gap-2">
 							Saved Bills
@@ -54,6 +55,7 @@ const DashboardPage: React.FC = () => {
 								</Badge>
 							)}
 						</TabsTrigger>
+						<TabsTrigger value="trending">Trending Bills</TabsTrigger>
 						<TabsTrigger value="explore">Explore Bills Nationwide</TabsTrigger>
 					</TabsList>
 
@@ -63,6 +65,10 @@ const DashboardPage: React.FC = () => {
 
 					<TabsContent value="state" className="mt-0">
 						<StateBillsTab userStateName={userStateName} />
+					</TabsContent>
+
+					<TabsContent value="trending" className="mt-0">
+						<TrendingBillsTab />
 					</TabsContent>
 
 					<TabsContent value="explore" className="mt-0">
