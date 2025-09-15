@@ -1,39 +1,14 @@
-import React, { Suspense, useEffect, useState } from "react";
-import StateSelector, { type States } from "./JurisdictionSelector";
-import TopicSelector from "./TopicSelector"; // Import TopicSelector
+import React, { Suspense } from "react";
+import { Link } from "react-router-dom";
 import animationData from "../assets/friends.json";
 import { Button } from "./ui/button";
+import { CheckCircle } from "lucide-react";
 
 const Lottie = React.lazy(() => import("lottie-react"));
 
-interface HeroSectionProps {
-	setSelectedJurisdiction: (jurisdiction: States | null) => void;
-	selectedJurisdiction: States | null;
-	selectedTopic: string | null;
-	setSelectedTopic: (topic: string | null) => void;
-}
+interface HeroSectionProps {}
 
-const HeroSection = ({
-	setSelectedJurisdiction,
-	selectedJurisdiction,
-	selectedTopic,
-	setSelectedTopic,
-}: HeroSectionProps) => {
-	const [localJurisdiction, setLocalJurisdiction] = useState<States | null>(
-		selectedJurisdiction
-	);
-	const [localTopic, setLocalTopic] = useState<string | null>(selectedTopic);
-
-	useEffect(() => {
-		if (!localJurisdiction) {
-			setLocalTopic(null);
-		}
-	}, [localJurisdiction]);
-
-	const handleSearch = () => {
-		setSelectedJurisdiction(localJurisdiction);
-		setSelectedTopic(localTopic);
-	};
+const HeroSection = ({}: HeroSectionProps) => {
 
 	return (
 		<div className='relative  overflow-hidden'>
@@ -45,25 +20,52 @@ const HeroSection = ({
 					<div className='grid lg:grid-cols-2 gap-8 items-center'>
 						<div className='text-center md:text-left'>
 							<h1 className='text-4xl sm:text-5xl md:text-6xl font-bold text-foreground tracking-tight mb-4'>
-								Understand Legislation That Matters
+								Track State Legislation That Impacts Your Life
 							</h1>
 
 							{/* Sub-heading */}
-							<p className='max-w-2xl md:mx-0 mx-auto text-lg text-muted-foreground mb-10'>
-								Decode complex state legislation with AI-powered summaries,
-								real-time bill tracking, and clear explanations.
+							<p className='max-w-2xl md:mx-0 mx-auto text-lg text-muted-foreground mb-6'>
+								Stay informed about state bills with AI-powered summaries, real-time tracking, and personalized alerts. Never miss legislation that affects your community, business, or interests.
 							</p>
 
-							<div className='max-w-5xl mx-auto mb-6 flex flex-col gap-8 border border-border bg-card px-4 md:px-6 py-8 md:py-12 rounded-3xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300'>
-								{/* Text Block */}
-								<div className='text-center'>
-									<p className='text-xl md:text-2xl font-medium text-foreground'>
-										Select your state and a topic to see a real-time feed of
-										relevant bills.
-									</p>
-								</div>
+							{/* Benefits List */}
+							<div className='max-w-3xl md:mx-0 mx-auto mb-8'>
+								<ul className='grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 text-left'>
+									<li className='flex items-center gap-2 sm:gap-3'>
+										<CheckCircle className='h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0' />
+										<span className='text-sm sm:text-base text-muted-foreground whitespace-nowrap'>AI-powered bill summaries</span>
+									</li>
+									<li className='flex items-center gap-2 sm:gap-3'>
+										<CheckCircle className='h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0' />
+										<span className='text-sm sm:text-base text-muted-foreground whitespace-nowrap'>Real-time tracking (50 states)</span>
+									</li>
+									<li className='flex items-center gap-2 sm:gap-3'>
+										<CheckCircle className='h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0' />
+										<span className='text-sm sm:text-base text-muted-foreground whitespace-nowrap'>Personalized topic alerts</span>
+									</li>
+									<li className='flex items-center gap-2 sm:gap-3'>
+										<CheckCircle className='h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0' />
+										<span className='text-sm sm:text-base text-muted-foreground whitespace-nowrap'>Save & organize bills</span>
+									</li>
+								</ul>
+							</div>
 
-								{/* Selector Wrapper */}
+							{/* Call-to-Action Buttons */}
+							<div className='flex flex-col sm:flex-row gap-4 justify-center md:justify-start mb-10'>
+								<Button asChild size='lg' className='px-8'>
+									<Link to='/sign-up'>
+										Get Started Free
+									</Link>
+								</Button>
+								<Button asChild variant='outline' size='lg' className='px-8 border-2 border-border'>
+									<Link to='/dashboard'>
+										View Demo Without An Account
+									</Link>
+								</Button>
+							</div>
+
+							{/* <div className='max-w-4xl mx-auto mb-6 border border-border bg-card px-4 md:px-6 py-6 md:py-8 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300'>
+								
 								<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end'>
 									<div className='md:col-span-1 lg:col-span-1'>
 										<StateSelector
@@ -87,7 +89,7 @@ const HeroSection = ({
 										</Button>
 									</div>
 								</div>
-							</div>
+							</div> */}
 						</div>
 						<div>
 							<Suspense fallback={<div>Loading...</div>}>

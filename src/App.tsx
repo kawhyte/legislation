@@ -1,10 +1,9 @@
-import React, { useState, useRef } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useUser } from '@/hooks/useAuth';
-import BillGrid from "./components/BillGrid";
 import Header from "./components/Header";
-import { type States } from "./components/JurisdictionSelector";
 import Hero from "./components/Hero";
+import HomepageContent from "./components/HomepageContent";
 import DashboardPage from "./pages/DashboardPage";
 import TrendingBillsPage from "./pages/TrendingBillsPage";
 import WhyThisMattersPage from "./pages/WhyThisMattersPage";
@@ -13,56 +12,21 @@ import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import { UserProvider, useUserData } from "./contexts/UserContext";
 import { Toaster } from "@/components/ui/sonner";
-import usStates from "./data/usStates";
 
-const HomePage = ({
-	selectedJurisdiction,
-	setSelectedJurisdiction,
-	selectedTopic,
-	setSelectedTopic,
-}: {
-	selectedJurisdiction: States | null;
-	setSelectedJurisdiction: (state: States | null) => void;
-	selectedTopic: string | null;
-	setSelectedTopic: (topic: string | null) => void;
-}) => {
-	const resultsRef = useRef<HTMLDivElement>(null);
-
-	const handleStateSelect = (state: States | null) => {
-		setSelectedJurisdiction(state);
-		// Only scroll if a state is selected (not for nationwide view on initial load)
-		if (state && resultsRef.current) {
-			setTimeout(() => {
-				// Timeout ensures the section is rendered before we scroll
-				resultsRef.current?.scrollIntoView({
-					behavior: "smooth",
-					block: "start",
-				});
-			}, 100);
-		}
-	};
-
+const HomePage = () => {
+	// Homepage is now purely presentational - shows Hero, HomepageContent, and TrendingBills
+	// Jurisdiction selection for bill viewing is handled through dashboard/navigation
+	
 	return (
 		<div className="bg-background text-foreground">
-			<Hero
-				selectedJurisdiction={selectedJurisdiction}
-				setSelectedJurisdiction={handleStateSelect}
-				selectedTopic={selectedTopic}
-				setSelectedTopic={setSelectedTopic}
-			/>
-			<main
-				ref={resultsRef}
-				className='container mx-auto px-4 sm:px-6 lg:px-8 py-6'>
-				{selectedJurisdiction ? (
-					<BillGrid
-						selectedJurisdiction={selectedJurisdiction}
-						selectedTopic={selectedTopic}
-						
-					/>
-				) : (
-					<TrendingBillsPage />
-				)}
+			<Hero />
+			<HomepageContent />
+			
+			{/* Show trending bills as the main content */}
+			<main className='container mx-auto px-4 sm:px-6 lg:px-8 py-6'>
+				<TrendingBillsPage />
 			</main>
+			
 			{/* <Footer /> */}
 		</div>
 	);
@@ -109,21 +73,7 @@ const ProfileSetupChecker: React.FC<{ children: React.ReactNode }> = ({ children
 
 // Main app with routing
 const AppRoutes = () => {
-	const [selectedJurisdiction, setSelectedJurisdiction] = useState<States | null>(null);
-	const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
 	const { isSignedIn, isLoaded } = useUser();
-	const { userPreferences } = useUserData();
-
-	// Auto-select user's state if authenticated and has preferences
-	React.useEffect(() => {
-		if (isSignedIn && userPreferences?.selectedState && !selectedJurisdiction) {
-			// Find the state object that matches the user's preference
-			const userState = usStates.find(state => state.abbreviation === userPreferences.selectedState);
-			if (userState) {
-				setSelectedJurisdiction(userState as States);
-			}
-		}
-	}, [isSignedIn, userPreferences, selectedJurisdiction]);
 
 	if (!isLoaded) {
 		return (
@@ -143,20 +93,10 @@ const AppRoutes = () => {
 					element={
 						isSignedIn ? (
 							<ProfileSetupChecker>
-								<HomePage
-									selectedJurisdiction={selectedJurisdiction}
-									setSelectedJurisdiction={setSelectedJurisdiction}
-									selectedTopic={selectedTopic}
-									setSelectedTopic={setSelectedTopic}
-								/>
+								<HomePage />
 							</ProfileSetupChecker>
 						) : (
-							<HomePage
-								selectedJurisdiction={selectedJurisdiction}
-								setSelectedJurisdiction={setSelectedJurisdiction}
-								selectedTopic={selectedTopic}
-								setSelectedTopic={setSelectedTopic}
-							/>
+							<HomePage />
 						)
 					}
 				/>
@@ -168,7 +108,7 @@ const AppRoutes = () => {
 					path='/sign-in'
 					element={
 						isSignedIn ? (
-							<Navigate to="/" replace />
+							<Navigate to="/dashboard" replace />
 						) : (
 							<SignInPage />
 						)

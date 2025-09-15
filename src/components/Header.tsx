@@ -213,7 +213,7 @@ const Header = () => {
                                 className='w-full justify-start gap-3 text-base py-6 text-foreground hover:bg-accent'
                             >
                                 <Settings className='h-4 w-4' />
-                                Settings
+                                Edit Profile
                             </Button>
                             <Button
                                 variant='ghost'

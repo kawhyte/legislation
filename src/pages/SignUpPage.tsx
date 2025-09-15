@@ -9,11 +9,9 @@ import { Separator } from '@/components/ui/separator';
 import { 
   signUpWithEmail, 
   signInWithGoogle, 
-  signInWithGithub,
   getAuthErrorMessage 
 } from '@/services/authService';
 import { useAuth } from '@/hooks/useAuth';
-import { Github } from 'lucide-react';
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
@@ -76,19 +74,6 @@ export default function SignUpPage() {
     }
   };
 
-  const handleGithubSignUp = async () => {
-    setIsLoading(true);
-    setError('');
-
-    try {
-      await signInWithGithub();
-      navigate('/profile-setup', { replace: true });
-    } catch (error: unknown) {
-      setError(getAuthErrorMessage(error));
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -144,17 +129,6 @@ export default function SignUpPage() {
                   />
                 </svg>
                 Continue with Google
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={handleGithubSignUp}
-                disabled={isLoading}
-              >
-                <Github className="w-4 h-4 mr-2" />
-                Continue with GitHub
               </Button>
             </div>
 

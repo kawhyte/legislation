@@ -21,10 +21,8 @@ const ProfileSetupPage: React.FC = () => {
   // Load existing preferences when component mounts or when userPreferences changes
   React.useEffect(() => {
     if (userPreferences) {
-      console.log('Loading user preferences:', userPreferences);
       setDisplayName(userPreferences.displayName || '');
       setSelectedState(userPreferences.selectedState || '');
-      console.log('Set selectedState to:', userPreferences.selectedState);
     }
   }, [userPreferences]);
 
@@ -50,8 +48,8 @@ const ProfileSetupPage: React.FC = () => {
         selectedState
       });
       
-      // Redirect to home page which will now show bills from their state
-      navigate('/');
+      // Redirect to dashboard page after saving profile changes
+      navigate('/dashboard');
     } catch (err) {
       console.error('Profile setup error:', err);
       console.error('Error details:', {
@@ -123,10 +121,10 @@ const ProfileSetupPage: React.FC = () => {
               <Select 
                 value={selectedState} 
                 onValueChange={(value) => {
-                  console.log('Select changed to:', value);
                   setSelectedState(value);
                 }}
                 disabled={isLoading}
+                key={selectedState} // Force re-render when selectedState changes
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select your state" />

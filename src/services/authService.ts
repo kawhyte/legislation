@@ -8,7 +8,7 @@ import {
   sendPasswordResetEmail,
   type User as FirebaseUser
 } from 'firebase/auth';
-import { auth, googleProvider, githubProvider } from '@/lib/firebase';
+import { auth, googleProvider } from '@/lib/firebase';
 
 export interface AuthUser {
   uid: string;
@@ -79,17 +79,6 @@ export const signInWithGoogle = async (): Promise<AuthUser> => {
   }
 };
 
-export const signInWithGithub = async (): Promise<AuthUser> => {
-  try {
-    const result = await signInWithPopup(auth, githubProvider);
-    const authUser = mapFirebaseUser(result.user);
-    if (!authUser) throw new Error('Failed to sign in with GitHub');
-    return authUser;
-  } catch (error) {
-    console.error('GitHub sign in error:', error);
-    throw error;
-  }
-};
 
 // Sign Out
 export const signOut = async (): Promise<void> => {
