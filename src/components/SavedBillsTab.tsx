@@ -13,9 +13,14 @@ import {
 	SortAsc,
 	Calendar,
 	MapPin,
+	Plus,
 } from "lucide-react";
 
-const SavedBillsTab: React.FC = () => {
+interface SavedBillsTabProps {
+	onSwitchToExplore?: () => void;
+}
+
+const SavedBillsTab: React.FC<SavedBillsTabProps> = ({ onSwitchToExplore }) => {
 	const { savedBills, removeSavedBill } = useUserData();
 	const [searchQuery, setSearchQuery] = useState("");
 	const filterStatus = "all";
@@ -128,13 +133,22 @@ const SavedBillsTab: React.FC = () => {
 							saved for later
 						</p>
 					</div>
-					<Button
-						onClick={handleClearAll}
-						variant='outline'
-						className='text-destructive border-destructive/50 hover:bg-destructive/10'>
-						<Trash2 className='h-4 w-4 mr-2' />
-						Remove All
-					</Button>
+					<div className="flex gap-3">
+						<Button
+							onClick={onSwitchToExplore}
+							variant='default'
+							className='bg-primary hover:bg-primary/90'>
+							<Plus className='h-4 w-4 mr-2' />
+							Add More Bills
+						</Button>
+						<Button
+							onClick={handleClearAll}
+							variant='outline'
+							className='text-destructive border-destructive/50 hover:bg-destructive/10'>
+							<Trash2 className='h-4 w-4 mr-2' />
+							Remove All
+						</Button>
+					</div>
 				</div>
 
 				{/* Enhanced Search and Filters Section */}

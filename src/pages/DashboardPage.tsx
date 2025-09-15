@@ -58,7 +58,7 @@ const DashboardPage: React.FC = () => {
 					</TabsList>
 
 					<TabsContent value="saved" className="mt-0">
-						<SavedBillsTab />
+						<SavedBillsTab onSwitchToExplore={() => setActiveTab("explore")} />
 					</TabsContent>
 
 					<TabsContent value="state" className="mt-0">
