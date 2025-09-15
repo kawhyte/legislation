@@ -50,7 +50,7 @@ const DashboardPage: React.FC = () => {
 						<TabsTrigger value="saved" className="flex items-center gap-2">
 							Saved Bills
 							{savedBills.length > 0 && (
-								<Badge className='h-5 px-2 text-xs bg-primary text-primary-foreground'>
+								<Badge className='h-5 px-2 rounded-full text-xs bg-primary text-primary-foreground'>
 									{savedBills.length}
 								</Badge>
 							)}

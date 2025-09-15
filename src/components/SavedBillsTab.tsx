@@ -152,7 +152,7 @@ const SavedBillsTab: React.FC<SavedBillsTabProps> = ({ onSwitchToExplore }) => {
 				</div>
 
 				{/* Enhanced Search and Filters Section */}
-				<div className='bg-accent border border-border rounded-lg p-6 space-y-6 hover:bg-accent/80 transition-all'>
+				<div className='bg-white border border-border rounded-lg p-6 space-y-6 hover:bg-accent/90 transition-all'>
 					<div className="flex items-center gap-3">
 						
 						<h3 className="text-lg font-semibold text-foreground">Search & Filter Your Bills</h3>
