@@ -19,12 +19,12 @@ const HeroSection = () => {
 
 					<div className='grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center'>
 						<div className='text-center md:text-left space-y-8'>
-							<h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-foreground tracking-tight leading-tight'>
+							<h1 className='text-display-xl text-foreground'>
 								Track State Legislation That Impacts Your Life
 							</h1>
 
 							{/* Sub-heading */}
-							<p className='max-w-2xl md:mx-0 mx-auto text-lg sm:text-xl text-muted-foreground leading-relaxed'>
+							<p className='max-w-2xl md:mx-0 mx-auto text-body-lg text-muted-foreground'>
 								Stay informed about state bills with AI-powered summaries, real-time tracking, and personalized alerts. Never miss legislation that affects your community, business, or interests.
 							</p>
 
