@@ -45,6 +45,7 @@ const DashboardPage: React.FC = () => {
 				{/* Tabs */}
 				<Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
 					<TabsList className="grid w-full grid-cols-3 mb-12">
+							<TabsTrigger value="state">Bills from {userStateName}</TabsTrigger>
 						<TabsTrigger value="saved" className="flex items-center gap-2">
 							Saved Bills
 							{savedBills.length > 0 && (
@@ -53,8 +54,7 @@ const DashboardPage: React.FC = () => {
 								</Badge>
 							)}
 						</TabsTrigger>
-						<TabsTrigger value="state">Bills from {userStateName}</TabsTrigger>
-						<TabsTrigger value="explore">Explore Bills</TabsTrigger>
+						<TabsTrigger value="explore">Explore Bills Nationwide</TabsTrigger>
 					</TabsList>
 
 					<TabsContent value="saved" className="mt-0">

@@ -39,13 +39,13 @@ const SimpleHero = ({
 				{/* Enhanced Text Block */}
 				<div className='text-center space-y-4'>
 					<h3 className='text-xl md:text-2xl font-bold text-foreground'>
-						🔍 Search Bills from Any State
+						 Search Bills from Any State
 					</h3>
 					<p className='text-lg md:text-xl font-medium text-muted-foreground max-w-3xl mx-auto leading-relaxed'>
 						Select your state and a topic to see a real-time feed of relevant bills.
 					</p>
-					<div className="bg-green-50 border border-green-200 rounded-lg p-4 max-w-2xl mx-auto">
-						<p className="text-sm text-green-700">
+					<div className="bg-accent border border-border rounded-lg p-4 max-w-2xl mx-auto">
+						<p className="text-sm text-accent-foreground">
 							✨ <strong>Quick start:</strong> Choose any state + "All Topics" for maximum results!
 						</p>
 					</div>
@@ -71,7 +71,7 @@ const SimpleHero = ({
 							onClick={handleSearch}
 							size='lg'
 							className='w-full py-4 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-md hover:shadow-lg transition-all'>
-							🚀 Search Bills
+							Search Bills
 						</Button>
 					</div>
 				</div>

@@ -147,7 +147,7 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 			{/* Header */}
 			<div className="space-y-4">
 				<h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-					📍 Your {userStateName} Dashboard
+					Your {userStateName} Dashboard
 				</h2>
 				<p className="text-lg text-muted-foreground">
 					Track bills, see what's trending, and discover legislation that affects your community

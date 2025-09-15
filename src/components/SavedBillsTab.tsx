@@ -96,34 +96,34 @@ const SavedBillsTab: React.FC = () => {
 
 	if (savedBills.length === 0) {
 		return (
-			<div className='text-center py-16'>
-				<div className='flex justify-center mb-6'>
-					<div className='w-20 h-20 bg-muted rounded-full flex items-center justify-center'>
-						<Bookmark className='h-10 w-10 text-muted-foreground' />
+			<div className='text-center py-20'>
+				<div className='flex justify-center mb-8'>
+					<div className='w-24 h-24 bg-muted/50 rounded-full flex items-center justify-center border border-border'>
+						<Bookmark className='h-12 w-12 text-muted-foreground' />
 					</div>
 				</div>
-				<h2 className='text-2xl font-bold text-foreground mb-4'>
+				<h2 className='text-2xl sm:text-3xl font-bold text-foreground mb-6'>
 					No Saved Bills Yet
 				</h2>
-				<p className='text-muted-foreground mb-8 max-w-md mx-auto'>
+				<p className='text-lg text-muted-foreground mb-8 max-w-md mx-auto leading-relaxed'>
 					Start bookmarking bills that interest you to keep track of
 					important legislation.
 				</p>
-				<Button onClick={() => window.history.back()}>Browse Bills</Button>
+				<Button onClick={() => window.history.back()} className="px-6 py-3">Browse Bills</Button>
 			</div>
 		);
 	}
 
 	return (
-		<div>
+		<div className="space-y-12">
 			{/* Header */}
-			<div className='mb-8'>
-				<div className='flex items-center justify-between mb-6'>
-					<div>
-						<h2 className='text-2xl font-bold text-foreground mb-2'>
+			<div className='space-y-6'>
+				<div className='flex items-center justify-between'>
+					<div className="space-y-2">
+						<h2 className='text-2xl sm:text-3xl font-bold text-foreground'>
 							Your Saved Bills
 						</h2>
-						<p className='text-muted-foreground'>
+						<p className='text-lg text-muted-foreground'>
 							You have {savedBills.length} bill{savedBills.length !== 1 ? "s" : ""}{" "}
 							saved for later
 						</p>
@@ -137,55 +137,64 @@ const SavedBillsTab: React.FC = () => {
 					</Button>
 				</div>
 
-				{/* Search and Filters */}
-				<div className='flex flex-col md:flex-row gap-4'>
-					{/* Search */}
-					<div className='relative flex-1'>
-						<Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground' />
-						<Input
-							type='text'
-							placeholder='Search saved bills...'
-							value={searchQuery}
-							onChange={(e) => setSearchQuery(e.target.value)}
-							className='pl-10'
-						/>
+				{/* Enhanced Search and Filters Section */}
+				<div className='bg-muted/50 border border-border rounded-lg p-6 space-y-6'>
+					<div className="flex items-center gap-3">
+						
+						<h3 className="text-lg font-semibold text-foreground">Search & Filter Your Bills</h3>
+					</div>
+					
+					<div className='flex flex-col lg:flex-row gap-6'>
+						{/* Search */}
+						<div className='relative flex-1'>
+							<Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+							<Input
+								type='text'
+								placeholder='Search by title, bill number, or state...'
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+								className='pl-10 py-3 bg-background border-border'
+							/>
+						</div>
+
+						{/* Sort Options */}
+						<div className='flex flex-col sm:flex-row gap-3'>
+							<span className="text-sm font-medium text-muted-foreground self-center">Sort by:</span>
+							<div className='flex gap-2'>
+								<Button
+									variant={sortBy === "date" ? "default" : "outline"}
+									size='sm'
+									onClick={() => setSortBy("date")}
+									className='gap-2'>
+									<Calendar className='h-4 w-4' /> Date
+								</Button>
+								<Button
+									variant={sortBy === "title" ? "default" : "outline"}
+									size='sm'
+									onClick={() => setSortBy("title")}
+									className='gap-2'>
+									<SortAsc className='h-4 w-4' /> Title
+								</Button>
+								<Button
+									variant={sortBy === "state" ? "default" : "outline"}
+									size='sm'
+									onClick={() => setSortBy("state")}
+									className='gap-2'>
+									<MapPin className='h-4 w-4' /> State
+								</Button>
+							</div>
+						</div>
 					</div>
 
-					{/* Sort */}
-					<div className='flex gap-2'>
-						<Button
-							variant={sortBy === "date" ? "secondary" : "outline"}
-							size='sm'
-							onClick={() => setSortBy("date")}
-							className='gap-2'>
-							<Calendar className='h-4 w-4' /> Date
-						</Button>
-						<Button
-							variant={sortBy === "title" ? "secondary" : "outline"}
-							size='sm'
-							onClick={() => setSortBy("title")}
-							className='gap-2'>
-							<SortAsc className='h-4 w-4' /> Title
-						</Button>
-						<Button
-							variant={sortBy === "state" ? "secondary" : "outline"}
-							size='sm'
-							onClick={() => setSortBy("state")}
-							className='gap-2'>
-							<MapPin className='h-4 w-4' /> State
-						</Button>
-					</div>
+					{/* Results count */}
+					{searchQuery && (
+						<div className='pt-2 border-t border-border'>
+							<Badge variant='outline' className="bg-accent text-accent-foreground">
+								{sortedBills.length} result{sortedBills.length !== 1 ? "s" : ""} found
+							</Badge>
+						</div>
+					)}
 				</div>
-
-				{/* Results count */}
-				{searchQuery && (
-					<div className='mt-4'>
-						<Badge variant='outline'>
-							{sortedBills.length} result{sortedBills.length !== 1 ? "s" : ""}{" "}
-							found
-						</Badge>
-					</div>
-				)}
 			</div>
 
 			{/* Bills Grid */}
@@ -196,12 +205,19 @@ const SavedBillsTab: React.FC = () => {
 					))}
 				</div>
 			) : (
-				<div className='text-center py-16'>
-					<div className='text-muted-foreground mb-4'>
-						<Filter className='h-12 w-12 mx-auto mb-4' />
-						No bills match your search criteria
+				<div className='text-center py-20'>
+					<div className='flex justify-center mb-6'>
+						<div className='w-20 h-20 bg-muted/50 rounded-full flex items-center justify-center border border-border'>
+							<Filter className='h-10 w-10 text-muted-foreground' />
+						</div>
 					</div>
-					<Button onClick={() => setSearchQuery("")} variant='outline'>
+					<h3 className='text-xl font-semibold text-foreground mb-4'>
+						No bills match your search
+					</h3>
+					<p className='text-muted-foreground mb-6'>
+						Try adjusting your search terms or clear the search to see all saved bills
+					</p>
+					<Button onClick={() => setSearchQuery("")} variant='outline' className="px-6 py-3">
 						Clear Search
 					</Button>
 				</div>

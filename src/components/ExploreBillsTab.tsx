@@ -35,27 +35,27 @@ const ExploreBillsTab: React.FC = () => {
 			</div>
 
 			{/* Friendly Getting Started Guide */}
-			<div className="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-r-lg">
+			<div className="bg-muted/50 border-l-4 border-primary p-6 rounded-r-lg">
 				<div className="space-y-3">
-					<h3 className="text-lg font-semibold text-blue-900">
-						🚀 New here? Here's how to get started:
+					<h3 className="text-lg font-semibold text-foreground">
+						New here? Here's how to get started:
 					</h3>
-					<div className="space-y-2 text-blue-800">
+					<div className="space-y-2 text-muted-foreground">
 						<p className="flex items-start gap-2">
-							<span className="font-medium">1.</span>
+							<span className="font-medium text-foreground">1.</span>
 							<span>Choose any state you're curious about (not just your home state!)</span>
 						</p>
 						<p className="flex items-start gap-2">
-							<span className="font-medium">2.</span>
+							<span className="font-medium text-foreground">2.</span>
 							<span>Select "All Topics" for the broadest results, or pick a specific area of interest</span>
 						</p>
 						<p className="flex items-start gap-2">
-							<span className="font-medium">3.</span>
+							<span className="font-medium text-foreground">3.</span>
 							<span>Click "Search Bills" to see real-time legislation from that state</span>
 						</p>
 					</div>
-					<div className="mt-4 p-3 bg-blue-100 rounded-lg">
-						<p className="text-sm text-blue-700">
+					<div className="mt-4 p-3 bg-accent rounded-lg">
+						<p className="text-sm text-accent-foreground">
 							💡 <strong>Pro tip:</strong> Start with "All Topics" to see the most results, then narrow down by topic if you want to focus on specific areas like healthcare, education, or housing.
 						</p>
 					</div>

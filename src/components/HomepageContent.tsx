@@ -230,7 +230,7 @@ const HomepageContent = () => {
 									<img
 										src={item.icon}
 										alt={item.title}
-										className="w-16 h-20 sm:w-20 sm:h-24 rounded-lg border-2 border-foreground"
+										className="w-16 h-20 sm:w-24 sm:h-28 rounded-lg border-2 border-foreground"
 									/>
 								</div>
 								<h3 className="text-xl sm:text-2xl font-semibold text-foreground mb-4">

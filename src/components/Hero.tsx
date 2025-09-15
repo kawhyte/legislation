@@ -57,7 +57,7 @@ const HeroSection = ({}: HeroSectionProps) => {
 										Get Started Free
 									</Link>
 								</Button>
-								<Button asChild variant='outline' size='lg' className='px-8 py-4 border-2 border-border'>
+								<Button asChild variant='outline' size='lg' className='px-8 py-4 border-2 border-border bg-background'>
 									<Link to='/dashboard'>
 										View Demo Without An Account
 									</Link>
