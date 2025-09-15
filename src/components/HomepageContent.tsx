@@ -5,10 +5,7 @@ import {
 	Search, 
 	Sparkles, 
 	Bell, 
-	BarChart3,
 	Users,
-	MapPin,
-	Clock,
 	HelpCircle,
 	CheckCircle
 } from "lucide-react";
@@ -85,32 +82,6 @@ const faqData = [
 	}
 ];
 
-const coverageStats = [
-	{
-		icon: MapPin,
-		number: "50",
-		label: "States Covered",
-		description: "Complete coverage of all US state legislatures"
-	},
-	{
-		icon: BarChart3,
-		number: "10,000+",
-		label: "Active Bills",
-		description: "Currently tracking thousands of pieces of legislation"
-	},
-	{
-		icon: Clock,
-		number: "Real-time",
-		label: "Updates",
-		description: "Instant notifications when bills change status"
-	},
-	{
-		icon: Users,
-		number: "5,000+", 
-		label: "Informed Citizens",
-		description: "Growing community of engaged users"
-	}
-];
 
 const QuoteIcon = () => (
 	<svg
@@ -167,38 +138,57 @@ const HomepageContent = () => {
 			</section>
 
 
-			{/* Coverage & Statistics Section */}
-			<section className="py-20 sm:py-24 lg:py-32 bg-muted/30">
-				<div className="container mx-auto px-4">
-					<div className="text-center mb-16 space-y-6">
-						<h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
-							Comprehensive Legislative Coverage
-						</h2>
-						<p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
-							Access the most complete database of state legislation with real-time updates
+			{/* Social Proof Section */}
+			<section className="py-20 sm:py-24 lg:py-32 bg-muted/30 relative overflow-hidden">
+				<div className="container mx-auto px-4 relative z-10">
+					{/* Floating animated avatars */}
+					<div className="absolute inset-0 pointer-events-none">
+						<div className="animate-float-slow absolute top-16 left-8 w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/40 rounded-full opacity-80"></div>
+						<div className="animate-float-medium absolute top-32 right-12 w-12 h-12 bg-gradient-to-br from-wellness-purple/20 to-wellness-purple/40 rounded-full opacity-70 animation-delay-1000"></div>
+						<div className="animate-float-fast absolute bottom-32 left-16 w-20 h-20 bg-gradient-to-br from-wellness-green/20 to-wellness-green/40 rounded-full opacity-60 animation-delay-2000"></div>
+						<div className="animate-float-slow absolute bottom-20 right-8 w-14 h-14 bg-gradient-to-br from-wellness-pink/20 to-wellness-pink/40 rounded-full opacity-75 animation-delay-3000"></div>
+						<div className="animate-float-medium absolute top-1/2 left-4 w-10 h-10 bg-gradient-to-br from-wellness-yellow/20 to-wellness-yellow/40 rounded-full opacity-80 animation-delay-4000"></div>
+						<div className="animate-float-fast absolute top-1/4 right-20 w-18 h-18 bg-gradient-to-br from-primary/15 to-primary/30 rounded-full opacity-70 animation-delay-500"></div>
+					</div>
+
+					{/* Central stat with large number */}
+					<div className="text-center mb-16">
+						<div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-2xl mb-6 mx-auto">
+							<Users className="h-10 w-10 text-primary" />
+						</div>
+						<div className="text-6xl sm:text-7xl lg:text-8xl font-bold text-primary mb-4">
+							10,000+
+						</div>
+						<p className="text-xl sm:text-2xl text-foreground font-semibold">
+							Bills Tracked Daily
 						</p>
 					</div>
+
+					{/* Main heading */}
+					<div className="text-center mb-16 space-y-6">
+						<h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
+							Join thousands who stay informed with our platform
+						</h2>
+					</div>
 					
-					<div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 max-w-6xl mx-auto">
-						{coverageStats.map((stat, index) => {
-							const Icon = stat.icon;
-							return (
-								<Card key={index} className="bg-card border-border p-8 sm:p-10 text-center hover:bg-accent/50 transition-all">
-									<div className="w-16 h-16 sm:w-20 sm:h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-										<Icon className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
-									</div>
-									<div className="text-3xl sm:text-4xl font-bold text-primary mb-3">
-										{stat.number}
-									</div>
-									<div className="font-semibold text-foreground mb-4 text-lg sm:text-xl">
-										{stat.label}
-									</div>
-									<p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-										{stat.description}
-									</p>
-								</Card>
-							);
-						})}
+					{/* Bottom stats grid */}
+					<div className="grid grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 max-w-5xl mx-auto">
+						<div className="text-center">
+							<div className="text-3xl sm:text-4xl font-bold text-primary mb-2">50</div>
+							<p className="text-sm sm:text-base text-muted-foreground">States Covered</p>
+						</div>
+						<div className="text-center">
+							<div className="text-3xl sm:text-4xl font-bold text-primary mb-2">Real-time</div>
+							<p className="text-sm sm:text-base text-muted-foreground">Updates</p>
+						</div>
+						<div className="text-center">
+							<div className="text-3xl sm:text-4xl font-bold text-primary mb-2">5,000+</div>
+							<p className="text-sm sm:text-base text-muted-foreground">Informed Citizens</p>
+						</div>
+						<div className="text-center">
+							<div className="text-3xl sm:text-4xl font-bold text-primary mb-2">24/7</div>
+							<p className="text-sm sm:text-base text-muted-foreground">Monitoring</p>
+						</div>
 					</div>
 				</div>
 			</section>
