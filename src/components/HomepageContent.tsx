@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import ExpertsCarousel from "./ExpertsCarousel";
 import { 
 	Search, 
 	Sparkles, 
@@ -12,30 +13,7 @@ import {
 	CheckCircle
 } from "lucide-react";
 
-// Data from WhyThisMattersPage
-const lawImpact = [
-	{
-		id: 1,
-		icon: "/justice.svg",
-		title: "Justice & Equality",
-		description:
-			"Laws ensure fair treatment and protect your fundamental rights, creating a just society for everyone.",
-	},
-	{
-		id: 2,
-		icon: "/hands.svg", 
-		title: "Community & Services",
-		description:
-			"Legislation funds and regulates public services like schools, parks, roads, and healthcare that you use every day.",
-	},
-	{
-		id: 3,
-		icon: "/forms.svg",
-		title: "Economic Opportunity", 
-		description:
-			"From minimum wage to business regulations, laws create the economic environment for jobs and innovation to flourish.",
-	},
-];
+// Data moved to ExpertsCarousel component
 
 const testimonials = [
 	{
@@ -136,12 +114,13 @@ const coverageStats = [
 
 const QuoteIcon = () => (
 	<svg
+	
 		width='48'
 		height='36'
 		viewBox='0 0 48 36'
 		fill='none'
 		xmlns='http://www.w3.org/2000/svg'
-		className='text-muted-foreground/50 mb-4'>
+		className='text-wellness-yellow mb-4'>
 		<path
 			d='M18 0H0V36H18V18H10C10 11.6 14.4 8 18 8V0ZM48 0H30V36H48V18H40C40 11.6 44.4 8 48 8V0Z'
 			fill='currentColor'
@@ -152,6 +131,8 @@ const QuoteIcon = () => (
 const HomepageContent = () => {
 	return (
 		<div className="bg-white">
+			{/* Experts Carousel Section */}
+			<ExpertsCarousel />
 			{/* How It Works Section */}
 			<section className="py-20 sm:py-24 lg:py-32">
 				<div className="container mx-auto px-4">
@@ -184,6 +165,7 @@ const HomepageContent = () => {
 					</div>
 				</div>
 			</section>
+
 
 			{/* Coverage & Statistics Section */}
 			<section className="py-20 sm:py-24 lg:py-32 bg-muted/30">
@@ -221,36 +203,7 @@ const HomepageContent = () => {
 				</div>
 			</section>
 
-			{/* How Laws Impact Your Daily Life Section */}
-			<section className="py-20 sm:py-24 lg:py-32">
-				<div className="container mx-auto px-4">
-					<div className="text-center mb-16 space-y-6">
-						<h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
-							How Laws Impact Your Daily Life
-						</h2>
-					</div>
-					
-					<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 max-w-6xl mx-auto">
-						{lawImpact.map((item) => (
-							<Card key={item.id} className="bg-card border-border p-8 sm:p-10 text-center">
-								<div className="flex justify-center mb-6">
-									<img
-										src={item.icon}
-										alt={item.title}
-										className="w-16 h-20 sm:w-24 sm:h-28 rounded-lg border-2 border-foreground"
-									/>
-								</div>
-								<h3 className="text-xl sm:text-2xl font-semibold text-foreground mb-4">
-									{item.title}
-								</h3>
-								<p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-									{item.description}
-								</p>
-							</Card>
-						))}
-					</div>
-				</div>
-			</section>
+			
 
 			{/* Your Voice, Your Future Section */}
 			<section className="py-20 sm:py-24 lg:py-32 bg-muted/20">

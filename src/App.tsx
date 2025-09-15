@@ -20,6 +20,7 @@ const HomePage = () => {
 	return (
 		<div className="bg-background text-foreground">
 			<Hero />
+			{/* <FeatureCarousel /> */}
 			<HomepageContent />
 			
 			{/* Show trending bills as the main content */}

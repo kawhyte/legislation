@@ -2,7 +2,7 @@ import React, { Suspense } from "react";
 import { Link } from "react-router-dom";
 import animationData from "../assets/friends.json";
 import { Button } from "./ui/button";
-import { CheckCircle } from "lucide-react";
+import { Circle } from "lucide-react";
 
 const Lottie = React.lazy(() => import("lottie-react"));
 
@@ -32,19 +32,19 @@ const HeroSection = () => {
 							<div className='max-w-3xl md:mx-0 mx-auto'>
 								<ul className='grid grid-cols-2 gap-6 sm:gap-8 text-left'>
 									<li className='flex items-center gap-3 sm:gap-4'>
-										<CheckCircle className='h-5 w-5 sm:h-6 sm:w-6 text-green-600 flex-shrink-0' />
+										<Circle className='h-4 w-4 text-wellness-purple flex-shrink-0 fill-wellness-purple/20' />
 										<span className='text-sm sm:text-base text-muted-foreground'>AI-powered bill summaries</span>
 									</li>
 									<li className='flex items-center gap-3 sm:gap-4'>
-										<CheckCircle className='h-5 w-5 sm:h-6 sm:w-6 text-green-600 flex-shrink-0' />
+										<Circle className='h-4 w-4 text-primary flex-shrink-0 fill-primary/20' />
 										<span className='text-sm sm:text-base text-muted-foreground'>Real-time tracking (50 states)</span>
 									</li>
 									<li className='flex items-center gap-3 sm:gap-4'>
-										<CheckCircle className='h-5 w-5 sm:h-6 sm:w-6 text-green-600 flex-shrink-0' />
+										<Circle className='h-4 w-4 text-wellness-green flex-shrink-0 fill-wellness-green/20' />
 										<span className='text-sm sm:text-base text-muted-foreground'>Personalized topic alerts</span>
 									</li>
 									<li className='flex items-center gap-3 sm:gap-4'>
-										<CheckCircle className='h-5 w-5 sm:h-6 sm:w-6 text-green-600 flex-shrink-0' />
+										<Circle className='h-4 w-4 text-wellness-pink flex-shrink-0 fill-wellness-pink/20' />
 										<span className='text-sm sm:text-base text-muted-foreground'>Save & organize bills</span>
 									</li>
 								</ul>
@@ -52,12 +52,12 @@ const HeroSection = () => {
 
 							{/* Call-to-Action Buttons */}
 							<div className='flex flex-col sm:flex-row gap-6 justify-center md:justify-start'>
-								<Button asChild size='lg' className='px-8 py-4 bg-primary hover:bg-primary-hover text-primary-foreground shadow-lg hover:shadow-xl transition-all'>
+								<Button asChild size='lg' className='px-8 py-6 bg-primary hover:bg-primary-hover text-primary-foreground shadow-lg hover:shadow-xl transition-all'>
 									<Link to='/sign-up'>
 										Get Started Free
 									</Link>
 								</Button>
-								<Button asChild variant='outline' size='lg' className='px-8 py-4 border-2 border-border bg-card hover:bg-wellness-pink/20 transition-all'>
+								<Button asChild  size='lg' className='px-8 py-6 text-muted-foreground border-2 border-border bg-card hover:bg-wellness-purple/10 transition-all'>
 									<Link to='/dashboard'>
 										Explore Demo
 									</Link>
