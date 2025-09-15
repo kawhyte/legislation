@@ -50,12 +50,12 @@ const Header = () => {
     );
 
     const DesktopNav = () => (
-        <nav className="hidden lg:flex items-center gap-4">
+        <nav className="hidden lg:flex items-center gap-6">
             <Button
                 variant='ghost'
                 onClick={() => navigate('/')}
                 // UPDATED: Added hover:bg-accent for consistency
-                className='text-muted-foreground hover:text-foreground hover:bg-accent'
+                className='text-muted-foreground hover:text-foreground hover:bg-accent px-6'
             >
                 Home
             </Button>
@@ -64,7 +64,7 @@ const Header = () => {
                     variant='ghost'
                     onClick={() => navigate("/dashboard")}
                     // UPDATED: Added hover:bg-accent for consistency
-                    className='text-muted-foreground hover:text-foreground hover:bg-accent'
+                    className='text-muted-foreground hover:text-foreground hover:bg-accent px-6'
                 >
                     Dashboard
                 </Button>
@@ -73,7 +73,7 @@ const Header = () => {
                 variant='ghost'
                 onClick={() => navigate("/why-this-matters")}
                 // UPDATED: Added hover:bg-accent for consistency
-                className='text-muted-foreground hover:text-foreground hover:bg-accent'
+                className='text-muted-foreground hover:text-foreground hover:bg-accent px-6'
             >
                 Why This Matters
             </Button>
@@ -81,17 +81,18 @@ const Header = () => {
     );
 
     const UserActions = () => (
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-4'>
             {isSignedIn ? (
                 // Authenticated user actions
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="flex items-center gap-2 h-auto px-2 py-1 rounded-full">
+                            <Button variant="ghost" className="flex items-center gap-3 h-auto px-3 py-2 rounded-full">
                                 <Avatar className="h-8 w-8">
                                     <AvatarImage 
-                                        src={user?.photoURL || ''} 
-                                        alt={userPreferences?.displayName || user?.displayName || user?.email || 'User'} 
+                                        src={user?.photoURL || undefined} 
+                                        alt={userPreferences?.displayName || user?.displayName || user?.email || 'User'}
+                                        referrerPolicy="no-referrer"
                                     />
                                     <AvatarFallback>
                                         {userPreferences?.displayName?.charAt(0) || user?.displayName?.charAt(0) || user?.email?.charAt(0) || 'U'}
@@ -106,8 +107,8 @@ const Header = () => {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56" align="end" forceMount>
-                            <div className="flex items-center justify-start gap-2 p-2">
-                                <div className="flex flex-col space-y-1 leading-none">
+                            <div className="flex items-center justify-start gap-3 p-4">
+                                <div className="flex flex-col space-y-2 leading-none">
                                     {(userPreferences?.displayName || user?.displayName) && (
                                         <p className="font-medium">
                                             {userPreferences?.displayName || user?.displayName}
@@ -172,14 +173,14 @@ const Header = () => {
                 isMobileMenuOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-4"
             }`}
         >
-            <div className='p-4 space-y-2'>
+            <div className='p-6 space-y-4'>
                 <Button
                     variant='ghost'
                     onClick={() => { navigate('/'); setIsMobileMenuOpen(false); }}
                     // UPDATED: Added text and hover styles
-                    className='w-full justify-start gap-3 text-base py-6 text-foreground hover:bg-accent'
+                    className='w-full justify-start gap-4 text-base py-8 text-foreground hover:bg-accent'
                 >
-                    <TrendingUp className='h-4 w-4' />
+                    <TrendingUp className='h-5 w-5' />
                     Home
                 </Button>
                 {isSignedIn && (
@@ -187,9 +188,9 @@ const Header = () => {
                         variant='ghost'
                         onClick={() => { navigate("/dashboard"); setIsMobileMenuOpen(false); }}
                         // UPDATED: Added text and hover styles
-                        className='w-full justify-start gap-3 text-base py-6 text-foreground hover:bg-accent'
+                        className='w-full justify-start gap-4 text-base py-8 text-foreground hover:bg-accent'
                     >
-                        <Bookmark className='h-4 w-4' />
+                        <Bookmark className='h-5 w-5' />
                         Dashboard
                     </Button>
                 )}
@@ -197,22 +198,22 @@ const Header = () => {
                     variant='ghost'
                     onClick={() => { navigate("/why-this-matters"); setIsMobileMenuOpen(false); }}
                     // UPDATED: Added text and hover styles
-                    className='w-full justify-start gap-3 text-base py-6 text-foreground hover:bg-accent'
+                    className='w-full justify-start gap-4 text-base py-8 text-foreground hover:bg-accent'
                 >
-                    <Lightbulb className='h-4 w-4' />
+                    <Lightbulb className='h-5 w-5' />
                     Why This Matters
                 </Button>
                 
                 {/* Mobile Auth Actions */}
                 {isSignedIn ? (
                     <>
-                        <div className="border-t border-border pt-2 mt-2">
+                        <div className="border-t border-border pt-4 mt-4">
                             <Button
                                 variant='ghost'
                                 onClick={() => { navigate("/profile-setup"); setIsMobileMenuOpen(false); }}
-                                className='w-full justify-start gap-3 text-base py-6 text-foreground hover:bg-accent'
+                                className='w-full justify-start gap-4 text-base py-8 text-foreground hover:bg-accent'
                             >
-                                <Settings className='h-4 w-4' />
+                                <Settings className='h-5 w-5' />
                                 Edit Profile
                             </Button>
                             <Button
@@ -221,28 +222,28 @@ const Header = () => {
                                     signOut();
                                     setIsMobileMenuOpen(false);
                                 }}
-                                className='w-full justify-start gap-3 text-base py-6 text-foreground hover:bg-accent'
+                                className='w-full justify-start gap-4 text-base py-8 text-foreground hover:bg-accent'
                             >
-                                <LogOut className='h-4 w-4' />
+                                <LogOut className='h-5 w-5' />
                                 Sign Out
                             </Button>
                         </div>
                     </>
                 ) : (
-                    <div className="border-t border-border pt-2 mt-2 space-y-2">
+                    <div className="border-t border-border pt-4 mt-4 space-y-4">
                         <Button
                             variant='ghost'
                             onClick={() => { navigate("/sign-in"); setIsMobileMenuOpen(false); }}
-                            className='w-full justify-start gap-3 text-base py-6 text-foreground hover:bg-accent'
+                            className='w-full justify-start gap-4 text-base py-8 text-foreground hover:bg-accent'
                         >
-                            <User className='h-4 w-4' />
+                            <User className='h-5 w-5' />
                             Log In
                         </Button>
                         <Button
                             onClick={() => { navigate("/sign-up"); setIsMobileMenuOpen(false); }}
-                            className='w-full justify-start gap-3 text-base py-6 bg-primary text-primary-foreground hover:bg-primary/90'
+                            className='w-full justify-start gap-4 text-base py-8 bg-primary text-primary-foreground hover:bg-primary/90'
                         >
-                            <User className='h-4 w-4' />
+                            <User className='h-5 w-5' />
                             Sign Up
                         </Button>
                     </div>

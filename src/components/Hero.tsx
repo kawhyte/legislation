@@ -11,53 +11,53 @@ interface HeroSectionProps {}
 const HeroSection = ({}: HeroSectionProps) => {
 
 	return (
-		<div className='relative  overflow-hidden'>
+		<div className='relative overflow-hidden'>
 			{/* Main content */}
-			<div className='relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-32 text-center'>
+			<div className='relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32 text-center'>
 				<div className='max-w-8xl mx-auto'>
 					{/* Main heading */}
 
-					<div className='grid lg:grid-cols-2 gap-8 items-center'>
-						<div className='text-center md:text-left'>
-							<h1 className='text-4xl sm:text-5xl md:text-6xl font-bold text-foreground tracking-tight mb-4'>
+					<div className='grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center'>
+						<div className='text-center md:text-left space-y-8'>
+							<h1 className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-foreground tracking-tight leading-tight'>
 								Track State Legislation That Impacts Your Life
 							</h1>
 
 							{/* Sub-heading */}
-							<p className='max-w-2xl md:mx-0 mx-auto text-lg text-muted-foreground mb-6'>
+							<p className='max-w-2xl md:mx-0 mx-auto text-lg sm:text-xl text-muted-foreground leading-relaxed'>
 								Stay informed about state bills with AI-powered summaries, real-time tracking, and personalized alerts. Never miss legislation that affects your community, business, or interests.
 							</p>
 
 							{/* Benefits List */}
-							<div className='max-w-3xl md:mx-0 mx-auto mb-8'>
-								<ul className='grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 text-left'>
-									<li className='flex items-center gap-2 sm:gap-3'>
-										<CheckCircle className='h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0' />
-										<span className='text-sm sm:text-base text-muted-foreground whitespace-nowrap'>AI-powered bill summaries</span>
+							<div className='max-w-3xl md:mx-0 mx-auto'>
+								<ul className='grid grid-cols-2 gap-6 sm:gap-8 text-left'>
+									<li className='flex items-center gap-3 sm:gap-4'>
+										<CheckCircle className='h-5 w-5 sm:h-6 sm:w-6 text-green-600 flex-shrink-0' />
+										<span className='text-sm sm:text-base text-muted-foreground'>AI-powered bill summaries</span>
 									</li>
-									<li className='flex items-center gap-2 sm:gap-3'>
-										<CheckCircle className='h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0' />
-										<span className='text-sm sm:text-base text-muted-foreground whitespace-nowrap'>Real-time tracking (50 states)</span>
+									<li className='flex items-center gap-3 sm:gap-4'>
+										<CheckCircle className='h-5 w-5 sm:h-6 sm:w-6 text-green-600 flex-shrink-0' />
+										<span className='text-sm sm:text-base text-muted-foreground'>Real-time tracking (50 states)</span>
 									</li>
-									<li className='flex items-center gap-2 sm:gap-3'>
-										<CheckCircle className='h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0' />
-										<span className='text-sm sm:text-base text-muted-foreground whitespace-nowrap'>Personalized topic alerts</span>
+									<li className='flex items-center gap-3 sm:gap-4'>
+										<CheckCircle className='h-5 w-5 sm:h-6 sm:w-6 text-green-600 flex-shrink-0' />
+										<span className='text-sm sm:text-base text-muted-foreground'>Personalized topic alerts</span>
 									</li>
-									<li className='flex items-center gap-2 sm:gap-3'>
-										<CheckCircle className='h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0' />
-										<span className='text-sm sm:text-base text-muted-foreground whitespace-nowrap'>Save & organize bills</span>
+									<li className='flex items-center gap-3 sm:gap-4'>
+										<CheckCircle className='h-5 w-5 sm:h-6 sm:w-6 text-green-600 flex-shrink-0' />
+										<span className='text-sm sm:text-base text-muted-foreground'>Save & organize bills</span>
 									</li>
 								</ul>
 							</div>
 
 							{/* Call-to-Action Buttons */}
-							<div className='flex flex-col sm:flex-row gap-4 justify-center md:justify-start mb-10'>
-								<Button asChild size='lg' className='px-8'>
+							<div className='flex flex-col sm:flex-row gap-6 justify-center md:justify-start'>
+								<Button asChild size='lg' className='px-8 py-4'>
 									<Link to='/sign-up'>
 										Get Started Free
 									</Link>
 								</Button>
-								<Button asChild variant='outline' size='lg' className='px-8 border-2 border-border'>
+								<Button asChild variant='outline' size='lg' className='px-8 py-4 border-2 border-border'>
 									<Link to='/dashboard'>
 										View Demo Without An Account
 									</Link>

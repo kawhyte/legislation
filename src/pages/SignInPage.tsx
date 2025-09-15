@@ -66,25 +66,25 @@ export default function SignInPage() {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-10">
+        <div className="text-center space-y-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
             Sign in to your account
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="text-base text-gray-600">
             Track legislation that matters to you
           </p>
         </div>
 
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle>Welcome back</CardTitle>
-            <CardDescription>
+        <Card className="shadow-lg">
+          <CardHeader className="space-y-3">
+            <CardTitle className="text-xl">Welcome back</CardTitle>
+            <CardDescription className="text-base">
               Choose your preferred sign-in method
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-8">
             {error && (
               <Alert variant="destructive">
                 <AlertDescription>{error}</AlertDescription>
@@ -92,11 +92,11 @@ export default function SignInPage() {
             )}
 
             {/* Social Sign In */}
-            <div className="space-y-3">
+            <div className="space-y-4">
               <Button
                 type="button"
                 variant="outline"
-                className="w-full"
+                className="w-full py-3"
                 onClick={handleGoogleSignIn}
                 disabled={isLoading}
               >
@@ -134,8 +134,8 @@ export default function SignInPage() {
             </div>
 
             {/* Email Sign In Form */}
-            <form onSubmit={handleEmailSignIn} className="space-y-4">
-              <div>
+            <form onSubmit={handleEmailSignIn} className="space-y-6">
+              <div className="space-y-2">
                 <Label htmlFor="email">Email address</Label>
                 <Input
                   id="email"
@@ -145,11 +145,11 @@ export default function SignInPage() {
                   placeholder="Enter your email"
                   required
                   disabled={isLoading}
-                  className="mt-1"
+                  className="py-3"
                 />
               </div>
 
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
@@ -159,20 +159,20 @@ export default function SignInPage() {
                   placeholder="Enter your password"
                   required
                   disabled={isLoading}
-                  className="mt-1"
+                  className="py-3"
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full py-3"
                 disabled={isLoading || !email.trim() || !password.trim()}
               >
                 {isLoading ? 'Signing in...' : 'Sign in'}
               </Button>
             </form>
 
-            <div className="text-center space-y-2">
+            <div className="text-center space-y-4">
               <p className="text-sm text-gray-600">
                 Don't have an account?{' '}
                 <Link 

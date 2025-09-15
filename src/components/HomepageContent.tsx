@@ -150,29 +150,27 @@ const HomepageContent = () => {
 	return (
 		<div className="bg-background">
 			{/* How It Works Section */}
-			<section className="py-16 sm:py-20">
+			<section className="py-20 sm:py-24 lg:py-32">
 				<div className="container mx-auto px-4">
-					<div className="text-center mb-12">
-						<h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+					<div className="text-center mb-16 space-y-6">
+						<h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
 							How It Works
 						</h2>
-						<p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+						<p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
 							Track legislation that matters to you in three simple steps
 						</p>
 					</div>
 					
-					<div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+					<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 max-w-6xl mx-auto">
 						{howItWorksSteps.map((item, index) => {
 							const Icon = item.icon;
 							return (
-								<Card key={index} className="bg-card border-border p-6 text-center hover:shadow-lg transition-shadow">
-									<div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4`}>
-										<Icon className={`h-8 w-8 ${item.color}`} />
-									</div>
-									<h3 className="text-xl font-semibold text-foreground mb-2">
+								<Card key={index} className="bg-card border-border p-8 sm:p-10 text-center hover:shadow-lg transition-shadow">
+									<Icon className={`h-12 w-12 sm:h-14 sm:w-14 ${item.color} mx-auto mb-6`} />
+									<h3 className="text-xl sm:text-2xl font-semibold text-foreground mb-4">
 										{item.title}
 									</h3>
-									<p className="text-muted-foreground">
+									<p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
 										{item.description}
 									</p>
 								</Card>
@@ -183,30 +181,30 @@ const HomepageContent = () => {
 			</section>
 
 			{/* Coverage & Statistics Section */}
-			<section className="py-16 sm:py-20 bg-muted/30">
+			<section className="py-20 sm:py-24 lg:py-32 bg-muted/30">
 				<div className="container mx-auto px-4">
-					<div className="text-center mb-12">
-						<h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+					<div className="text-center mb-16 space-y-6">
+						<h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
 							Comprehensive Legislative Coverage
 						</h2>
-						<p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+						<p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
 							Access the most complete database of state legislation with real-time updates
 						</p>
 					</div>
 					
-					<div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+					<div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 max-w-6xl mx-auto">
 						{coverageStats.map((stat, index) => {
 							const Icon = stat.icon;
 							return (
-								<Card key={index} className="bg-card border-border p-6 text-center">
-									<Icon className="h-10 w-10 text-primary mx-auto mb-4" />
-									<div className="text-3xl font-bold text-foreground mb-2">
+								<Card key={index} className="bg-card border-border p-8 sm:p-10 text-center">
+									<Icon className="h-12 w-12 sm:h-14 sm:w-14 text-primary mx-auto mb-6" />
+									<div className="text-3xl sm:text-4xl font-bold text-foreground mb-3">
 										{stat.number}
 									</div>
-									<div className="font-semibold text-foreground mb-2">
+									<div className="font-semibold text-foreground mb-4 text-lg sm:text-xl">
 										{stat.label}
 									</div>
-									<p className="text-sm text-muted-foreground">
+									<p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
 										{stat.description}
 									</p>
 								</Card>
@@ -217,30 +215,30 @@ const HomepageContent = () => {
 			</section>
 
 			{/* How Laws Impact Your Daily Life Section */}
-			<section className="py-16 sm:py-20">
+			<section className="py-20 sm:py-24 lg:py-32">
 				<div className="container mx-auto px-4">
-					<h2 className="text-3xl sm:text-4xl font-bold text-center text-foreground mb-12">
-						How Laws Impact Your Daily Life
-					</h2>
+					<div className="text-center mb-16 space-y-6">
+						<h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
+							How Laws Impact Your Daily Life
+						</h2>
+					</div>
 					
-					<div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+					<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 max-w-6xl mx-auto">
 						{lawImpact.map((item) => (
-							<Card key={item.id} className="bg-card border-border p-6 md:p-8 rounded-2xl flex flex-col sm:flex-row items-center gap-6">
-								<div className="flex-shrink-0">
+							<Card key={item.id} className="bg-card border-border p-8 sm:p-10 text-center">
+								<div className="flex justify-center mb-6">
 									<img
 										src={item.icon}
 										alt={item.title}
-										className="w-24 h-30 rounded-lg border-2 border-foreground"
+										className="w-16 h-20 sm:w-20 sm:h-24 rounded-lg border-2 border-foreground"
 									/>
 								</div>
-								<div className="flex flex-col items-center sm:items-start text-center sm:text-left">
-									<h3 className="text-xl font-semibold text-foreground mb-2">
-										{item.title}
-									</h3>
-									<p className="text-muted-foreground">
-										{item.description}
-									</p>
-								</div>
+								<h3 className="text-xl sm:text-2xl font-semibold text-foreground mb-4">
+									{item.title}
+								</h3>
+								<p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+									{item.description}
+								</p>
 							</Card>
 						))}
 					</div>
@@ -248,23 +246,25 @@ const HomepageContent = () => {
 			</section>
 
 			{/* Your Voice, Your Future Section */}
-			<section className="py-16 sm:py-20 bg-muted/20">
+			<section className="py-20 sm:py-24 lg:py-32 bg-muted/20">
 				<div className="container mx-auto px-4">
 					<div className="max-w-6xl mx-auto">
-						<hr className="border-t border-border mb-8" />
-						<h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-12">
-							Your Voice, Your Future
-						</h2>
+						<hr className="border-t border-border mb-12" />
+						<div className="text-center mb-16 space-y-6">
+							<h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
+								Your Voice, Your Future
+							</h2>
+						</div>
 						
-						<div className="grid md:grid-cols-2 gap-x-12 gap-y-16">
+						<div className="grid md:grid-cols-2 gap-x-16 gap-y-20">
 							{testimonials.map((testimonial, index) => (
-								<div key={index}>
+								<div key={index} className="space-y-6">
 									<QuoteIcon />
-									<blockquote className="text-lg text-foreground leading-relaxed mb-6">
+									<blockquote className="text-lg sm:text-xl text-foreground leading-relaxed">
 										{testimonial.quote}
 									</blockquote>
-									<footer>
-										<p className="font-semibold text-foreground">
+									<footer className="space-y-2">
+										<p className="font-semibold text-foreground text-lg">
 											{testimonial.author}
 										</p>
 										<p className="text-muted-foreground">{testimonial.title}</p>
@@ -277,29 +277,29 @@ const HomepageContent = () => {
 			</section>
 
 			{/* FAQ Section */}
-			<section className="py-16 sm:py-20">
+			<section className="py-20 sm:py-24 lg:py-32">
 				<div className="container mx-auto px-4">
-					<div className="text-center mb-12">
-						<h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+					<div className="text-center mb-16 space-y-6">
+						<h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
 							Frequently Asked Questions
 						</h2>
-						<p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+						<p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
 							Get answers to common questions about tracking legislation
 						</p>
 					</div>
 					
-					<div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+					<div className="grid md:grid-cols-2 gap-8 sm:gap-10 max-w-6xl mx-auto">
 						{faqData.map((faq, index) => (
-							<Card key={index} className="bg-card border-border p-6">
-								<div className="flex items-start gap-3 mb-3">
-									<HelpCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-									<h3 className="font-semibold text-foreground">
+							<Card key={index} className="bg-card border-border p-8 sm:p-10">
+								<div className="flex items-start gap-4 mb-6">
+									<HelpCircle className="h-6 w-6 text-primary mt-0.5 flex-shrink-0" />
+									<h3 className="font-semibold text-foreground text-lg sm:text-xl">
 										{faq.question}
 									</h3>
 								</div>
-								<div className="flex items-start gap-3">
-									<CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
-									<p className="text-muted-foreground">
+								<div className="flex items-start gap-4">
+									<CheckCircle className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
+									<p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
 										{faq.answer}
 									</p>
 								</div>
@@ -310,22 +310,22 @@ const HomepageContent = () => {
 			</section>
 
 			{/* Stay Informed, Stay Empowered Section */}
-			<section className="py-16 sm:py-20 bg-primary/10">
+			<section className="py-20 sm:py-24 lg:py-32 bg-primary/10">
 				<div className="container mx-auto px-4">
-					<div className="text-center max-w-4xl mx-auto">
-						<h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6">
+					<div className="text-center max-w-5xl mx-auto space-y-8">
+						<h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
 							Stay Informed, Stay Empowered
 						</h2>
-						<p className="text-lg sm:text-xl text-muted-foreground mb-8">
+						<p className="text-lg sm:text-xl text-muted-foreground">
 							Our platform is designed to demystify the legislative process,
 							providing you with the clear, concise information you need to be an
 							effective citizen.
 						</p>
-						<div className="flex flex-wrap justify-center gap-2">
-							<Badge variant="secondary" className="text-sm px-3 py-1">Legislative Transparency</Badge>
-							<Badge variant="secondary" className="text-sm px-3 py-1">Civic Engagement</Badge>
-							<Badge variant="secondary" className="text-sm px-3 py-1">Government Accountability</Badge>
-							<Badge variant="secondary" className="text-sm px-3 py-1">Informed Democracy</Badge>
+						<div className="flex flex-wrap justify-center gap-3 sm:gap-4">
+							<Badge variant="secondary" className="text-sm sm:text-base px-4 py-2">Legislative Transparency</Badge>
+							<Badge variant="secondary" className="text-sm sm:text-base px-4 py-2">Civic Engagement</Badge>
+							<Badge variant="secondary" className="text-sm sm:text-base px-4 py-2">Government Accountability</Badge>
+							<Badge variant="secondary" className="text-sm sm:text-base px-4 py-2">Informed Democracy</Badge>
 						</div>
 					</div>
 				</div>

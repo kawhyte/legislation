@@ -34,18 +34,25 @@ const SimpleHero = ({
 
 	return (
 		<div className="w-full">
-			{/* Simplified selector card that fills the dashboard */}
-			<div className='w-full mb-6 flex flex-col gap-6 border border-border bg-card px-4 md:px-6 py-6 md:py-8 rounded-2xl shadow-lg'>
-				{/* Text Block */}
-				<div className='text-center'>
-					<p className='text-lg md:text-xl font-medium text-foreground'>
-						Select your state and a topic to see a real-time feed of
-						relevant bills.
+			{/* Enhanced selector card with better CTA */}
+			<div className='w-full flex flex-col gap-8 border border-border bg-card px-6 md:px-8 py-8 md:py-10 rounded-2xl shadow-lg hover:shadow-xl transition-shadow'>
+				{/* Enhanced Text Block */}
+				<div className='text-center space-y-4'>
+					<h3 className='text-xl md:text-2xl font-bold text-foreground'>
+						🔍 Search Bills from Any State
+					</h3>
+					<p className='text-lg md:text-xl font-medium text-muted-foreground max-w-3xl mx-auto leading-relaxed'>
+						Select your state and a topic to see a real-time feed of relevant bills.
 					</p>
+					<div className="bg-green-50 border border-green-200 rounded-lg p-4 max-w-2xl mx-auto">
+						<p className="text-sm text-green-700">
+							✨ <strong>Quick start:</strong> Choose any state + "All Topics" for maximum results!
+						</p>
+					</div>
 				</div>
 
 				{/* Selector Wrapper */}
-				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end'>
+				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-end'>
 					<div className='md:col-span-1 lg:col-span-1'>
 						<StateSelector
 							selectedJurisdiction={localJurisdiction}
@@ -63,8 +70,8 @@ const SimpleHero = ({
 						<Button
 							onClick={handleSearch}
 							size='lg'
-							className='w-full'>
-							Search Bills
+							className='w-full py-4 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-md hover:shadow-lg transition-all'>
+							🚀 Search Bills
 						</Button>
 					</div>
 				</div>

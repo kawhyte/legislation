@@ -69,14 +69,14 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 		description: string;
 		color?: string;
 	}) => (
-		<Card>
-			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+		<Card className="hover:shadow-md transition-shadow">
+			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
 				<CardTitle className="text-sm font-medium">{title}</CardTitle>
-				<Icon className={`h-4 w-4 ${color}`} />
+				<Icon className={`h-5 w-5 ${color}`} />
 			</CardHeader>
-			<CardContent>
-				<div className="text-2xl font-bold">{value}</div>
-				<p className="text-xs text-muted-foreground">{description}</p>
+			<CardContent className="pt-0">
+				<div className="text-2xl sm:text-3xl font-bold mb-2">{value}</div>
+				<p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
 			</CardContent>
 		</Card>
 	);
@@ -96,23 +96,23 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 		color?: string;
 		showMax?: number;
 	}) => (
-		<div className="space-y-4">
-			<div className="flex items-center gap-2">
-				<Icon className={`h-5 w-5 ${color}`} />
-				<h3 className="text-lg font-semibold">{title}</h3>
+		<div className="space-y-6 p-6 bg-muted/20 rounded-lg border">
+			<div className="flex items-center gap-3">
+				<Icon className={`h-6 w-6 ${color}`} />
+				<h3 className="text-xl font-semibold">{title}</h3>
 				{bills && bills.length > 0 && (
-					<Badge variant="secondary">{bills.length}</Badge>
+					<Badge variant="secondary" className="text-sm px-3 py-1">{bills.length}</Badge>
 				)}
 			</div>
 			
 			{isLoading ? (
-				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 					{Array.from({ length: showMax }).map((_, i) => (
 						<BillCardSkeleton key={i} />
 					))}
 				</div>
 			) : bills && bills.length > 0 ? (
-				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 					{bills.slice(0, showMax).map((bill) => (
 						<BillCard 
 							key={bill.id} 
@@ -123,9 +123,9 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 					))}
 				</div>
 			) : (
-				<div className="text-center py-8 text-muted-foreground">
-					<Icon className="h-12 w-12 mx-auto mb-4 opacity-50" />
-					<p>No {title.toLowerCase()} bills found in {userStateName}</p>
+				<div className="text-center py-12 text-muted-foreground">
+					<Icon className="h-16 w-16 mx-auto mb-6 opacity-50" />
+					<p className="text-lg">No {title.toLowerCase()} bills found in {userStateName}</p>
 				</div>
 			)}
 		</div>
@@ -133,29 +133,29 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 
 	if (!userPreferences?.selectedState) {
 		return (
-			<div className="text-center py-16">
-				<div className="text-muted-foreground">
-					<Home className="h-12 w-12 mx-auto mb-4" />
-					Please set up your profile with a selected state to see personalized bill information.
+			<div className="text-center py-20">
+				<div className="text-muted-foreground space-y-4">
+					<Home className="h-16 w-16 mx-auto" />
+					<p className="text-lg">Please set up your profile with a selected state to see personalized bill information.</p>
 				</div>
 			</div>
 		);
 	}
 
 	return (
-		<div className="space-y-8">
+		<div className="space-y-12">
 			{/* Header */}
-			<div>
-				<h2 className="text-2xl font-bold text-foreground mb-2">
-					Bills from {userStateName}
+			<div className="space-y-4">
+				<h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+					📍 Your {userStateName} Dashboard
 				</h2>
-				<p className="text-muted-foreground">
-					Stay up to date with legislation in your state
+				<p className="text-lg text-muted-foreground">
+					Track bills, see what's trending, and discover legislation that affects your community
 				</p>
 			</div>
 
 			{/* Dashboard Stats */}
-			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
 				<DashboardStatsCard
 					icon={BookmarkIcon}
 					title="Bills Saved"
@@ -188,13 +188,13 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 
 			{/* Recent Activity Section */}
 			{recentActivity.length > 0 && (
-				<div className="space-y-4">
-					<div className="flex items-center gap-2">
-						<Activity className="h-5 w-5 text-orange-600" />
-						<h3 className="text-lg font-semibold">Recent Activity</h3>
-						<Badge variant="secondary">{recentActivity.length}</Badge>
+				<div className="space-y-6 p-6 bg-muted/20 rounded-lg border">
+					<div className="flex items-center gap-3">
+						<Activity className="h-6 w-6 text-orange-600" />
+						<h3 className="text-xl font-semibold">Recent Activity</h3>
+						<Badge variant="secondary" className="text-sm px-3 py-1">{recentActivity.length}</Badge>
 					</div>
-					<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+					<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 						{recentActivity.map((savedBill) => (
 							<BillCard 
 								key={savedBill.billId} 

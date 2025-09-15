@@ -31,20 +31,20 @@ const DashboardPage: React.FC = () => {
 
 	return (
 		<div className='min-h-screen bg-background'>
-			<div className='container mx-auto px-4 py-8'>
+			<div className='container mx-auto px-4 py-12'>
 				{/* Header */}
-				<div className='mb-8'>
-					<h1 className='text-3xl font-bold text-foreground mb-2'>
+				<div className='mb-12 space-y-4'>
+					<h1 className='text-3xl sm:text-4xl font-bold text-foreground'>
 						Dashboard
 					</h1>
-					<p className='text-muted-foreground'>
+					<p className='text-lg text-muted-foreground'>
 						Track legislation, explore bills, and stay informed
 					</p>
 				</div>
 
 				{/* Tabs */}
 				<Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-					<TabsList className="grid w-full grid-cols-3 mb-8">
+					<TabsList className="grid w-full grid-cols-3 mb-12">
 						<TabsTrigger value="saved" className="flex items-center gap-2">
 							Saved Bills
 							{savedBills.length > 0 && (
