@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Bookmark, BookmarkCheck } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { useUserData } from '../contexts/UserContext';
 import { useUser } from '@/hooks/useAuth';
 import type { Bill } from '@/types';
@@ -16,7 +16,7 @@ interface BookmarkButtonProps {
 
 const BookmarkButton: React.FC<BookmarkButtonProps> = ({ 
   bill, 
-  variant = 'ghost', 
+  variant = 'outline', 
   size = 'icon',
   showText = false,
   className = ""
@@ -50,15 +50,15 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     }
   };
 
-  // Updated to use wellness color system
+  // Updated to use blue for add, red for remove
   const getBookmarkStyles = () => {
     if (bookmarked) {
-      return "text-wellness-yellow hover:text-wellness-yellow/90 bg-wellness-yellow/10 border-wellness-yellow/20";
+      return "text-destructive border-destructive/50 hover:bg-destructive/10 hover:border-destructive transition-all";
     }
-    return "text-muted-foreground hover:text-wellness-yellow hover:bg-wellness-yellow/10 border-transparent hover:border-wellness-yellow/20";
+    return "text-primary-foreground border-primary/50 bg-primary hover:text-primary  hover:text-primary hover:bg-primary/10 border-transparent hover:border-primary/20";
   };
 
-  const tooltipText = bookmarked ? "Remove from saved" : "Save for later";
+  const tooltipText = bookmarked ? "Remove from saved" : "Add to saved";
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -71,9 +71,9 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
             className={`transition-all duration-200 border ${getBookmarkStyles()} ${className}`}
           >
             {bookmarked ? (
-              <BookmarkCheck className="h-4 w-4" />
+              <Trash2 className="h-4 w-4" />
             ) : (
-              <Bookmark className="h-4 w-4" />
+              <Plus className="h-4 w-4" />
             )}
             {showText && (
               <span className="ml-2 text-xs font-medium">
@@ -82,8 +82,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
             )}
           </Button>
         </TooltipTrigger>
-        {/* UPDATED: Themed the tooltip content to match other popovers */}
-        <TooltipContent className="bg-popover text-popover-foreground border-border">
+        <TooltipContent className="bg-muted text-muted-foreground border-border">
           <p>{tooltipText}</p>
         </TooltipContent>
       </Tooltip>

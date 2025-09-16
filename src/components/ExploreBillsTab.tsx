@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { type States } from "./JurisdictionSelector";
 import SimpleHero from "./SimpleHero";
-// import BillGrid from "./BillGrid";
+import BillGrid from "./BillGrid";
 
 const ExploreBillsTab: React.FC = () => {
 	const [selectedJurisdiction, setSelectedJurisdiction] = useState<States | null>(null);
@@ -35,7 +35,7 @@ const ExploreBillsTab: React.FC = () => {
 			</div>
 
 			{/* Friendly Getting Started Guide */}
-			<div className="bg-accent border-l-4 border-primary p-6 rounded-r-lg hover:bg-accent/80 transition-all">
+			{/* <div className="bg-accent border-l-4 border-primary p-6 rounded-r-lg hover:bg-accent/80 transition-all">
 				<div className="space-y-3">
 					<h3 className="text-lg font-semibold text-foreground">
 						New here? Here's how to get started:
@@ -60,10 +60,10 @@ const ExploreBillsTab: React.FC = () => {
 						</p>
 					</div>
 				</div>
-			</div>
+			</div> */}
 
 			{/* Simple Hero Search */}
-			<div>
+			<div className="">
 				<SimpleHero
 					selectedJurisdiction={selectedJurisdiction}
 					setSelectedJurisdiction={handleStateSelect}
@@ -72,15 +72,15 @@ const ExploreBillsTab: React.FC = () => {
 				/>
 			</div>
 
-			{/* Results */}
-			{/* <div ref={resultsRef}>
+			{/* Results */} 
+			<div ref={resultsRef} >
 				{(selectedJurisdiction || (!selectedJurisdiction && !selectedTopic)) && (
 					<BillGrid
 						selectedJurisdiction={selectedJurisdiction}
 						selectedTopic={selectedTopic}
 					/>
 				)}
-			</div> */}
+			</div>
 		</div>
 	);
 };

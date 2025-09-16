@@ -55,10 +55,10 @@ const BillGrid = ({ selectedJurisdiction, selectedTopic }: Props) => {
                 </div>
             )}
 
-            <div>
+            <div className="">
                 {/* NOTE: Ensure your SectionHeader component uses themed text colors like text-foreground */}
                 {hasData && <SectionHeader jurisdiction={selectedJurisdiction} />}
-                <div className='grid grid-cols-[repeat(auto-fill,minmax(380px,1fr))] gap-6 mt-6'>
+                <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4'>
                     {/* NOTE: Ensure your BillCardSkeleton uses themed background colors like bg-muted */}
                     {isLoading &&
                         skeletons.map((skeleton) => <BillCardSkeleton key={skeleton} />)}

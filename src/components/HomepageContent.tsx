@@ -104,29 +104,29 @@ const HomepageContent = () => {
 			{/* Experts Carousel Section */}
 			<ExpertsCarousel />
 			{/* How It Works Section */}
-			<section className="py-20 sm:py-24 lg:py-32">
-				<div className="container mx-auto px-4">
-					<div className="text-center mb-16 space-y-6">
+			<section className="container-section">
+				<div className="container-legislation">
+					<div className="text-center mb-12 space-y-4">
 						<h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
 							How It Works
 						</h2>
-						<p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
+						<p className="text-8px-rhythm-lg sm:text-8px-rhythm-xl text-muted-foreground max-w-2xl mx-auto">
 							Track legislation that matters to you in three simple steps
 						</p>
 					</div>
 					
-					<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 max-w-6xl mx-auto">
+					<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
 						{howItWorksSteps.map((item, index) => {
 							const Icon = item.icon;
 							return (
-								<Card key={index} className="bg-card border-border p-8 sm:p-10 text-center hover:shadow-lg transition-all hover:-translate-y-1">
-									<div className={`w-16 h-16 sm:w-20 sm:h-20 ${item.bgColor} rounded-2xl flex items-center justify-center mx-auto mb-6`}>
+								<Card key={index} className="bg-card border-border p-6 sm:p-8 text-center hover:shadow-lg transition-all hover:-translate-y-1">
+									<div className={`w-16 h-16 sm:w-20 sm:h-20 ${item.bgColor} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
 										<Icon className={`h-8 w-8 sm:h-10 sm:w-10 ${item.color}`} />
 									</div>
-									<h3 className="text-xl sm:text-2xl font-semibold text-foreground mb-4">
+									<h3 className="text-8px-rhythm-xl sm:text-8px-rhythm-2xl font-semibold text-foreground mb-4">
 										{item.title}
 									</h3>
-									<p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+									<p className="text-8px-rhythm-base sm:text-8px-rhythm-lg text-muted-foreground">
 										{item.description}
 									</p>
 								</Card>
@@ -138,8 +138,8 @@ const HomepageContent = () => {
 
 
 			{/* Social Proof Section */}
-			<section className="py-20 sm:py-24 lg:py-32 bg-muted/30 relative overflow-hidden">
-				<div className="container mx-auto px-4 relative z-10">
+			<section className="container-section bg-muted/30 relative overflow-hidden">
+				<div className="container-legislation relative z-10">
 					{/* Floating animated avatars */}
 					<div className="absolute inset-0 pointer-events-none">
 						<div className="animate-float-slow absolute top-16 left-8 w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/40 rounded-full opacity-80"></div>
@@ -151,40 +151,40 @@ const HomepageContent = () => {
 					</div>
 
 					{/* Central stat with large number */}
-					<div className="text-center mb-16">
+					<div className="text-center mb-12">
 						
 						<div className="text-6xl sm:text-7xl lg:text-8xl font-bold text-primary mb-4">
 							10,000+
 						</div>
-						<p className="text-xl sm:text-2xl text-foreground font-semibold">
+						<p className="text-8px-rhythm-xl sm:text-8px-rhythm-2xl text-foreground font-semibold">
 							Bills Tracked Daily
 						</p>
 					</div>
 
 					{/* Main heading */}
-					<div className="text-center mb-16 space-y-6">
+					<div className="text-center mb-12 space-y-4">
 						<h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
 							Join thousands who stay informed with our platform
 						</h2>
 					</div>
 					
 					{/* Bottom stats grid */}
-					<div className="grid grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 max-w-5xl mx-auto">
+					<div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-5xl mx-auto">
 						<div className="text-center">
 							<div className="text-3xl sm:text-4xl font-bold text-primary mb-2">50</div>
-							<p className="text-sm sm:text-base text-muted-foreground">States Covered</p>
+							<p className="text-8px-rhythm-sm sm:text-8px-rhythm-base text-muted-foreground">States Covered</p>
 						</div>
 						<div className="text-center">
 							<div className="text-3xl sm:text-4xl font-bold text-primary mb-2">Real-time</div>
-							<p className="text-sm sm:text-base text-muted-foreground">Updates</p>
+							<p className="text-8px-rhythm-sm sm:text-8px-rhythm-base text-muted-foreground">Updates</p>
 						</div>
 						<div className="text-center">
 							<div className="text-3xl sm:text-4xl font-bold text-primary mb-2">5,000+</div>
-							<p className="text-sm sm:text-base text-muted-foreground">Informed Citizens</p>
+							<p className="text-8px-rhythm-sm sm:text-8px-rhythm-base text-muted-foreground">Informed Citizens</p>
 						</div>
 						<div className="text-center">
 							<div className="text-3xl sm:text-4xl font-bold text-primary mb-2">24/7</div>
-							<p className="text-sm sm:text-base text-muted-foreground">Monitoring</p>
+							<p className="text-8px-rhythm-sm sm:text-8px-rhythm-base text-muted-foreground">Monitoring</p>
 						</div>
 					</div>
 				</div>
@@ -193,25 +193,25 @@ const HomepageContent = () => {
 			
 
 			{/* Your Voice, Your Future Section */}
-			<section className="py-20 sm:py-24 lg:py-32 bg-muted/20">
-				<div className="container mx-auto px-4">
+			<section className="container-section bg-muted/20">
+				<div className="container-legislation">
 					<div className="max-w-6xl mx-auto">
-						<hr className="border-t border-border mb-12" />
-						<div className="text-center mb-16 space-y-6">
+						<hr className="border-t border-border mb-8" />
+						<div className="text-center mb-12 space-y-4">
 							<h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
 								Your Voice, Your Future
 							</h2>
 						</div>
 						
-						<div className="grid md:grid-cols-2 gap-x-16 gap-y-20">
+						<div className="grid md:grid-cols-2 gap-x-12 gap-y-16">
 							{testimonials.map((testimonial, index) => (
-								<div key={index} className="space-y-6">
+								<div key={index} className="space-y-4">
 									<QuoteIcon />
-									<blockquote className="text-lg sm:text-xl text-foreground leading-relaxed">
+									<blockquote className="text-8px-rhythm-lg sm:text-8px-rhythm-xl text-foreground">
 										{testimonial.quote}
 									</blockquote>
-									<footer className="space-y-2">
-										<p className="font-semibold text-foreground text-lg">
+									<footer className="space-y-1">
+										<p className="font-semibold text-foreground text-8px-rhythm-lg">
 											{testimonial.author}
 										</p>
 										<p className="text-muted-foreground">{testimonial.title}</p>
@@ -224,33 +224,33 @@ const HomepageContent = () => {
 			</section>
 
 			{/* FAQ Section */}
-			<section className="py-20 sm:py-24 lg:py-32">
-				<div className="container mx-auto px-4">
+			<section className="container-section">
+				<div className="container-legislation">
 					<div className="text-center mb-16 space-y-6">
 						<h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
 							Frequently Asked Questions
 						</h2>
-						<p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
+						<p className="text-8px-rhythm-lg sm:text-8px-rhythm-xl text-muted-foreground max-w-3xl mx-auto">
 							Get answers to common questions about tracking legislation
 						</p>
 					</div>
 					
-					<div className="grid md:grid-cols-2 gap-8 sm:gap-10 max-w-6xl mx-auto">
+					<div className="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-6xl mx-auto">
 						{faqData.map((faq, index) => (
-							<Card key={index} className="bg-card border-border p-8 sm:p-10 hover:border-primary/20 transition-all">
-								<div className="flex items-start gap-4 mb-6">
+							<Card key={index} className="bg-card border-border p-6 sm:p-8 hover:border-primary/20 transition-all">
+								<div className="flex items-start gap-3 mb-4">
 									<div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
 										<HelpCircle className="h-5 w-5 text-primary" />
 									</div>
-									<h3 className="font-semibold text-foreground text-lg sm:text-xl">
+									<h3 className="font-semibold text-foreground text-8px-rhythm-lg sm:text-8px-rhythm-xl">
 										{faq.question}
 									</h3>
 								</div>
-								<div className="flex items-start gap-4">
+								<div className="flex items-start gap-3">
 									<div className="w-10 h-10 bg-wellness-green/10 rounded-xl flex items-center justify-center flex-shrink-0">
 										<CheckCircle className="h-5 w-5 text-wellness-green" />
 									</div>
-									<p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
+									<p className="text-muted-foreground text-8px-rhythm-base sm:text-8px-rhythm-lg">
 										{faq.answer}
 									</p>
 								</div>
@@ -261,9 +261,9 @@ const HomepageContent = () => {
 			</section>
 
 			{/* Stay Informed, Stay Empowered Section */}
-			<section className="py-20 sm:py-24 lg:py-32 bg-wellness-yellow">
-				<div className="container mx-auto px-4">
-					<div className="text-center max-w-5xl mx-auto space-y-8">
+			<section className="container-section bg-wellness-yellow">
+				<div className="container-legislation">
+					<div className="text-center max-w-5xl mx-auto space-y-6">
 						<h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
 							Stay Informed, Stay Empowered
 						</h2>
@@ -272,11 +272,11 @@ const HomepageContent = () => {
 							providing you with the clear, concise information you need to be an
 							effective citizen.
 						</p>
-						<div className="flex flex-wrap justify-center gap-3 sm:gap-4">
-							<Badge variant="secondary" className="text-sm sm:text-base px-4 py-2">Legislative Transparency</Badge>
-							<Badge variant="secondary" className="text-sm sm:text-base px-4 py-2">Civic Engagement</Badge>
-							<Badge variant="secondary" className="text-sm sm:text-base px-4 py-2">Government Accountability</Badge>
-							<Badge variant="secondary" className="text-sm sm:text-base px-4 py-2">Informed Democracy</Badge>
+						<div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+							<Badge variant="secondary" className="text-8px-rhythm-sm sm:text-8px-rhythm-base px-4 py-2">Legislative Transparency</Badge>
+							<Badge variant="secondary" className="text-8px-rhythm-sm sm:text-8px-rhythm-base px-4 py-2">Civic Engagement</Badge>
+							<Badge variant="secondary" className="text-8px-rhythm-sm sm:text-8px-rhythm-base px-4 py-2">Government Accountability</Badge>
+							<Badge variant="secondary" className="text-8px-rhythm-sm sm:text-8px-rhythm-base px-4 py-2">Informed Democracy</Badge>
 						</div>
 					</div>
 				</div>

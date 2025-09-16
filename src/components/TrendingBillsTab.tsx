@@ -12,7 +12,7 @@ const TrendingBillsTab: React.FC = () => {
   const renderContent = () => {
     if (isLoading) {
       return (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(380px,1fr))] gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {Array.from({ length: 12 }).map((_, i) => (
             <BillCardSkeleton key={i} />
           ))}
@@ -52,12 +52,12 @@ const TrendingBillsTab: React.FC = () => {
   };
 
   return (
-    <div>
-      <div className="mb-8 text-center">
-        <h2 className="text-2xl font-bold text-foreground mb-2">
+    <div className='space-y-12'>
+      <div className="space-y-4">
+        <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
           Legislative Bills Trending Around The USA
         </h2>
-        <p className="text-muted-foreground">
+        <p className="text-lg text-muted-foreground">
           Bills that are currently gaining momentum nationwide.
         </p>
       </div>

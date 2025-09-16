@@ -32,7 +32,7 @@ const DashboardPage: React.FC = () => {
 
 	return (
 		<div className='min-h-screen bg-background'>
-			<div className='container mx-auto px-4 py-12'>
+			<div className='container-legislation container-section'>
 				{/* Header */}
 				{/* <div className='mb-12 space-y-4'>
 					<h1 className='text-3xl sm:text-4xl font-bold text-foreground'>

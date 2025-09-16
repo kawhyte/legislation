@@ -13,7 +13,7 @@ const HeroSection = () => {
 	return (
 		<div className='relative overflow-hidden'>
 			{/* Main content */}
-			<div className='relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32 text-center'>
+			<div className='relative z-10 container-legislation py-20 sm:py-24 lg:py-32 text-center'>
 				<div className='max-w-8xl mx-auto'>
 					{/* Main heading */}
 

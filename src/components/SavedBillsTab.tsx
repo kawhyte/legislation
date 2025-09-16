@@ -122,7 +122,7 @@ const SavedBillsTab: React.FC<SavedBillsTabProps> = ({ onSwitchToExplore }) => {
 	return (
 		<div className="space-y-12">
 			{/* Header */}
-			<div className='space-y-6'>
+			<div className='space-y-4'>
 				<div className='flex items-center justify-between'>
 					<div className="space-y-2">
 						<h2 className='text-2xl sm:text-3xl font-bold text-foreground'>

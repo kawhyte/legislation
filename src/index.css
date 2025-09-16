@@ -39,6 +39,37 @@
   --color-wellness-green: var(--wellness-green);
   --color-wellness-yellow: var(--wellness-yellow);
 
+  /* ===== ENHANCED ACCENT COLOR SYSTEM (Enterprise Grade) ===== */
+  /* Primary Enhanced Accents - Yellow Focus */
+  --color-accent-yellow: var(--wellness-yellow);          /* #FFCE00 */
+  --color-accent-yellow-subtle: #FFFBF0;                  /* 5% background tint */
+  --color-accent-yellow-bolder: #E6B800;                  /* 90% saturation for depth */
+  --color-accent-yellow-boldest: #CC9900;                 /* 80% saturation for highest emphasis */
+  
+  /* Primary Enhanced Accents - Magenta Focus */
+  --color-accent-magenta: #E91E63;                        /* Enterprise magenta */
+  --color-accent-magenta-subtle: #FDF2F8;                 /* 5% background tint */
+  --color-accent-magenta-bolder: #C2185B;                 /* 90% saturation */
+  --color-accent-magenta-boldest: #AD1457;                /* 80% saturation */
+  
+  /* Interactive State Modifiers */
+  --color-accent-yellow-hovered: #FFDA33;                 /* 110% brightness */
+  --color-accent-yellow-pressed: #B8A300;                 /* 90% brightness */
+  --color-accent-magenta-hovered: #F06292;                /* 110% brightness */
+  --color-accent-magenta-pressed: #C2185B;                /* 90% brightness */
+
+  /* Component-Specific Intelligent Color Tokens */
+  --color-bill-card-accent: var(--color-accent-yellow);
+  --color-bill-card-accent-subtle: var(--color-accent-yellow-subtle);
+  --color-bill-card-action: var(--color-accent-magenta);
+  --color-bill-card-action-subtle: var(--color-accent-magenta-subtle);
+  
+  /* Automatic Contrast Text Colors */
+  --color-text-on-yellow: #2D2C2B;                        /* Dark text on yellow */
+  --color-text-on-magenta: #FFFFFF;                       /* Light text on magenta */
+  --color-text-on-yellow-subtle: var(--foreground);       /* Default text on subtle yellow */
+  --color-text-on-magenta-subtle: var(--foreground);      /* Default text on subtle magenta */
+
   /* Status & Feedback Colors */
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
@@ -50,9 +81,124 @@
   /* Additional utility colors */
   --color-muted: var(--muted);
 
+  /* ===== ENHANCED ACCENT UTILITIES FOR TAILWIND V4 ===== */
+  /* Yellow Accent System */
+  --color-accent-yellow: var(--color-accent-yellow);
+  --color-accent-yellow-subtle: var(--color-accent-yellow-subtle);
+  --color-accent-yellow-bolder: var(--color-accent-yellow-bolder);
+  --color-accent-yellow-boldest: var(--color-accent-yellow-boldest);
+  --color-accent-yellow-hovered: var(--color-accent-yellow-hovered);
+  --color-accent-yellow-pressed: var(--color-accent-yellow-pressed);
+  
+  /* Magenta Accent System */
+  --color-accent-magenta: var(--color-accent-magenta);
+  --color-accent-magenta-subtle: var(--color-accent-magenta-subtle);
+  --color-accent-magenta-bolder: var(--color-accent-magenta-bolder);
+  --color-accent-magenta-boldest: var(--color-accent-magenta-boldest);
+  --color-accent-magenta-hovered: var(--color-accent-magenta-hovered);
+  --color-accent-magenta-pressed: var(--color-accent-magenta-pressed);
+  
+  /* Component-Specific Tokens */
+  --color-bill-card-accent: var(--color-bill-card-accent);
+  --color-bill-card-accent-subtle: var(--color-bill-card-accent-subtle);
+  --color-bill-card-action: var(--color-bill-card-action);
+  --color-bill-card-action-subtle: var(--color-bill-card-action-subtle);
+  
+  /* Smart Contrast Text Colors */
+  --color-text-on-yellow: var(--color-text-on-yellow);
+  --color-text-on-magenta: var(--color-text-on-magenta);
+  --color-text-on-yellow-subtle: var(--color-text-on-yellow-subtle);
+  --color-text-on-magenta-subtle: var(--color-text-on-magenta-subtle);
+
   /* Headspace-Inspired Font Families */
   --font-display: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+
+  /* 🎯 8-POINT GRID SPACING SYSTEM - Enterprise Grade */
+  
+  /* ===== FIXED GRID BREAKPOINTS (Content-Optimized) ===== */
+  --breakpoint-xs: 20rem;     /* 320px - Mobile single */
+  --breakpoint-sm: 30rem;     /* 480px - Mobile dual */  
+  --breakpoint-md: 48rem;     /* 768px - Tablet triple */
+  --breakpoint-lg: 64rem;     /* 1024px - Desktop quad */
+  --breakpoint-xl: 80rem;     /* 1280px - Large quad+ */
+  --breakpoint-2xl: 96rem;    /* 1536px - Ultra-wide */
+
+  /* ===== GRID SEMANTIC TOKENS ===== */
+  --grid-legislation-container: 87.5rem;        /* 1400px max width */
+  --grid-legislation-gap: var(--space-6);       /* 48px standard gap */
+  --grid-legislation-gap-dense: var(--space-4); /* 32px compact gap */
+  --grid-legislation-card-min: 23.75rem;        /* 380px minimum card */
+  --grid-legislation-card-optimal: 26rem;       /* 416px optimal card */
+  
+  /* ===== CONTAINER QUERY SUPPORT ===== */
+  --grid-cq-1-col: 23.75rem;   /* 380px+ = 1 column */
+  --grid-cq-2-col: 48rem;      /* 768px+ = 2 columns */
+  --grid-cq-3-col: 72rem;      /* 1152px+ = 3 columns */
+  --grid-cq-4-col: 96rem;      /* 1536px+ = 4 columns */
+  --grid-cq-5-col: 120rem;     /* 1920px+ = 5 columns */
+
+  /* ===== CORE 8-POINT SPACING SCALE ===== */
+  --space-0: 0;
+  --space-px: 1px;
+  --space-0_5: 0.25rem;   /* 4px - Micro adjustments */
+  --space-1: 0.5rem;      /* 8px - Base unit */
+  --space-1_5: 0.75rem;   /* 12px - Small gaps */
+  --space-2: 1rem;        /* 16px - Standard elements */
+  --space-2_5: 1.25rem;   /* 20px - Medium elements */
+  --space-3: 1.5rem;      /* 24px - Component spacing */
+  --space-3_5: 1.75rem;   /* 28px - Large elements */
+  --space-4: 2rem;        /* 32px - Section padding */
+  --space-5: 2.5rem;      /* 40px - Large spacing */
+  --space-6: 3rem;        /* 48px - Section gaps */
+  --space-8: 4rem;        /* 64px - Large sections */
+  --space-10: 5rem;       /* 80px - Major spacing */
+  --space-12: 6rem;       /* 96px - Hero sections */
+  --space-16: 8rem;       /* 128px - Maximum spacing */
+  --space-20: 10rem;      /* 160px - Extra large */
+  --space-24: 12rem;      /* 192px - Extreme spacing */
+  
+  /* ===== NEGATIVE SPACING (Layout Flexibility) ===== */
+  --space--1: -0.5rem;    /* -8px */
+  --space--2: -1rem;      /* -16px */
+  --space--3: -1.5rem;    /* -24px */
+  --space--4: -2rem;      /* -32px */
+  
+  /* ===== SEMANTIC SPACING TOKENS ===== */
+  --space-card-padding: var(--space-4);      /* 32px */
+  --space-section-gap: var(--space-12);      /* 96px */
+  --space-component-gap: var(--space-3);     /* 24px */
+  --space-inline-gap: var(--space-2);        /* 16px */
+  --space-grid-gap: var(--space-3);          /* 24px - Perfect for BillGrid */
+  
+  /* ===== FLUID RESPONSIVE SPACING ===== */
+  --space-fluid-xs: clamp(0.5rem, 2vw, 1rem);     /* 8px → 16px */
+  --space-fluid-sm: clamp(1rem, 3vw, 1.5rem);     /* 16px → 24px */
+  --space-fluid-md: clamp(1.5rem, 4vw, 3rem);     /* 24px → 48px */
+  --space-fluid-lg: clamp(3rem, 6vw, 6rem);       /* 48px → 96px */
+  --space-fluid-xl: clamp(6rem, 10vw, 12rem);     /* 96px → 192px */
+  
+  /* ===== 8PX-ALIGNED TYPOGRAPHY ===== */
+  --text-xs: 0.75rem;     /* 12px */
+  --text-xs--line-height: 1rem;      /* 16px = 2×8 */
+  
+  --text-sm: 0.875rem;    /* 14px */
+  --text-sm--line-height: 1.25rem;   /* 20px = 2.5×8 */
+  
+  --text-base: 1rem;      /* 16px */
+  --text-base--line-height: 1.5rem;  /* 24px = 3×8 */
+  
+  --text-lg: 1.125rem;    /* 18px */
+  --text-lg--line-height: 1.75rem;   /* 28px = 3.5×8 */
+  
+  --text-xl: 1.25rem;     /* 20px */
+  --text-xl--line-height: 2rem;      /* 32px = 4×8 */
+  
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-2xl--line-height: 2rem;     /* 32px = 4×8 */
+  
+  --text-3xl: 1.875rem;   /* 30px */
+  --text-3xl--line-height: 2.5rem;   /* 40px = 5×8 */
 }
 
 /* 🎨 Headspace-Inspired Wellness Color System */
@@ -65,7 +211,7 @@
   |--------------------------------------------------------------------------
   | Core colors for backgrounds and text, inspired by Headspace's calming palette
   */
-  --background: #F9F4F2;                       /* Use for: Main page background. Headspace's signature warm cream */
+  --background: #f9f8f8;                       /* Use for: Main page background. Clean off-white */
   --foreground: #2D2C2B;                       /* Use for: Primary text color. Headspace's deep charcoal */
   --muted-foreground: #63605D;                 /* Use for: Secondary text, captions, descriptions */
 
@@ -203,6 +349,42 @@
   
   .font-body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  }
+  
+  /* ===== 8PX-ALIGNED TYPOGRAPHY UTILITIES ===== */
+  .text-8px-rhythm-xs {
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+  }
+  
+  .text-8px-rhythm-sm {
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+  }
+  
+  .text-8px-rhythm-base {
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+  }
+  
+  .text-8px-rhythm-lg {
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+  }
+  
+  .text-8px-rhythm-xl {
+    font-size: var(--text-xl);
+    line-height: var(--text-xl--line-height);
+  }
+  
+  .text-8px-rhythm-2xl {
+    font-size: var(--text-2xl);
+    line-height: var(--text-2xl--line-height);
+  }
+  
+  .text-8px-rhythm-3xl {
+    font-size: var(--text-3xl);
+    line-height: var(--text-3xl--line-height);
   }
   
   /* Text styles inspired by Headspace's calm, approachable typography */
@@ -400,4 +582,633 @@
   .animation-delay-4000 {
     animation-delay: 4s;
   }
+
+  /* ===== ENHANCED CONTAINER SYSTEM ===== */
+  
+  /* Standard fixed-width container (1400px max) */
+  .container-legislation {
+    max-width: var(--grid-legislation-container);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  
+  /* Full-width container with smart padding */
+  .container-legislation-full {
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  
+  /* Narrow container for focused content */
+  .container-legislation-narrow {
+    max-width: 75rem; /* 1200px */
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  
+  /* Wide container for data-dense layouts */
+  .container-legislation-wide {
+    max-width: 105rem; /* 1680px */
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  
+  /* Responsive container padding adjustments */
+  @media (min-width: 30rem) { /* 480px+ */
+    .container-legislation,
+    .container-legislation-full,
+    .container-legislation-narrow,
+    .container-legislation-wide {
+      padding-left: var(--space-6);
+      padding-right: var(--space-6);
+    }
+  }
+  
+  @media (min-width: 64rem) { /* 1024px+ */
+    .container-legislation,
+    .container-legislation-full,
+    .container-legislation-narrow,
+    .container-legislation-wide {
+      padding-left: var(--space-8);
+      padding-right: var(--space-8);
+    }
+  }
+  
+  @media (min-width: 80rem) { /* 1280px+ */
+    .container-legislation-full,
+    .container-legislation-wide {
+      padding-left: var(--space-12);
+      padding-right: var(--space-12);
+    }
+  }
+  
+  /* ===== FIXED GRID UTILITIES ===== */
+  .grid-legislation {
+    container-type: inline-size;
+    container-name: legislation-grid;
+    display: grid;
+    gap: var(--grid-legislation-gap);
+    grid-template-columns: repeat(1, 1fr);
+  }
+  
+  /* Responsive grid columns with container queries */
+  @container legislation-grid (min-width: 30rem) {
+    .grid-legislation { grid-template-columns: repeat(2, 1fr); }
+  }
+  @container legislation-grid (min-width: 48rem) {
+    .grid-legislation { grid-template-columns: repeat(3, 1fr); }
+  }
+  @container legislation-grid (min-width: 64rem) {
+    .grid-legislation { grid-template-columns: repeat(4, 1fr); }
+  }
+  @container legislation-grid (min-width: 80rem) {
+    .grid-legislation { grid-template-columns: repeat(5, 1fr); }
+  }
+  
+  /* Fallback for browsers without container query support */
+  @supports not (container-type: inline-size) {
+    .grid-legislation {
+      grid-template-columns: repeat(auto-fit, minmax(var(--grid-legislation-card-min), 1fr));
+    }
+  }
+
+  /* ===== GRID VARIANTS ===== */
+  
+  /* Compact grid - denser information display */
+  .grid-legislation-compact {
+    container-type: inline-size;
+    container-name: legislation-grid;
+    display: grid;
+    gap: var(--grid-legislation-gap-dense);
+    grid-template-columns: repeat(1, 1fr);
+  }
+  
+  /* Compact variant responsive columns */
+  @container legislation-grid (min-width: 25rem) {
+    .grid-legislation-compact { grid-template-columns: repeat(2, 1fr); }
+  }
+  @container legislation-grid (min-width: 40rem) {
+    .grid-legislation-compact { grid-template-columns: repeat(3, 1fr); }
+  }
+  @container legislation-grid (min-width: 55rem) {
+    .grid-legislation-compact { grid-template-columns: repeat(4, 1fr); }
+  }
+  @container legislation-grid (min-width: 70rem) {
+    .grid-legislation-compact { grid-template-columns: repeat(5, 1fr); }
+  }
+  @container legislation-grid (min-width: 85rem) {
+    .grid-legislation-compact { grid-template-columns: repeat(6, 1fr); }
+  }
+  
+  /* Featured grid - optimal card sizing */
+  .grid-legislation-featured {
+    container-type: inline-size;
+    container-name: legislation-grid;
+    display: grid;
+    gap: var(--grid-legislation-gap);
+    grid-template-columns: repeat(auto-fit, minmax(var(--grid-legislation-card-optimal), 1fr));
+  }
+  
+  /* ===== GRID SPANNING UTILITIES ===== */
+  
+  /* Basic spanning */
+  .bill-card-span-2 { 
+    grid-column: span 2; 
+  }
+  
+  .bill-card-span-3 { 
+    grid-column: span 3; 
+  }
+  
+  .bill-card-span-4 { 
+    grid-column: span 4; 
+  }
+  
+  /* Featured card - spans 2 columns and 2 rows */
+  .bill-card-featured { 
+    grid-column: span 2; 
+    grid-row: span 2; 
+  }
+  
+  /* Hero card - spans full width */
+  .bill-card-hero { 
+    grid-column: 1 / -1; 
+  }
+  
+  /* Tall card - spans 2 rows */
+  .bill-card-tall { 
+    grid-row: span 2; 
+  }
+  
+  /* Wide card - spans 3 columns */
+  .bill-card-wide { 
+    grid-column: span 3; 
+  }
+  
+  /* ===== RESPONSIVE SPANNING (Mobile-first safety) ===== */
+  
+  /* On small screens, reset all spanning to single columns */
+  @container legislation-grid (max-width: 29.9rem) {
+    .bill-card-span-2,
+    .bill-card-span-3,
+    .bill-card-span-4,
+    .bill-card-featured,
+    .bill-card-wide {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+    
+    .bill-card-hero {
+      grid-column: 1 / -1; /* Hero stays full width */
+    }
+  }
+  
+  /* Medium screens - limit spanning */
+  @container legislation-grid (min-width: 30rem) and (max-width: 47.9rem) {
+    .bill-card-span-3,
+    .bill-card-span-4,
+    .bill-card-wide {
+      grid-column: span 2; /* Max 2 columns on medium */
+    }
+    
+    .bill-card-featured {
+      grid-column: span 2;
+      grid-row: span 1; /* Single row on medium */
+    }
+  }
+  
+  /* ===== GRID UTILITY MODIFIERS ===== */
+  
+  /* Dense gap override */
+  .grid-dense {
+    gap: var(--grid-legislation-gap-dense);
+  }
+  
+  /* Extra loose gap */
+  .grid-loose {
+    gap: var(--space-8); /* 64px */
+  }
+  
+  /* Auto-fit override for any grid */
+  .grid-auto-fit {
+    grid-template-columns: repeat(auto-fit, minmax(var(--grid-legislation-card-min), 1fr));
+  }
+  
+  /* Auto-fill override for any grid */
+  .grid-auto-fill {
+    grid-template-columns: repeat(auto-fill, minmax(var(--grid-legislation-card-min), 1fr));
+  }
+
+  /* ===== CONTAINER UTILITY MODIFIERS ===== */
+  
+  /* Padding modifiers */
+  .container-padding-none {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  
+  .container-padding-tight {
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
+  }
+  
+  .container-padding-loose {
+    padding-left: var(--space-12);
+    padding-right: var(--space-12);
+  }
+  
+  /* Width modifiers */
+  .container-narrow {
+    max-width: 60rem; /* 960px */
+  }
+  
+  .container-content {
+    max-width: 42rem; /* 672px - optimal for reading */
+  }
+  
+  .container-ultra-wide {
+    max-width: 120rem; /* 1920px */
+  }
+  
+  /* Breakout utilities */
+  .container-breakout {
+    margin-left: calc(-1 * var(--space-4));
+    margin-right: calc(-1 * var(--space-4));
+  }
+  
+  @media (min-width: 30rem) {
+    .container-breakout {
+      margin-left: calc(-1 * var(--space-6));
+      margin-right: calc(-1 * var(--space-6));
+    }
+  }
+  
+  @media (min-width: 64rem) {
+    .container-breakout {
+      margin-left: calc(-1 * var(--space-8));
+      margin-right: calc(-1 * var(--space-8));
+    }
+  }
+  
+  /* Container sections */
+  .container-section {
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+  }
+  
+  .container-section-tight {
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-6);
+  }
+  
+  .container-section-loose {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-16);
+  }
+
+  /* ===== CONTAINER BREAKPOINT CUSTOMIZATIONS ===== */
+  
+  /* Custom container breakpoints for specific use cases */
+  .container-legislation-mobile {
+    max-width: 100%;
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
+  }
+  
+  @media (min-width: 40rem) {
+    .container-legislation-mobile {
+      max-width: var(--grid-legislation-container);
+      padding-left: var(--space-6);
+      padding-right: var(--space-6);
+    }
+  }
+  
+  /* Dashboard-specific container */
+  .container-dashboard {
+    max-width: 100%;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  
+  @media (min-width: 48rem) {
+    .container-dashboard {
+      max-width: 95%;
+      padding-left: var(--space-6);
+      padding-right: var(--space-6);
+    }
+  }
+  
+  @media (min-width: 80rem) {
+    .container-dashboard {
+      max-width: 90%;
+      padding-left: var(--space-8);
+      padding-right: var(--space-8);
+    }
+  }
+  
+  /* Hero section container */
+  .container-hero {
+    max-width: 100%;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  
+  @media (min-width: 64rem) {
+    .container-hero {
+      max-width: 120rem; /* 1920px */
+      padding-left: var(--space-16);
+      padding-right: var(--space-16);
+    }
+  }
+
+  /* ===== ADVANCED GRID FEATURES ===== */
+  
+  /* Masonry-style layout using CSS Grid (Firefox native, Chrome fallback) */
+  .grid-legislation-masonry {
+    container-type: inline-size;
+    container-name: legislation-grid;
+    display: grid;
+    gap: var(--grid-legislation-gap);
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: masonry; /* Native masonry in Firefox */
+  }
+  
+  /* Masonry responsive columns */
+  @container legislation-grid (min-width: 30rem) {
+    .grid-legislation-masonry { grid-template-columns: repeat(2, 1fr); }
+  }
+  @container legislation-grid (min-width: 48rem) {
+    .grid-legislation-masonry { grid-template-columns: repeat(3, 1fr); }
+  }
+  @container legislation-grid (min-width: 64rem) {
+    .grid-legislation-masonry { grid-template-columns: repeat(4, 1fr); }
+  }
+  @container legislation-grid (min-width: 80rem) {
+    .grid-legislation-masonry { grid-template-columns: repeat(5, 1fr); }
+  }
+  
+  /* Fallback for browsers without masonry support */
+  @supports not (grid-template-rows: masonry) {
+    .grid-legislation-masonry {
+      /* Use column-count for masonry-like effect */
+      column-count: 1;
+      column-gap: var(--grid-legislation-gap);
+      grid-template-columns: none;
+      grid-template-rows: none;
+    }
+    
+    .grid-legislation-masonry > * {
+      break-inside: avoid;
+      margin-bottom: var(--grid-legislation-gap);
+      display: inline-block;
+      width: 100%;
+    }
+    
+    @container legislation-grid (min-width: 30rem) {
+      .grid-legislation-masonry { column-count: 2; }
+    }
+    @container legislation-grid (min-width: 48rem) {
+      .grid-legislation-masonry { column-count: 3; }
+    }
+    @container legislation-grid (min-width: 64rem) {
+      .grid-legislation-masonry { column-count: 4; }
+    }
+    @container legislation-grid (min-width: 80rem) {
+      .grid-legislation-masonry { column-count: 5; }
+    }
+  }
+  
+  /* ===== GRID AREA NAMING SYSTEM ===== */
+  
+  /* Semantic layout areas for legislation pages */
+  .grid-legislation-layout {
+    display: grid;
+    gap: var(--grid-legislation-gap);
+    grid-template-areas:
+      "header"
+      "filters"
+      "content"
+      "sidebar"
+      "footer";
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr auto auto;
+  }
+  
+  /* Responsive layout transformation */
+  @media (min-width: 48rem) {
+    .grid-legislation-layout {
+      grid-template-areas:
+        "header header"
+        "filters sidebar"
+        "content sidebar"
+        "footer footer";
+      grid-template-columns: 1fr 20rem;
+      grid-template-rows: auto auto 1fr auto;
+    }
+  }
+  
+  @media (min-width: 80rem) {
+    .grid-legislation-layout {
+      grid-template-areas:
+        "header header header"
+        "filters content sidebar"
+        "footer footer footer";
+      grid-template-columns: 16rem 1fr 20rem;
+      grid-template-rows: auto 1fr auto;
+    }
+  }
+  
+  /* Area assignment utilities */
+  .grid-area-header { grid-area: header; }
+  .grid-area-filters { grid-area: filters; }
+  .grid-area-content { grid-area: content; }
+  .grid-area-sidebar { grid-area: sidebar; }
+  .grid-area-footer { grid-area: footer; }
+  
+  /* Dashboard-specific grid layout */
+  .grid-dashboard-layout {
+    display: grid;
+    gap: var(--grid-legislation-gap);
+    grid-template-areas:
+      "nav"
+      "main"
+      "aside";
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+  }
+  
+  @media (min-width: 64rem) {
+    .grid-dashboard-layout {
+      grid-template-areas:
+        "nav nav nav"
+        "aside main main";
+      grid-template-columns: 16rem 1fr 1fr;
+      grid-template-rows: auto 1fr;
+    }
+  }
+  
+  @media (min-width: 90rem) {
+    .grid-dashboard-layout {
+      grid-template-areas: "nav aside main";
+      grid-template-columns: 4rem 16rem 1fr;
+      grid-template-rows: 100vh;
+    }
+  }
+  
+  /* Dashboard area utilities */
+  .grid-area-nav { grid-area: nav; }
+  .grid-area-main { grid-area: main; }
+  .grid-area-aside { grid-area: aside; }
+  
+  /* ===== SUBGRID SUPPORT ===== */
+  
+  /* Subgrid for nested grid alignment */
+  .grid-subgrid {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-template-rows: subgrid;
+  }
+  
+  /* Subgrid columns only */
+  .grid-subgrid-cols {
+    display: grid;
+    grid-template-columns: subgrid;
+  }
+  
+  /* Subgrid rows only */
+  .grid-subgrid-rows {
+    display: grid;
+    grid-template-rows: subgrid;
+  }
+  
+  /* Fallback for browsers without subgrid */
+  @supports not (grid-template-columns: subgrid) {
+    .grid-subgrid,
+    .grid-subgrid-cols {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+    
+    .grid-subgrid-rows {
+      display: grid;
+      grid-template-rows: auto;
+    }
+  }
+
+  /* ===== ADVANCED GRID POSITIONING UTILITIES ===== */
+  
+  /* Precise grid positioning */
+  .grid-col-start-1 { grid-column-start: 1; }
+  .grid-col-start-2 { grid-column-start: 2; }
+  .grid-col-start-3 { grid-column-start: 3; }
+  .grid-col-start-4 { grid-column-start: 4; }
+  .grid-col-start-5 { grid-column-start: 5; }
+  
+  .grid-col-end-neg1 { grid-column-end: -1; }
+  .grid-row-end-neg1 { grid-row-end: -1; }
+  
+  /* Grid placement shortcuts */
+  .grid-col-1-neg1 { grid-column: 1 / -1; }
+  .grid-col-2-neg1 { grid-column: 2 / -1; }
+  .grid-row-1-neg1 { grid-row: 1 / -1; }
+  
+  /* Grid alignment utilities */
+  .grid-justify-center { justify-self: center; }
+  .grid-justify-end { justify-self: end; }
+  .grid-align-center { align-self: center; }
+  .grid-align-end { align-self: end; }
+  
+  /* Grid container alignment */
+  .grid-justify-items-center { justify-items: center; }
+  .grid-align-items-center { align-items: center; }
+  
+  /* ===== EXPERIMENTAL GRID FEATURES ===== */
+  
+  /* Animated grid transitions */
+  .grid-animate {
+    transition: grid-template-columns 0.3s ease, grid-template-rows 0.3s ease;
+  }
+  
+  /* Sticky grid items */
+  .grid-sticky {
+    position: sticky;
+    top: var(--space-4);
+    z-index: 10;
+  }
+  
+  /* Print-optimized grid */
+  @media print {
+    .grid-legislation,
+    .grid-legislation-compact,
+    .grid-legislation-featured,
+    .grid-legislation-masonry {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: var(--space-4) !important;
+    }
+    
+    .bill-card-span-2,
+    .bill-card-span-3,
+    .bill-card-featured,
+    .bill-card-hero {
+      grid-column: span 1 !important;
+      grid-row: span 1 !important;
+    }
+  }
+
+  /* ===== ENHANCED ACCENT COLOR UTILITIES ===== */
+  
+  /* Yellow Accent Backgrounds */
+  .bg-accent-yellow { background-color: var(--color-accent-yellow); }
+  .bg-accent-yellow-subtle { background-color: var(--color-accent-yellow-subtle); }
+  .bg-accent-yellow-bolder { background-color: var(--color-accent-yellow-bolder); }
+  .bg-accent-yellow-boldest { background-color: var(--color-accent-yellow-boldest); }
+  
+  /* Yellow Accent Text */
+  .text-accent-yellow { color: var(--color-accent-yellow); }
+  .text-accent-yellow-bolder { color: var(--color-accent-yellow-bolder); }
+  .text-accent-yellow-boldest { color: var(--color-accent-yellow-boldest); }
+  .text-on-yellow { color: var(--color-text-on-yellow); }
+  .text-on-yellow-subtle { color: var(--color-text-on-yellow-subtle); }
+  
+  /* Yellow Accent Borders */
+  .border-accent-yellow { border-color: var(--color-accent-yellow); }
+  .border-accent-yellow-bolder { border-color: var(--color-accent-yellow-bolder); }
+  
+  /* Magenta Accent Backgrounds */
+  .bg-accent-magenta { background-color: var(--color-accent-magenta); }
+  .bg-accent-magenta-subtle { background-color: var(--color-accent-magenta-subtle); }
+  .bg-accent-magenta-bolder { background-color: var(--color-accent-magenta-bolder); }
+  .bg-accent-magenta-boldest { background-color: var(--color-accent-magenta-boldest); }
+  
+  /* Magenta Accent Text */
+  .text-accent-magenta { color: var(--color-accent-magenta); }
+  .text-accent-magenta-bolder { color: var(--color-accent-magenta-bolder); }
+  .text-accent-magenta-boldest { color: var(--color-accent-magenta-boldest); }
+  .text-on-magenta { color: var(--color-text-on-magenta); }
+  .text-on-magenta-subtle { color: var(--color-text-on-magenta-subtle); }
+  
+  /* Magenta Accent Borders */
+  .border-accent-magenta { border-color: var(--color-accent-magenta); }
+  .border-accent-magenta-bolder { border-color: var(--color-accent-magenta-bolder); }
+  
+  /* Interactive Hover States */
+  .hover\:bg-accent-yellow-hovered:hover { background-color: var(--color-accent-yellow-hovered); }
+  .hover\:bg-accent-magenta-hovered:hover { background-color: var(--color-accent-magenta-hovered); }
+  
+  /* Component-Specific Utilities */
+  .bg-bill-card-accent { background-color: var(--color-bill-card-accent); }
+  .bg-bill-card-accent-subtle { background-color: var(--color-bill-card-accent-subtle); }
+  .bg-bill-card-action { background-color: var(--color-bill-card-action); }
+  .bg-bill-card-action-subtle { background-color: var(--color-bill-card-action-subtle); }
+  .text-bill-card-accent { color: var(--color-bill-card-accent); }
+  .text-bill-card-action { color: var(--color-bill-card-action); }
 }

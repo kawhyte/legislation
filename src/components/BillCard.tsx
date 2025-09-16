@@ -162,13 +162,13 @@ const BillCard = ({
 	};
 
 	return (
-<Card className='bg-card border-border hover:border-border/80 hover:shadow-lg transition-all duration-300 flex flex-col h-full'>			<CardHeader className='p-4 space-y-1'>
+<Card className='bg-card border-border hover:border-border/80 hover:shadow-lg transition-all duration-300 flex flex-col h-full hover:bg-bill-card-accent-subtle'>			<CardHeader className='p-4 space-y-2'>
 				{/* --- TOP LINE METADATA --- */}
 				<div className='flex items-start justify-between'>
-					<div className='flex items-center gap-2 text-xs text-muted-foreground'>
+					<div className='flex items-center gap-2 text-8px-rhythm-xs text-muted-foreground'>
 						<Avatar className='w-6 h-6 border border-border rounded-md'>
 							<AvatarImage src={flagUrl} alt={bill?.jurisdiction?.name} />
-							<AvatarFallback className='text-xs bg-muted text-muted-foreground'>
+							<AvatarFallback className='text-8px-rhythm-xs bg-muted text-muted-foreground'>
 								{bill?.jurisdiction?.name.slice(0, 2).toUpperCase()}
 							</AvatarFallback>
 						</Avatar>
@@ -180,10 +180,10 @@ const BillCard = ({
 					</div>
 				<div className='flex flex-row items-start gap-2'>
     {showTrendingReason && bill.trendingReason === "Trending" && (
-            // UPDATED: Replaced hardcoded amber-* colors with the theme's semantic "warning" color
-            <div className='flex items-center gap-1.5 text-xs font-semibold bg-wellness-yellow  px-2 py-1 rounded-full border border-warning/20'>
+            // UPDATED: Using new enhanced accent yellow system with automatic contrast
+            <div className='flex items-center gap-1.5 text-8px-rhythm-xs font-semibold bg-accent-yellow text-on-yellow px-2 py-1 rounded-full border border-accent-yellow-bolder/20'>
                 <Zap className='h-3 w-3' />
-                <span>Trending</span>
+                <span className="bg-white">Trending</span>
             </div>
         )}
     <TooltipProvider>
@@ -193,7 +193,7 @@ const BillCard = ({
 				</div>
 
 				{/* --- BILL TITLE (PRIMARY) --- */}
-				<CardTitle className='text-base font-semibold line-clamp-3 h-12 text-foreground leading-snug pt-1'>
+				<CardTitle className='text-8px-rhythm-base font-semibold line-clamp-3 h-12 text-foreground pt-2'>
 					{toSentenceCase(bill.title)}
 				</CardTitle>
 
@@ -203,13 +203,13 @@ const BillCard = ({
 				</div>
 			</CardHeader>
 
-			<CardContent className='flex-grow flex flex-col justify-end space-y-2 p-4 pt-0'>
+			<CardContent className='flex-grow flex flex-col justify-end space-y-3 p-4 pt-0'>
 				{showProgressBar && <BillProgressStepper bill={bill} />}
 
-				<div className='flex items-center gap-2 mt-2'>
+				<div className='flex items-center gap-3 mt-3'>
 					<Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
 						<DialogTrigger asChild>
-							<Button onClick={handleDecodeClick} className='w-full' size='sm'>
+							<Button onClick={handleDecodeClick} className='w-full bg-primary text-primary-foreground hover:bg-primary-hover border border-accent-magenta-bolder/20' size='sm'>
 								<Sparkles className='h-4 w-4 mr-1' />
 								Explain this Bill
 							</Button>
@@ -217,7 +217,7 @@ const BillCard = ({
 						<DialogContent className='bg-card sm:max-w-[625px]'>
 							<DialogHeader>
 								<DialogTitle className='flex items-center gap-3'>
-									<Sparkles className='h-5 w-5 text-primary' />
+									<Sparkles className='h-5 w-5 text-bill-card-action' />
 									<span className='text-sm font-medium text-muted-foreground'>
 										Powered by AI to find what matters
 									</span>
@@ -246,7 +246,7 @@ const BillCard = ({
 										<Button
 											variant='ghost'
 											size='sm'
-											className='text-xs text-muted-foreground hover:text-foreground'>
+											className='text-8px-rhythm-xs text-muted-foreground hover:text-foreground'>
 											<Link className='h-3 w-3 mr-1.5' />
 											<span>
 												{bill.sources.length} Official Source
@@ -274,7 +274,7 @@ const BillCard = ({
 
 						<div>
 							{bill.latest_action_date && (
-								<div className='flex items-center text-xs text-muted-foreground'>
+								<div className='flex items-center text-8px-rhythm-xs text-muted-foreground'>
 									<span className="pr-1 "> Last Updated on </span>
 									{/* <Calendar className='h-3 w-3 mr-1.5' /> */}
 									<span>

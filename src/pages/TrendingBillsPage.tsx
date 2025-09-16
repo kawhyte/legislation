@@ -12,7 +12,7 @@ const TrendingBillsPage: React.FC = () => {
   const renderContent = () => {
     if (isLoading) {
       return (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(380px,1fr))] gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {Array.from({ length: 12 }).map((_, i) => (
             <BillCardSkeleton key={i} />
           ))}
@@ -37,7 +37,7 @@ const TrendingBillsPage: React.FC = () => {
     if (trendingBills.length === 0) {
       return (
         <div className="text-center py-10">
-          <p className="text-slate-500">No trending bills at the moment. Check back later!</p>
+          <p className="text-8px-rhythm-base text-muted-foreground">No trending bills at the moment. Check back later!</p>
         </div>
       );
     }
@@ -53,12 +53,12 @@ const TrendingBillsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">
+      <div className="container-legislation container-section">
+        <div className="mb-12 text-center">
+          <h1 className="text-3xl font-bold text-foreground mb-4">
             Legislative Bills Trending Around The USA
           </h1>
-          <p className="text-slate-500">
+          <p className="text-8px-rhythm-lg text-muted-foreground">
             Bills that are currently gaining momentum nationwide.
           </p>
         </div>
