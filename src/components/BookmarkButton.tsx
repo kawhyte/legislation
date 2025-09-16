@@ -50,12 +50,12 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     }
   };
 
-  // UPDATED: Replaced hardcoded colors with theme variables
+  // Updated to use wellness color system
   const getBookmarkStyles = () => {
     if (bookmarked) {
-      return "text-warning hover:text-warning/90 bg-warning/10 border-warning/20";
+      return "text-wellness-yellow hover:text-wellness-yellow/90 bg-wellness-yellow/10 border-wellness-yellow/20";
     }
-    return "text-muted-foreground hover:text-warning hover:bg-warning/10 border-transparent hover:border-warning/20";
+    return "text-muted-foreground hover:text-wellness-yellow hover:bg-wellness-yellow/10 border-transparent hover:border-wellness-yellow/20";
   };
 
   const tooltipText = bookmarked ? "Remove from saved" : "Save for later";

@@ -182,7 +182,7 @@ const BillCard = ({
 				<div className='flex flex-row items-start gap-2'>
     {showTrendingReason && bill.trendingReason === "Trending" && (
             // UPDATED: Replaced hardcoded amber-* colors with the theme's semantic "warning" color
-            <div className='flex items-center gap-1.5 text-xs font-semibold bg-warning/10 text-warning px-2 py-1 rounded-full border border-warning/20'>
+            <div className='flex items-center gap-1.5 text-xs font-semibold bg-wellness-yellow  px-2 py-1 rounded-full border border-warning/20'>
                 <Zap className='h-3 w-3' />
                 <span>Trending</span>
             </div>
@@ -276,7 +276,8 @@ const BillCard = ({
 						<div>
 							{bill.latest_action_date && (
 								<div className='flex items-center text-xs text-muted-foreground'>
-									<Calendar className='h-3 w-3 mr-1.5' />
+									<span className="pr-1 "> Last Updated on </span>
+									{/* <Calendar className='h-3 w-3 mr-1.5' /> */}
 									<span>
 										{new Date(bill.latest_action_date).toLocaleDateString(
 											"en-US",

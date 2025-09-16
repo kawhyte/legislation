@@ -47,11 +47,11 @@ const BillProgressStepper: React.FC<BillProgressStepperProps> = ({ bill, classNa
 const statusDotColor = {
     "Failed": "bg-destructive",
     "Passed": "bg-success",
-    "In Progress": "bg-info"
+    "In Progress": "bg-success"
   }[progress.current.status] ?? "bg-border";
 
   return (
-    <div className={`bg-muted border border-border rounded-lg p-3 ${className}`}>
+    <div className={` border border-border rounded-lg p-3 ${className}`}>
       <div className='flex items-center gap-2 mb-3'>
       <Gavel className='h-3.5 w-3.5 text-muted-foreground' />
         <span className='text-xs font-medium text-muted-foreground'>Progress</span>
@@ -74,8 +74,8 @@ const statusDotColor = {
             
             const colors = {
               completed: 'text-success',
-              inProgress: 'text-info',
-              pending: 'text-muted-foreground',
+              inProgress: 'text-success',
+              pending: 'text-success',
               failed: 'text-destructive'
             };
             
@@ -91,7 +91,7 @@ const statusDotColor = {
                   ${isInProgress ? 'bg-card border-2 border-info' : ''}
                   ${stage.status === 'Pending' ? 'bg-border' : ''}
                 `}>
-              {isFailed && <X className="w-3.5 h-3.5 text-destructive-foreground" />}
+              {isFailed && <X className="w-3.5 h-3.5 text-primary-foreground" />}
                   {isCompleted && <Check className="w-3.5 h-3.5 text-primary-foreground" />}
                   {isInProgress && <div className="w-2 h-2 rounded-full bg-info"></div>}
                 </div>

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { type States } from "./JurisdictionSelector";
 import SimpleHero from "./SimpleHero";
-import BillGrid from "./BillGrid";
+// import BillGrid from "./BillGrid";
 
 const ExploreBillsTab: React.FC = () => {
 	const [selectedJurisdiction, setSelectedJurisdiction] = useState<States | null>(null);
@@ -73,14 +73,14 @@ const ExploreBillsTab: React.FC = () => {
 			</div>
 
 			{/* Results */}
-			<div ref={resultsRef}>
+			{/* <div ref={resultsRef}>
 				{(selectedJurisdiction || (!selectedJurisdiction && !selectedTopic)) && (
 					<BillGrid
 						selectedJurisdiction={selectedJurisdiction}
 						selectedTopic={selectedTopic}
 					/>
 				)}
-			</div>
+			</div> */}
 		</div>
 	);
 };
