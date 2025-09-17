@@ -3,20 +3,30 @@ import { Link } from "react-router-dom";
 import animationData from "../assets/friends.json";
 import { Button } from "./ui/button";
 import { Circle } from "lucide-react";
+import { useDemo } from "@/contexts/DemoContext";
 
 const Lottie = React.lazy(() => import("lottie-react"));
 
 
 
 const HeroSection = () => {
+	const { setDemoMode, refreshDemoBills } = useDemo();
+
 	const scrollToDemo = () => {
-		const demoElement = document.getElementById('demo-playground');
-		if (demoElement) {
-			demoElement.scrollIntoView({ 
-				behavior: 'smooth',
-				block: 'start'
-			});
-		}
+		// First activate demo mode
+		setDemoMode(true);
+		refreshDemoBills();
+		
+		// Then scroll to the demo section
+		setTimeout(() => {
+			const demoElement = document.getElementById('demo-playground');
+			if (demoElement) {
+				demoElement.scrollIntoView({ 
+					behavior: 'smooth',
+					block: 'start'
+				});
+			}
+		}, 100); // Small delay to ensure demo mode is activated
 	};
 
 	return (

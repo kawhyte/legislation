@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PlayCircle, Sparkles, RefreshCw, ArrowRight } from 'lucide-react';
+import { PlayCircle, RefreshCw, ArrowRight } from 'lucide-react';
 import { useDemo } from '@/contexts/DemoContext';
 import DemoBillCard from './DemoBillCard';
 import { Link } from 'react-router-dom';
@@ -21,10 +21,6 @@ const DemoPlayground: React.FC = () => {
   
   const [activeTab, setActiveTab] = useState("demo-bills");
 
-  const handleStartDemo = () => {
-    setDemoMode(true);
-    refreshDemoBills();
-  };
 
   const handleRefreshBills = () => {
     refreshDemoBills();
@@ -50,61 +46,10 @@ const DemoPlayground: React.FC = () => {
     return trendingBills.slice(0, 3);
   };
 
+  // Auto-activate demo mode if not already active
   if (!isDemoMode) {
-    return (
-      <section id="demo-playground" className="container-section bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-dashed border-primary/30 rounded-2xl">
-        <div className="container-legislation">
-          <div className="text-center space-y-6">
-            {/* Demo Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full">
-              <PlayCircle className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-primary">Interactive Demo</span>
-            </div>
-            
-            {/* Heading */}
-            <div className="space-y-3">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
-                Try Our Platform Risk-Free
-              </h2>
-              <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
-                Experience how our AI-powered bill tracking works with real legislative data. 
-                Save bills, get explanations, and explore features – no account required.
-              </p>
-            </div>
-
-            {/* Features Preview */}
-            <div className="grid sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
-              <div className="bg-card border border-border rounded-lg p-4">
-                <Sparkles className="h-6 w-6 text-wellness-purple mx-auto mb-2" />
-                <p className="text-sm font-medium text-foreground">AI Bill Explanations</p>
-              </div>
-              <div className="bg-card border border-border rounded-lg p-4">
-                <Badge className="mx-auto mb-2 bg-wellness-green text-wellness-green-foreground">Save Bills</Badge>
-                <p className="text-sm font-medium text-foreground">Bookmark & Track</p>
-              </div>
-              <div className="bg-card border border-border rounded-lg p-4">
-                <RefreshCw className="h-6 w-6 text-wellness-pink mx-auto mb-2" />
-                <p className="text-sm font-medium text-foreground">Live Dashboard</p>
-              </div>
-            </div>
-
-            {/* CTA Button */}
-            <Button 
-              onClick={handleStartDemo}
-              size="lg"
-              className="bg-primary text-primary-foreground hover:bg-primary-hover px-8 py-3 text-lg"
-            >
-              <PlayCircle className="h-5 w-5 mr-2" />
-              Start Demo Experience
-            </Button>
-
-            <p className="text-sm text-muted-foreground">
-              Demo saves to your browser for 7 days • No personal information collected
-            </p>
-          </div>
-        </div>
-      </section>
-    );
+    setDemoMode(true);
+    refreshDemoBills();
   }
 
   return (
