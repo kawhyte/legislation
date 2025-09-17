@@ -1,5 +1,7 @@
 // src/contexts/DemoContext.tsx
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import type { Bill } from '@/types';
 import { demoBillsData, demoExplanations } from '@/data/demoBillsData';
 
@@ -94,7 +96,7 @@ export const DemoProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const saveDemoBill = (bill: Bill) => {
     const newSavedBill: DemoSavedBill = {
-      id: `demo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `demo-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
       billId: bill.id,
       billData: bill,
       savedAt: new Date().toISOString(),
