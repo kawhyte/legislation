@@ -11,6 +11,7 @@ import ProfileSetupPage from "./pages/ProfileSetupPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import { UserProvider, useUserData } from "./contexts/UserContext";
+import { DemoProvider } from "./contexts/DemoContext";
 import { Toaster } from "@/components/ui/sonner";
 
 const HomePage = () => {
@@ -154,8 +155,10 @@ const App = () => {
 	return (
 		<Router>
 			<UserProvider>
-				<AppRoutes />
-				<Toaster />
+				<DemoProvider>
+					<AppRoutes />
+					<Toaster />
+				</DemoProvider>
 			</UserProvider>
 		</Router>
 	);

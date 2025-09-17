@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import ExpertsCarousel from "./ExpertsCarousel";
+import DemoPlayground from "./DemoPlayground";
 import { 
 	Search, 
 	Sparkles, 
@@ -135,7 +136,13 @@ const HomepageContent = () => {
 					</div>
 				</div>
 			</section>
+<section className="mb-16"> 
 
+
+	{/* Demo Playground Section */}
+			<DemoPlayground />
+</section>
+			
 
 			{/* Social Proof Section */}
 			<section className="container-section bg-muted/30 relative overflow-hidden">

@@ -9,6 +9,15 @@ const Lottie = React.lazy(() => import("lottie-react"));
 
 
 const HeroSection = () => {
+	const scrollToDemo = () => {
+		const demoElement = document.getElementById('demo-playground');
+		if (demoElement) {
+			demoElement.scrollIntoView({ 
+				behavior: 'smooth',
+				block: 'start'
+			});
+		}
+	};
 
 	return (
 		<div className='relative overflow-hidden'>
@@ -57,10 +66,12 @@ const HeroSection = () => {
 										Get Started Free
 									</Link>
 								</Button>
-								<Button asChild  size='lg' className='px-8 py-6 text-muted-foreground border-2 border-border bg-card hover:bg-wellness-purple/10 transition-all'>
-									<Link to='/dashboard'>
-										Explore Demo
-									</Link>
+								<Button 
+									onClick={scrollToDemo}
+									size='lg' 
+									className='px-8 py-6 text-muted-foreground border-2 border-border bg-card hover:bg-wellness-purple/10 transition-all'
+								>
+									Explore Demo
 								</Button>
 							</div>
 
