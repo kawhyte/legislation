@@ -14,7 +14,6 @@ import {
 	TrendingUp,
 	Menu,
 	X,
-	Lightbulb,
 	User,
 	Settings,
 	LogOut,
