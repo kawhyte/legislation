@@ -6,7 +6,7 @@ import Hero from "./components/Hero";
 import HomepageContent from "./components/HomepageContent";
 import DashboardPage from "./pages/DashboardPage";
 import TrendingBillsPage from "./pages/TrendingBillsPage";
-import WhyThisMattersPage from "./pages/WhyThisMattersPage";
+// import WhyThisMattersPage from "./pages/WhyThisMattersPage";
 import ProfileSetupPage from "./pages/ProfileSetupPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
@@ -102,7 +102,7 @@ const AppRoutes = () => {
 					}
 				/>
 				<Route path='/trending' element={<TrendingBillsPage />} />
-				<Route path='/why-this-matters' element={<WhyThisMattersPage />} />
+				{/* <Route path='/why-this-matters' element={<WhyThisMattersPage />} /> */}
 				
 				{/* Auth routes */}
 				<Route

@@ -71,13 +71,13 @@ const Header = () => {
 					Dashboard
 				</Button>
 			)}
-			<Button
+			{/* <Button
 				variant='ghost'
 				onClick={() => navigate("/why-this-matters")}
 				// UPDATED: Added hover:bg-accent for consistency
 				className='text-muted-foreground hover:text-foreground hover:bg-accent px-6'>
 				Why This Matters
-			</Button>
+			</Button> */}
 		</nav>
 	);
 
@@ -216,7 +216,7 @@ const Header = () => {
 						Dashboard
 					</Button>
 				)}
-				<Button
+				{/* <Button
 					variant='ghost'
 					onClick={() => {
 						navigate("/why-this-matters");
@@ -226,7 +226,7 @@ const Header = () => {
 					className='w-full justify-start gap-4 text-base py-8 text-foreground hover:bg-accent'>
 					<Lightbulb className='h-5 w-5' />
 					Why This Matters
-				</Button>
+				</Button> */}
 
 				{/* Mobile Auth Actions */}
 				{isSignedIn ? (
