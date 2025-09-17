@@ -5,15 +5,17 @@ import BillCardSkeleton from "./BillCardSkeleton";
 import type { States } from "./JurisdictionSelector";
 import SectionHeader from "./SectionHeader";
 import animationData from "../assets/Tumbleweed Rolling.json";
+import type { BillViewMode } from "@/types";
 
 const Lottie = React.lazy(() => import("lottie-react"));
 
 interface Props {
     selectedJurisdiction: States | null;
     selectedTopic: string | null;
+    viewMode?: BillViewMode;
 }
 
-const BillGrid = ({ selectedJurisdiction, selectedTopic }: Props) => {
+const BillGrid = ({ selectedJurisdiction, selectedTopic, viewMode = 'detailed' }: Props) => {
     const { data, error, isLoading } = useBills(
         selectedJurisdiction,
         selectedTopic
@@ -70,6 +72,7 @@ const BillGrid = ({ selectedJurisdiction, selectedTopic }: Props) => {
                                 showSource={true}
                                 showVotes={false}
                                 showTrendingReason={true}
+                                viewMode={viewMode}
                             />
                         ))}
                 </div>

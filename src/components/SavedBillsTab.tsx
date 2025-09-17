@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import BillViewSwitcher from "./BillViewSwitcher";
+import type { BillViewMode } from "@/types";
 import {
 	Search,
 	Bookmark,
@@ -25,6 +27,7 @@ const SavedBillsTab: React.FC<SavedBillsTabProps> = ({ onSwitchToExplore }) => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const filterStatus = "all";
 	const [sortBy, setSortBy] = useState<"date" | "title" | "state">("date");
+	const [viewMode, setViewMode] = useState<BillViewMode>('detailed');
 
 	// Extract bill data from savedBills for filtering and sorting
 	const bills = savedBills.map(savedBill => savedBill.billData);
@@ -151,6 +154,14 @@ const SavedBillsTab: React.FC<SavedBillsTabProps> = ({ onSwitchToExplore }) => {
 					</div>
 				</div>
 
+				{/* View Switcher */}
+				<div className="flex justify-between items-center">
+					<BillViewSwitcher 
+						value={viewMode}
+						onValueChange={setViewMode}
+					/>
+				</div>
+
 				{/* Enhanced Search and Filters Section */}
 				<div className='bg-white border border-border rounded-lg p-6 space-y-6 hover:bg-accent/90 transition-all'>
 					<div className="flex items-center gap-3">
@@ -215,7 +226,7 @@ const SavedBillsTab: React.FC<SavedBillsTabProps> = ({ onSwitchToExplore }) => {
 			{sortedBills.length > 0 ? (
 				<div className='grid grid-cols-[repeat(auto-fill,minmax(380px,1fr))] gap-6'>
 					{sortedBills.map((bill) => (
-						<BillCard showSource key={bill.id} bill={bill} />
+						<BillCard showSource key={bill.id} bill={bill} viewMode={viewMode} />
 					))}
 				</div>
 			) : (

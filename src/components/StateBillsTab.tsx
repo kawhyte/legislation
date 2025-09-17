@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useUserData } from "../contexts/UserContext";
 import useBills from "../hooks/useBills";
 import BillCard from "@/components/BillCard";
 import BillCardSkeleton from "@/components/BillCardSkeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import BillViewSwitcher from "./BillViewSwitcher";
 import {
 	BookmarkIcon,
 	TrendingUp,
@@ -19,7 +20,7 @@ import {
 } from "lucide-react";
 import usStates from "../data/usStates";
 import type { States } from "./JurisdictionSelector";
-import type { Bill } from "@/types";
+import type { Bill, BillViewMode } from "@/types";
 
 interface StateBillsTabProps {
 	userStateName: string;
@@ -27,6 +28,7 @@ interface StateBillsTabProps {
 
 const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 	const { userPreferences, savedBills } = useUserData();
+	const [viewMode, setViewMode] = useState<BillViewMode>('detailed');
 	
 	// Get user's state object for API calls
 	const userStateObj = userPreferences?.selectedState ? 
@@ -87,7 +89,8 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 		isLoading, 
 		icon: Icon, 
 		color = "text-primary",
-		showMax = 4
+		showMax = 4,
+		viewMode: sectionViewMode = viewMode
 	}: {
 		title: string;
 		bills: Bill[] | undefined;
@@ -95,6 +98,7 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 		icon: LucideIcon;
 		color?: string;
 		showMax?: number;
+		viewMode?: BillViewMode;
 	}) => (
 		<div className="space-y-6 p-6 bg-muted/20 rounded-lg border">
 			<div className="flex items-center gap-3">
@@ -119,6 +123,7 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 							bill={bill} 
 							showSource={true}
 							showProgressBar={true}
+							viewMode={sectionViewMode}
 						/>
 					))}
 				</div>
@@ -186,6 +191,14 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 				/>
 			</div>
 
+			{/* View Switcher */}
+			<div className="flex justify-between items-center">
+				<BillViewSwitcher 
+					value={viewMode}
+					onValueChange={setViewMode}
+				/>
+			</div>
+
 			{/* Recent Activity Section */}
 			{recentActivity.length > 0 && (
 				<div className="space-y-6 p-6 bg-muted/20 rounded-lg border">
@@ -201,6 +214,7 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 								bill={savedBill.billData} 
 								showSource={true}
 								showProgressBar={true}
+								viewMode={viewMode}
 							/>
 						))}
 					</div>

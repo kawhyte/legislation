@@ -10,21 +10,13 @@ import {
 	CardFooter,
 } from "@/components/ui/card";
 
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-	RefreshCw,
-	Sparkles,
-	Link,
-	Zap,
-	
-} from "lucide-react";
+import { RefreshCw, Sparkles, Link, Zap } from "lucide-react";
 import BillProgressStepper from "./BillProgressStepper";
 import BookmarkButton from "./BookmarkButton";
 import { toSentenceCase } from "../lib/utils";
 import MomentumBadge from "./MomentumBadge";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import {
 	Dialog,
 	DialogContent,
@@ -56,8 +48,8 @@ const BillCard = ({
 	showProgressBar = true,
 	showVotes = false,
 	showSource = false,
-	
 	showTrendingReason = false,
+	viewMode = "detailed",
 }: BillCardProps) => {
 	const {
 		summary,
@@ -74,7 +66,11 @@ const BillCard = ({
 	const democratVotes = 102;
 	const republicanVotes = 88;
 	const otherVotes = 12;
-	
+
+	// Determine display props based on viewMode
+	const shouldShowProgressBar =
+		viewMode === "detailed" ? showProgressBar : false;
+	const shouldShowSource = viewMode === "detailed" ? showSource : false;
 
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -144,16 +140,20 @@ const BillCard = ({
 
 					{impacts && impacts.length > 0 && (
 						<div className='bg-info/10 border border-info/20 rounded-lg p-4'>
-                            <p className='text-sm font-bold text-info-foreground mb-3'>Potential Impact if Passed</p>
-                            <div className='space-y-3'>
-                                {impacts.map((impact, i) => (
-                                    <div key={i} className='flex items-start gap-3'>
-                                        <div className='w-1.5 h-1.5 bg-info rounded-full mt-1.5 flex-shrink-0'></div>
-                                        <p className='text-sm text-foreground/80 leading-relaxed'>{impact}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+							<p className='text-sm font-bold text-info-foreground mb-3'>
+								Potential Impact if Passed
+							</p>
+							<div className='space-y-3'>
+								{impacts.map((impact, i) => (
+									<div key={i} className='flex items-start gap-3'>
+										<div className='w-1.5 h-1.5 bg-info rounded-full mt-1.5 flex-shrink-0'></div>
+										<p className='text-sm text-foreground/80 leading-relaxed'>
+											{impact}
+										</p>
+									</div>
+								))}
+							</div>
+						</div>
 					)}
 				</div>
 			);
@@ -162,54 +162,74 @@ const BillCard = ({
 	};
 
 	return (
-<Card className='bg-card border-border hover:border-border/80 hover:shadow-lg transition-all duration-300 flex flex-col h-full hover:bg-bill-card-accent-subtle'>			<CardHeader className='p-4 space-y-2'>
-				{/* --- TOP LINE METADATA --- */}
-				<div className='flex items-start justify-between'>
-					<div className='flex items-center gap-2 text-8px-rhythm-xs text-muted-foreground'>
-						<Avatar className='w-6 h-6 border border-border rounded-md'>
+		<Card className='bg-card border-border hover:border-border/80 hover:shadow-lg transition-all duration-300 flex flex-col h-full hover:bg-bill-card-accent-subtle'>
+			{" "}
+			<CardHeader className='p-4 space-y-3'>
+				{/* --- TOP METADATA ROW --- */}
+				<div className='flex items-center justify-between'>
+					{/* Left side: State and Bill ID */}
+					<div className='flex items-center gap-3'>
+						<Avatar className='w-7 h-7 border border-border rounded-md shrink-0'>
 							<AvatarImage src={flagUrl} alt={bill?.jurisdiction?.name} />
-							<AvatarFallback className='text-8px-rhythm-xs bg-muted text-muted-foreground'>
+							<AvatarFallback className='text-xs bg-muted text-muted-foreground font-medium'>
 								{bill?.jurisdiction?.name.slice(0, 2).toUpperCase()}
 							</AvatarFallback>
 						</Avatar>
-						<span className='font-medium text-foreground/80'>
-							{flagAbbreviation}
-						</span>
-						<span>•</span>
-						<span className='font-mono'>{bill.identifier}</span>
+						<div className='flex items-center gap-2 text-sm text-muted-foreground'>
+							<span className='font-medium text-foreground/90'>
+								{flagAbbreviation}
+							</span>
+							<span className='text-muted-foreground/60'>•</span>
+							<span className='font-mono font-medium'>{bill.identifier}</span>
+						</div>
 					</div>
-				<div className='flex flex-row items-start gap-2'>
-    {showTrendingReason && bill.trendingReason === "Trending" && (
-            // UPDATED: Using new enhanced accent yellow system with automatic contrast
-            <div className='flex items-center gap-1.5 text-8px-rhythm-xs font-semibold bg-accent-yellow text-on-yellow px-2 py-1 rounded-full border border-accent-yellow-bolder/20'>
-                <Zap className='h-3 w-3' />
-                <span className="bg-white">Trending</span>
-            </div>
-        )}
-    <TooltipProvider>
-        <BookmarkButton bill={bill} />
-    </TooltipProvider>
-</div>
+
+					{/* Right side: Actions */}
+					<div className='flex items-center gap-2'>
+						{/* {showTrendingReason && bill.trendingReason === "Trending" && (
+							<div className='flex items-center gap-1.5 text-xs font-semibold bg-accent-yellow text-on-yellow px-3 py-1 rounded-full border border-accent-yellow-bolder/20'>
+								<Zap className='h-3 w-3' />
+								<span>Trending</span>
+							</div>
+						)} */}
+						{/* <TooltipProvider> */}
+						<BookmarkButton bill={bill} />
+						{/* </TooltipProvider> */}
+					</div>
 				</div>
 
 				{/* --- BILL TITLE (PRIMARY) --- */}
-				<CardTitle className='text-8px-rhythm-base font-semibold line-clamp-3 h-12 text-foreground pt-2'>
+				<CardTitle className='text-base font-semibold line-clamp-3 text-foreground leading-relaxed'>
 					{toSentenceCase(bill.title)}
 				</CardTitle>
 
 				{/* --- SECONDARY METADATA --- */}
-				<div className='flex justify-start items-center gap-2'>
-					{bill.momentum && <MomentumBadge momentum={bill.momentum} />}
+
+				<div className='flex gap-8 items-center'>
+					{bill.momentum && (
+						<div className='flex justify-start items-center'>
+							<MomentumBadge momentum={bill.momentum} />
+						</div>
+					)}
+
+					{showTrendingReason && bill.trendingReason === "Trending" && (
+						<div className='flex items-center gap-1.5 text-xs font-semibold bg-accent-yellow text-on-yellow px-3 py-1 rounded-full border border-accent-yellow-bolder/20'>
+							<Zap className='h-3 w-3' />
+							<span>Trending</span>
+						</div>
+					)}
 				</div>
 			</CardHeader>
-
 			<CardContent className='flex-grow flex flex-col justify-end space-y-3 p-4 pt-0'>
-				{showProgressBar && <BillProgressStepper bill={bill} />}
+				{shouldShowProgressBar && <BillProgressStepper bill={bill} />}
 
 				<div className='flex items-center gap-3 mt-3'>
 					<Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
 						<DialogTrigger asChild>
-							<Button onClick={handleDecodeClick} className='w-full bg-primary text-primary-foreground hover:bg-primary-hover border border-accent-magenta-bolder/20' size='sm'>
+							<Button
+								onClick={handleDecodeClick}
+								className='w-full bg-primary text-primary-foreground hover:bg-primary-hover border border-accent-magenta-bolder/20'
+								size='sm'>
 								<Sparkles className='h-4 w-4 mr-1' />
 								Explain this Bill
 							</Button>
@@ -230,13 +250,14 @@ const BillCard = ({
 					</Dialog>
 				</div>
 			</CardContent>
-			{showVotes && <VoteByParty
-				democratVotes={democratVotes}
-				republicanVotes={republicanVotes}
-				otherVotes={otherVotes}
-			/>}
-
-			{showSource && (
+			{showVotes && (
+				<VoteByParty
+					democratVotes={democratVotes}
+					republicanVotes={republicanVotes}
+					otherVotes={otherVotes}
+				/>
+			)}
+			{shouldShowSource && (
 				<CardFooter className='p-4 pt-2'>
 					<div className='flex items-center justify-between w-full'>
 						<div>
@@ -254,11 +275,16 @@ const BillCard = ({
 											</span>
 										</Button>
 									</DropdownMenuTrigger>
-                                    <DropdownMenuContent align='start' className="bg-popover text-popover-foreground border-border">
+									<DropdownMenuContent
+										align='start'
+										className='bg-popover text-popover-foreground border-border'>
 										{bill.sources
 											.filter((source) => source.note !== "API Details")
 											.map((source, index) => (
-                                                <DropdownMenuItem key={index} asChild className="hover:bg-accent focus:bg-accent">
+												<DropdownMenuItem
+													key={index}
+													asChild
+													className='hover:bg-accent focus:bg-accent'>
 													<a
 														href={source.url}
 														target='_blank'
@@ -275,7 +301,7 @@ const BillCard = ({
 						<div>
 							{bill.latest_action_date && (
 								<div className='flex items-center text-8px-rhythm-xs text-muted-foreground'>
-									<span className="pr-1 "> Last Updated on </span>
+									<span className='pr-1 '> Last Updated on </span>
 									{/* <Calendar className='h-3 w-3 mr-1.5' /> */}
 									<span>
 										{new Date(bill.latest_action_date).toLocaleDateString(

@@ -2,10 +2,13 @@ import React, { useState, useRef } from "react";
 import { type States } from "./JurisdictionSelector";
 import SimpleHero from "./SimpleHero";
 import BillGrid from "./BillGrid";
+import BillViewSwitcher from "./BillViewSwitcher";
+import type { BillViewMode } from "@/types";
 
 const ExploreBillsTab: React.FC = () => {
 	const [selectedJurisdiction, setSelectedJurisdiction] = useState<States | null>(null);
 	const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+	const [viewMode, setViewMode] = useState<BillViewMode>('detailed');
 	const resultsRef = useRef<HTMLDivElement>(null);
 
 	const handleStateSelect = (state: States | null) => {
@@ -75,10 +78,21 @@ const ExploreBillsTab: React.FC = () => {
 			{/* Results */} 
 			<div ref={resultsRef} >
 				{(selectedJurisdiction || (!selectedJurisdiction && !selectedTopic)) && (
-					<BillGrid
-						selectedJurisdiction={selectedJurisdiction}
-						selectedTopic={selectedTopic}
-					/>
+					<div className="space-y-6">
+						{/* View Switcher */}
+						<div className="flex justify-between items-center">
+							<BillViewSwitcher 
+								value={viewMode}
+								onValueChange={setViewMode}
+							/>
+						</div>
+						
+						<BillGrid
+							selectedJurisdiction={selectedJurisdiction}
+							selectedTopic={selectedTopic}
+							viewMode={viewMode}
+						/>
+					</div>
 				)}
 			</div>
 		</div>
