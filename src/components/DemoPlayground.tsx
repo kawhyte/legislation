@@ -67,7 +67,7 @@ const DemoPlayground: React.FC = () => {
           {/* Header */}
           <div className="text-center space-y-4">
             <h2 className="text-3xl sm:text-6xl font-bold text-wellness-yellow">
-              Demo Dashboard
+               Interactive Demo Dashboard
             </h2>
             <p className="text-lg text-primary-foreground max-w-2xl mx-auto">
               Explore legislation tracking features with live data. All actions are temporary and saved locally.
