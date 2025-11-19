@@ -1,4 +1,4 @@
-import { 
+import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
@@ -9,6 +9,7 @@ import {
   type User as FirebaseUser
 } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
+import { logger } from '@/lib/logger';
 
 export interface AuthUser {
   uid: string;
@@ -39,7 +40,7 @@ export const signInWithEmail = async (email: string, password: string): Promise<
     if (!authUser) throw new Error('Failed to sign in');
     return authUser;
   } catch (error) {
-    console.error('Email sign in error:', error);
+    logger.error('Email sign in error:', error);
     throw error;
   }
 };
@@ -61,7 +62,7 @@ export const signUpWithEmail = async (
     if (!authUser) throw new Error('Failed to create account');
     return authUser;
   } catch (error) {
-    console.error('Email sign up error:', error);
+    logger.error('Email sign up error:', error);
     throw error;
   }
 };
@@ -74,7 +75,7 @@ export const signInWithGoogle = async (): Promise<AuthUser> => {
     if (!authUser) throw new Error('Failed to sign in with Google');
     return authUser;
   } catch (error) {
-    console.error('Google sign in error:', error);
+    logger.error('Google sign in error:', error);
     throw error;
   }
 };
@@ -85,7 +86,7 @@ export const signOut = async (): Promise<void> => {
   try {
     await firebaseSignOut(auth);
   } catch (error) {
-    console.error('Sign out error:', error);
+    logger.error('Sign out error:', error);
     throw error;
   }
 };
@@ -95,7 +96,7 @@ export const resetPassword = async (email: string): Promise<void> => {
   try {
     await sendPasswordResetEmail(auth, email);
   } catch (error) {
-    console.error('Password reset error:', error);
+    logger.error('Password reset error:', error);
     throw error;
   }
 };

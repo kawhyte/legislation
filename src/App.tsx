@@ -1,35 +1,38 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useUser } from '@/hooks/useAuth';
 import Header from "./components/Header";
-import Hero from "./components/Hero";
-import HomepageContent from "./components/HomepageContent";
-import DashboardPage from "./pages/DashboardPage";
-import TrendingBillsPage from "./pages/TrendingBillsPage";
-// import WhyThisMattersPage from "./pages/WhyThisMattersPage";
-import ProfileSetupPage from "./pages/ProfileSetupPage";
-import SignInPage from "./pages/SignInPage";
-import SignUpPage from "./pages/SignUpPage";
 import { UserProvider, useUserData } from "./contexts/UserContext";
 import { DemoProvider } from "./contexts/DemoContext";
 import { Toaster } from "@/components/ui/sonner";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+
+// Lazy load route components for better performance
+const Hero = lazy(() => import("./components/Hero"));
+const HomepageContent = lazy(() => import("./components/HomepageContent"));
+const DashboardPage = lazy(() => import("./pages/DashboardPage"));
+const TrendingBillsPage = lazy(() => import("./pages/TrendingBillsPage"));
+const ProfileSetupPage = lazy(() => import("./pages/ProfileSetupPage"));
+const SignInPage = lazy(() => import("./pages/SignInPage"));
+const SignUpPage = lazy(() => import("./pages/SignUpPage"));
+
+// Loading fallback component
+const LoadingFallback = () => (
+	<div className="min-h-screen flex items-center justify-center">
+		<div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+	</div>
+);
 
 const HomePage = () => {
 	// Homepage is now purely presentational - shows Hero, HomepageContent, and TrendingBills
 	// Jurisdiction selection for bill viewing is handled through dashboard/navigation
-	
+
 	return (
 		<div className="bg-background text-foreground">
-			<Hero />
-			{/* <FeatureCarousel /> */}
-			<HomepageContent />
-			
-			{/* Show trending bills as the main content */}
-			{/* <main className='container mx-auto px-4 sm:px-6 lg:px-8 py-6'> */}
-				{/* <TrendingBillsPage /> */}
-			{/* </main> */}
-			
-			{/* <Footer /> */}
+			<Suspense fallback={<LoadingFallback />}>
+				<Hero />
+				<HomepageContent />
+			</Suspense>
 		</div>
 	);
 };
@@ -37,39 +40,31 @@ const HomePage = () => {
 // Protected route wrapper for authenticated users
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const { isSignedIn, isLoaded } = useUser();
-	
+
 	if (!isLoaded) {
-		return (
-			<div className="min-h-screen flex items-center justify-center">
-				<div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-			</div>
-		);
+		return <LoadingFallback />;
 	}
-	
+
 	if (!isSignedIn) {
 		return <Navigate to="/sign-in" replace />;
 	}
-	
+
 	return <>{children}</>;
 };
 
 // Profile setup checker
 const ProfileSetupChecker: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const { userPreferences, isLoadingPreferences } = useUserData();
-	
+
 	if (isLoadingPreferences) {
-		return (
-			<div className="min-h-screen flex items-center justify-center">
-				<div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-			</div>
-		);
+		return <LoadingFallback />;
 	}
-	
+
 	// If user has no preferences or profile setup is not completed, redirect to setup
 	if (!userPreferences || !userPreferences.profileSetupCompleted) {
 		return <Navigate to="/profile-setup" replace />;
 	}
-	
+
 	return <>{children}</>;
 };
 
@@ -78,17 +73,14 @@ const AppRoutes = () => {
 	const { isSignedIn, isLoaded } = useUser();
 
 	if (!isLoaded) {
-		return (
-			<div className="min-h-screen flex items-center justify-center">
-				<div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-			</div>
-		);
+		return <LoadingFallback />;
 	}
 
 	return (
 		<div className='min-h-screen'>
 			<Header />
-			<Routes>
+			<Suspense fallback={<LoadingFallback />}>
+				<Routes>
 				{/* Public routes */}
 				<Route
 					path='/'
@@ -146,21 +138,24 @@ const AppRoutes = () => {
 						</ProtectedRoute>
 					}
 				/>
-			</Routes>
+				</Routes>
+			</Suspense>
 		</div>
 	);
 };
 
 const App = () => {
 	return (
-		<Router>
-			<UserProvider>
-				<DemoProvider>
-					<AppRoutes />
-					<Toaster />
-				</DemoProvider>
-			</UserProvider>
-		</Router>
+		<ErrorBoundary>
+			<Router>
+				<UserProvider>
+					<DemoProvider>
+						<AppRoutes />
+						<Toaster />
+					</DemoProvider>
+				</UserProvider>
+			</Router>
+		</ErrorBoundary>
 	);
 };
 

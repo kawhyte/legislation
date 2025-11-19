@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { Bill } from '@/types'; // Import the Bill type
+import { logger } from '@/lib/logger';
 
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
@@ -11,6 +12,7 @@ interface CacheEntry {
   expiresIn: number;
 }
 
+const MAX_CACHE_SIZE = 100; // Limit cache to 100 entries to prevent memory leaks
 const summaryCache = new Map<string, CacheEntry>();
 const pendingRequests = new Map<string, Promise<{ summary: string; impacts: string[] }>>();
 
@@ -49,16 +51,25 @@ export class GeminiService {
     return Date.now() - entry.timestamp < entry.expiresIn;
   }
 
+  private evictOldestCacheEntry(): void {
+    if (summaryCache.size >= MAX_CACHE_SIZE) {
+      // Remove oldest entry (LRU eviction)
+      const oldestKey = summaryCache.keys().next().value;
+      summaryCache.delete(oldestKey);
+      logger.debug('[GeminiService] Cache eviction: removed oldest entry');
+    }
+  }
+
   private async enforceRateLimit(): Promise<void> {
     const now = Date.now();
     const timeSinceLastRequest = now - this.lastRequestTime;
-    
+
     if (timeSinceLastRequest < GeminiService.REQUEST_DELAY) {
       const waitTime = GeminiService.REQUEST_DELAY - timeSinceLastRequest;
-      console.log(`[GeminiService] Rate limiting: waiting ${waitTime}ms`);
+      logger.debug(`[GeminiService] Rate limiting: waiting ${waitTime}ms`);
       await new Promise(resolve => setTimeout(resolve, waitTime));
     }
-    
+
     this.lastRequestTime = Date.now();
   }
 
@@ -90,7 +101,7 @@ export class GeminiService {
         impacts: impacts.length > 0 ? impacts : ["Legislative changes may affect current policies."]
       };
     } catch (error) {
-      console.error('Error parsing AI response:', error);
+      logger.error('Error parsing AI response:', error);
       return {
         summary: "This bill introduces new legislation.",
         impacts: ["Policy changes may occur."]
@@ -108,7 +119,7 @@ export class GeminiService {
     if (useCache) {
       const cachedEntry = summaryCache.get(cacheKey);
       if (cachedEntry && this.isCacheValid(cachedEntry)) {
-        console.log('[GeminiService] Using cached result for:', bill.title);
+        logger.debug('[GeminiService] Using cached result for:', bill.title);
         return cachedEntry.data;
       }
     }
@@ -123,6 +134,7 @@ export class GeminiService {
     try {
       const result = await requestPromise;
       if (useCache && result) {
+        this.evictOldestCacheEntry(); // Evict oldest entry before adding new one
         summaryCache.set(cacheKey, {
           data: result,
           timestamp: Date.now(),
@@ -180,20 +192,20 @@ export class GeminiService {
         ${context}
       `;
 
-      console.log('[GeminiService] Making API request for:', bill.title);
-      
+      logger.debug('[GeminiService] Making API request for:', bill.title);
+
       const result = await this.model.generateContent(prompt);
       const response = await result.response;
       const text = response.text().trim();
-      
+
       return this.parseResponse(text);
     } catch (error) {
-      console.error('[GeminiService] API request failed:', error);
+      logger.error('[GeminiService] API request failed:', error);
       return {
         summary: "This bill introduces new legislation that may impact public policy.",
         impacts: [
           "Changes to regulations may occur.",
-          "Administrative processes may be updated.", 
+          "Administrative processes may be updated.",
           "Public services may be affected."
         ]
       };
@@ -221,3 +233,6 @@ export class GeminiService {
     };
   }
 }
+
+// Export singleton instance to ensure shared cache and rate limiting across components
+export const geminiServiceInstance = new GeminiService();

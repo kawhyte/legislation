@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
-import { GeminiService } from '../services/geminiServices';
+import { geminiServiceInstance } from '../services/geminiServices';
 import type { Bill, UseBillSummaryOptions, UseBillSummaryReturn } from '@/types';
+import { logger } from '@/lib/logger';
 
 export const useBillSummary = (
   bill: Bill,
@@ -10,9 +11,8 @@ export const useBillSummary = (
   const [impacts, setImpacts] = useState<string[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const { maxLength = 150, targetAge = "30-40" } = options;
-  const geminiService = useRef(new GeminiService());
   const abortController = useRef<AbortController | null>(null);
 
   const cleanup = useCallback(() => {
@@ -26,16 +26,16 @@ export const useBillSummary = (
 
     cleanup(); // Abort any previous request
     abortController.current = new AbortController();
-    
+
     setIsLoading(true);
     setError(null);
 
     try {
-      const result = await geminiService.current.summarizeBillWithImpacts(
+      const result = await geminiServiceInstance.summarizeBillWithImpacts(
         bill,
         { maxLength, targetAge, useCache: true }
       );
-      
+
       if (!abortController.current.signal.aborted) {
         setSummary(result.summary);
         setImpacts(result.impacts);
@@ -43,17 +43,17 @@ export const useBillSummary = (
     } catch (err) {
       if (err instanceof Error) {
         if (err.name !== 'AbortError') {
-          console.error('[useBillSummary] Error in generateSummary:', err);
+          logger.error('[useBillSummary] Error in generateSummary:', err);
           setError(err.message);
         }
       } else {
-        console.error('[useBillSummary] Unexpected error in generateSummary:', err);
+        logger.error('[useBillSummary] Unexpected error in generateSummary:', err);
         setError('An unexpected error occurred');
       }
     } finally {
       setIsLoading(false);
     }
-  }, [bill, maxLength, targetAge, cleanup]);
+  }, [bill, maxLength, targetAge, cleanup, isLoading]);
 
   return {
     summary,

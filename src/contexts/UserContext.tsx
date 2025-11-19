@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { useUser } from '@/hooks/useAuth';
 import type { ReactNode } from 'react';
+import { logger } from '@/lib/logger';
 import type { 
   UserContextType, 
   UserPreferences, 
@@ -50,7 +51,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       setUserPreferences(preferences);
       setSavedBills(bills);
     } catch (error) {
-      console.error('Error loading user data:', error);
+      logger.error('Error loading user data:', error);
     } finally {
       setIsLoadingPreferences(false);
       setIsLoadingSavedBills(false);
@@ -92,7 +93,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         };
       });
     } catch (error) {
-      console.error('Error updating user preferences:', error);
+      logger.error('Error updating user preferences:', error);
       throw error;
     } finally {
       setIsLoadingPreferences(false);
@@ -127,7 +128,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         setUserPreferences(newPreferences);
       }
     } catch (error) {
-      console.error('Error completing profile setup:', error);
+      logger.error('Error completing profile setup:', error);
       throw error;
     } finally {
       setIsLoadingPreferences(false);
@@ -150,7 +151,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         return [savedBill, ...prev];
       });
     } catch (error) {
-      console.error('Error saving bill:', error);
+      logger.error('Error saving bill:', error);
       throw error;
     } finally {
       setIsLoadingSavedBills(false);
@@ -168,7 +169,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       // Remove from local state
       setSavedBills(prev => prev.filter(bill => bill.billId !== billId));
     } catch (error) {
-      console.error('Error removing saved bill:', error);
+      logger.error('Error removing saved bill:', error);
       throw error;
     } finally {
       setIsLoadingSavedBills(false);
@@ -181,28 +182,40 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   // Helper computed properties
   const isProfileSetupRequired = Boolean(
-    isSignedIn && 
-    userPreferences && 
+    isSignedIn &&
+    userPreferences &&
     !userPreferences.profileSetupCompleted
   );
 
-  const value: UserContextType = {
+  // Memoize context value to prevent unnecessary re-renders
+  const value: UserContextType = useMemo(() => ({
     // User preferences
     userPreferences,
     isLoadingPreferences,
     updateUserPreferences,
     completeProfileSetup,
-    
+
     // Saved bills
     savedBills,
     isLoadingSavedBills,
     saveBill,
     removeSavedBill,
     isBillSaved,
-    
+
     // Auth state helpers
     isProfileSetupRequired
-  };
+  }), [
+    userPreferences,
+    isLoadingPreferences,
+    updateUserPreferences,
+    completeProfileSetup,
+    savedBills,
+    isLoadingSavedBills,
+    saveBill,
+    removeSavedBill,
+    isBillSaved,
+    isProfileSetupRequired
+  ]);
 
   return (
     <UserContext.Provider value={value}>
