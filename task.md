@@ -64,3 +64,14 @@
   - Adjust the empty state in `src/components/HomepageContent.tsx`.
   - Style the Tumbleweed Lottie container to be responsive (max-w-xs or similar).
   - Add a friendly, casual heading and subtext below the animation telling the user there are no active bills for that zip code.
+
+- [x] **Task 15: Evict Homepage Clutter**
+  - Create `src/pages/AboutPage.tsx`. Move all the generic educational content, carousels, and "Why it matters" sections here.
+  - Update `src/App.tsx` to include the `<Route path='/about' element={<AboutPage />} />`.
+  - Add an "About" link to `src/components/Header.tsx` so users can still find it.
+
+- [x] **Task 16: The "Zillow" Hero Redesign**
+  - Gut `src/components/Hero.tsx` and `src/components/HomepageContent.tsx`.
+  - The homepage should essentially just be the search Hero, taking up at least `70vh` so it's vertically centered.
+  - Supersize the search input: use classes like `text-2xl py-8 px-6`. Apply the neo-brutalist doodle art styling (`border-4 border-foreground shadow-[6px_6px_0px_0px_var(--tw-shadow-color)]`).
+  - If a user hasn't searched yet, the space below the search bar should be completely clean (no Lotties, no grid). Only render the bill grid or the Tumbleweed empty state *after* a search submission.

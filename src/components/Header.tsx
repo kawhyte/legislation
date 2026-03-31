@@ -17,6 +17,7 @@ import {
 	User,
 	Settings,
 	LogOut,
+	HelpCircle,
 } from "lucide-react";
 
 import { useUserData } from "../contexts/UserContext";
@@ -57,26 +58,23 @@ const Header = () => {
 			<Button
 				variant='ghost'
 				onClick={() => navigate("/")}
-				// UPDATED: Added hover:bg-accent for consistency
 				className='text-muted-foreground hover:text-foreground hover:bg-accent px-6'>
 				Home
+			</Button>
+			<Button
+				variant='ghost'
+				onClick={() => navigate("/about")}
+				className='text-muted-foreground hover:text-foreground hover:bg-accent px-6'>
+				About
 			</Button>
 			{isSignedIn && (
 				<Button
 					variant='ghost'
 					onClick={() => navigate("/dashboard")}
-					// UPDATED: Added hover:bg-accent for consistency
 					className='text-muted-foreground hover:text-foreground hover:bg-accent px-6'>
 					Dashboard
 				</Button>
 			)}
-			{/* <Button
-				variant='ghost'
-				onClick={() => navigate("/why-this-matters")}
-				// UPDATED: Added hover:bg-accent for consistency
-				className='text-muted-foreground hover:text-foreground hover:bg-accent px-6'>
-				Why This Matters
-			</Button> */}
 		</nav>
 	);
 
@@ -193,14 +191,17 @@ const Header = () => {
 			<div className='p-6 space-y-4'>
 				<Button
 					variant='ghost'
-					onClick={() => {
-						navigate("/");
-						setIsMobileMenuOpen(false);
-					}}
-					// UPDATED: Added text and hover styles
+					onClick={() => { navigate("/"); setIsMobileMenuOpen(false); }}
 					className='w-full justify-start gap-4 text-base py-8 text-foreground hover:bg-accent'>
 					<TrendingUp className='h-5 w-5' />
 					Home
+				</Button>
+				<Button
+					variant='ghost'
+					onClick={() => { navigate("/about"); setIsMobileMenuOpen(false); }}
+					className='w-full justify-start gap-4 text-base py-8 text-foreground hover:bg-accent'>
+					<HelpCircle className='h-5 w-5' />
+					About
 				</Button>
 				{isSignedIn && (
 					<Button

@@ -3,10 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { useUser } from '@/hooks/useAuth';
 import Header from "./components/Header";
 import Hero from "./components/Hero";
-import HomepageContent from "./components/HomepageContent";
+import AboutPage from "./pages/AboutPage";
 import DashboardPage from "./pages/DashboardPage";
 import TrendingBillsPage from "./pages/TrendingBillsPage";
-// import WhyThisMattersPage from "./pages/WhyThisMattersPage";
 import ProfileSetupPage from "./pages/ProfileSetupPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
@@ -101,7 +100,6 @@ const HomePage = () => {
 				<ZipBillResults jurisdiction={jurisdiction} />
 			)}
 
-			<HomepageContent />
 		</div>
 	);
 };
@@ -163,6 +161,7 @@ const AppRoutes = () => {
 			<Routes>
 				{/* Public routes — no auth redirect; AuthModal handles soft-gating */}
 				<Route path='/' element={<HomePage />} />
+				<Route path='/about' element={<AboutPage />} />
 				<Route path='/trending' element={<TrendingBillsPage />} />
 				{/* <Route path='/why-this-matters' element={<WhyThisMattersPage />} /> */}
 
