@@ -5,8 +5,8 @@ import { useUserData } from '../contexts/UserContext';
 import { useUser } from '@/hooks/useAuth';
 import type { Bill } from '@/types';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useNavigate } from 'react-router-dom';
 import { useBillToast } from '@/hooks/useBillToast';
+import AuthModal from './AuthModal';
 
 interface BookmarkButtonProps {
   bill: Bill;
@@ -31,8 +31,8 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
 }) => {
   const { isBillSaved, saveBill, removeSavedBill } = useUserData();
   const { isSignedIn } = useUser();
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const bookmarked = isBillSaved(bill.id);
   const { 
     showSaveSuccess, 
@@ -46,13 +46,12 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     e.preventDefault();
     e.stopPropagation();
     
-    // Show auth required toast and redirect if not authenticated
+    // Show auth modal if not authenticated
     if (!isSignedIn) {
       if (showToast) {
         showAuthRequired();
       }
-      // Small delay to show toast before navigation
-      setTimeout(() => navigate('/sign-in'), 500);
+      setAuthModalOpen(true);
       return;
     }
     
@@ -93,7 +92,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [bill, bookmarked, isSignedIn, isLoading, navigate, removeSavedBill, saveBill, onSaveSuccess, onSaveError, showToast, toastDuration, showAuthRequired, showRemoveSuccess, showSaveSuccess, showRemoveError, showSaveError]);
+  }, [bill, bookmarked, isSignedIn, isLoading, removeSavedBill, saveBill, onSaveSuccess, onSaveError, showToast, toastDuration, showAuthRequired, showRemoveSuccess, showSaveSuccess, showRemoveError, showSaveError]);
 
   // Enhanced styling with better state management
   const getButtonVariant = () => {
@@ -115,6 +114,8 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     : `Add ${bill.title} to saved bills`;
 
   return (
+    <>
+    <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     <Tooltip delayDuration={300}>
       <TooltipTrigger asChild>
         <Button
@@ -145,6 +146,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
         <p className="text-sm">{tooltipText}</p>
       </TooltipContent>
     </Tooltip>
+    </>
   );
 };
 

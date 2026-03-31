@@ -155,7 +155,7 @@ const AppRoutes = () => {
 		<div className='min-h-screen'>
 			<Header />
 			<Routes>
-				{/* Public routes */}
+				{/* Public routes — no auth redirect; AuthModal handles soft-gating */}
 				<Route path='/' element={<HomePage />} />
 				<Route path='/trending' element={<TrendingBillsPage />} />
 				{/* <Route path='/why-this-matters' element={<WhyThisMattersPage />} /> */}

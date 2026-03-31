@@ -22,3 +22,17 @@
   - Manage the state of the active `jurisdiction`.
   - When the Hero search form submits, use `getJurisdictionFromZip`, set the jurisdiction state, and pass it to your existing bill fetching hook.
   - If the fetch returns empty, render the `Tumbleweed Rolling.json` Lottie animation as an empty state.
+
+- [x] **Task 5: Create an Auth Modal (Soft-Gate)**
+  - Create a new component `src/components/AuthModal.tsx` using shadcn/ui `Dialog`.
+  - Move the core sign-in/sign-up logic (Google/Email) into this modal so it can be rendered anywhere, not just on dedicated routes.
+
+- [x] **Task 6: Intercept the "Save/Track" Action**
+  - Update `src/components/BookmarkButton.tsx` (or equivalent save button on the `BillCard`).
+  - Check the `useUser` auth state.
+  - If unauthenticated, prevent the save action and open the `AuthModal` instead.
+  - If authenticated, proceed with the normal Firestore save action.
+
+- [x] **Task 7: Preserve User Context Post-Login**
+  - Ensure that after a user successfully authenticates via the `AuthModal`, the modal closes and the app stays on the current homepage/search view. 
+  - Do NOT force a redirect to `/dashboard` or `/profile-setup` if they are just trying to save a bill from the homepage.
