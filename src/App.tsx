@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useUser } from '@/hooks/useAuth';
 import Header from "./components/Header";
@@ -13,23 +13,89 @@ import SignUpPage from "./pages/SignUpPage";
 import { UserProvider, useUserData } from "./contexts/UserContext";
 import { DemoProvider } from "./contexts/DemoContext";
 import { Toaster } from "@/components/ui/sonner";
+import type { States } from "./components/JurisdictionSelector";
+import { getJurisdictionFromZip } from "./utils/zipToJurisdiction";
+import useBills from "./hooks/useBills";
+import BillCard from "./components/BillCard";
+import BillCardSkeleton from "./components/BillCardSkeleton";
+import tumbleweedData from "./assets/Tumbleweed Rolling.json";
+
+const Lottie = React.lazy(() => import("lottie-react"));
+
+const ZipBillResults: React.FC<{ jurisdiction: States; }> = ({ jurisdiction }) => {
+	const { data: bills, isLoading } = useBills(jurisdiction, null);
+
+	if (isLoading) {
+		return (
+			<section className="container-legislation py-12">
+				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+					{Array.from({ length: 6 }).map((_, i) => <BillCardSkeleton key={i} />)}
+				</div>
+			</section>
+		);
+	}
+
+	if (!bills || bills.length === 0) {
+		return (
+			<section className="container-legislation py-12 text-center">
+				<Suspense fallback={null}>
+					<Lottie animationData={tumbleweedData} loop className="w-64 mx-auto" />
+				</Suspense>
+				<p className="text-muted-foreground mt-4">No bills found for {jurisdiction.name}.</p>
+			</section>
+		);
+	}
+
+	return (
+		<section className="container-legislation py-12">
+			<h2 className="text-2xl font-bold text-foreground mb-6">
+				Bills in {jurisdiction.name}
+			</h2>
+			<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+				{bills.map(bill => (
+					<BillCard key={bill.id} bill={bill} showSource showProgressBar viewMode="detailed" />
+				))}
+			</div>
+		</section>
+	);
+};
 
 const HomePage = () => {
-	// Homepage is now purely presentational - shows Hero, HomepageContent, and TrendingBills
-	// Jurisdiction selection for bill viewing is handled through dashboard/navigation
-	
+	const [jurisdiction, setJurisdiction] = useState<States | null>(null);
+	const [isSearching, setIsSearching] = useState(false);
+	const [searched, setSearched] = useState(false);
+
+	const handleSearch = async (zip: string) => {
+		setIsSearching(true);
+		setSearched(true);
+		const result = await getJurisdictionFromZip(zip);
+		setJurisdiction(result);
+		setIsSearching(false);
+	};
+
 	return (
 		<div className="bg-background text-foreground">
-			<Hero />
-			{/* <FeatureCarousel /> */}
+			<Hero onSearch={handleSearch} />
+
+			{isSearching && (
+				<section className="container-legislation py-12">
+					<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+						{Array.from({ length: 6 }).map((_, i) => <BillCardSkeleton key={i} />)}
+					</div>
+				</section>
+			)}
+
+			{!isSearching && searched && !jurisdiction && (
+				<section className="container-legislation py-12 text-center">
+					<p className="text-muted-foreground text-lg">Zip code not found. Please try again.</p>
+				</section>
+			)}
+
+			{!isSearching && jurisdiction && (
+				<ZipBillResults jurisdiction={jurisdiction} />
+			)}
+
 			<HomepageContent />
-			
-			{/* Show trending bills as the main content */}
-			{/* <main className='container mx-auto px-4 sm:px-6 lg:px-8 py-6'> */}
-				{/* <TrendingBillsPage /> */}
-			{/* </main> */}
-			
-			{/* <Footer /> */}
 		</div>
 	);
 };
@@ -37,7 +103,7 @@ const HomePage = () => {
 // Protected route wrapper for authenticated users
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const { isSignedIn, isLoaded } = useUser();
-	
+
 	if (!isLoaded) {
 		return (
 			<div className="min-h-screen flex items-center justify-center">
@@ -45,18 +111,18 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 			</div>
 		);
 	}
-	
+
 	if (!isSignedIn) {
 		return <Navigate to="/sign-in" replace />;
 	}
-	
+
 	return <>{children}</>;
 };
 
 // Profile setup checker
 const ProfileSetupChecker: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const { userPreferences, isLoadingPreferences } = useUserData();
-	
+
 	if (isLoadingPreferences) {
 		return (
 			<div className="min-h-screen flex items-center justify-center">
@@ -64,12 +130,12 @@ const ProfileSetupChecker: React.FC<{ children: React.ReactNode }> = ({ children
 			</div>
 		);
 	}
-	
+
 	// If user has no preferences or profile setup is not completed, redirect to setup
 	if (!userPreferences || !userPreferences.profileSetupCompleted) {
 		return <Navigate to="/profile-setup" replace />;
 	}
-	
+
 	return <>{children}</>;
 };
 
@@ -90,21 +156,10 @@ const AppRoutes = () => {
 			<Header />
 			<Routes>
 				{/* Public routes */}
-				<Route
-					path='/'
-					element={
-						isSignedIn ? (
-							<ProfileSetupChecker>
-								<HomePage />
-							</ProfileSetupChecker>
-						) : (
-							<HomePage />
-						)
-					}
-				/>
+				<Route path='/' element={<HomePage />} />
 				<Route path='/trending' element={<TrendingBillsPage />} />
 				{/* <Route path='/why-this-matters' element={<WhyThisMattersPage />} /> */}
-				
+
 				{/* Auth routes */}
 				<Route
 					path='/sign-in'
@@ -126,7 +181,7 @@ const AppRoutes = () => {
 						)
 					}
 				/>
-				
+
 				{/* Protected routes */}
 				<Route
 					path='/profile-setup'
