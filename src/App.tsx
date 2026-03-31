@@ -37,11 +37,16 @@ const ZipBillResults: React.FC<{ jurisdiction: States; }> = ({ jurisdiction }) =
 
 	if (!bills || bills.length === 0) {
 		return (
-			<section className="container-legislation py-12 text-center">
-				<Suspense fallback={null}>
-					<Lottie animationData={tumbleweedData} loop className="w-64 mx-auto" />
-				</Suspense>
-				<p className="text-muted-foreground mt-4">No bills found for {jurisdiction.name}.</p>
+			<section className="container-legislation py-16 text-center">
+				<div className="max-w-xs mx-auto">
+					<Suspense fallback={null}>
+						<Lottie animationData={tumbleweedData} loop className="w-full" />
+					</Suspense>
+					<h3 className="text-xl font-bold text-foreground mt-2">Quiet out here.</h3>
+					<p className="text-muted-foreground mt-2 text-sm">
+						Nothing too wild happening in {jurisdiction.name} right now. Try a different zip code!
+					</p>
+				</div>
 			</section>
 		);
 	}
@@ -87,7 +92,8 @@ const HomePage = () => {
 
 			{!isSearching && searched && !jurisdiction && (
 				<section className="container-legislation py-12 text-center">
-					<p className="text-muted-foreground text-lg">Zip code not found. Please try again.</p>
+					<p className="text-xl font-bold text-foreground">Hmm, that zip didn't work.</p>
+					<p className="text-muted-foreground mt-2 text-sm">Double-check the zip code and try again.</p>
 				</section>
 			)}
 

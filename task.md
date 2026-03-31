@@ -49,3 +49,18 @@
   - Refactor the UI where the summary is displayed (e.g., `BillCard.tsx` or similar).
   - Remove the single paragraph layout.
   - Implement a clean, scannable UI using existing Tailwind/shadcn classes to display the parsed JSON fields. Make "Wallet Impact" stand out.
+
+- [x] **Task 11: Strip Boring Metadata**
+  - Modify `src/components/BillCard.tsx`.
+  - Remove any display of committees, full sponsor lists (keep primary if necessary, or drop entirely), and raw legislative text. The card should only highlight the Title, Momentum, and the AI Summary sections.
+
+- [x] **Task 12: Apply "Doodle Art" Styling**
+  - Update the Tailwind classes in `src/components/BillCard.tsx`.
+  - Apply `border-2 border-foreground rounded-xl shadow-[4px_4px_0px_0px_var(--tw-shadow-color)] shadow-foreground` to the main cards.
+  - Make buttons and badges pop with similar thick borders and distinct background colors.
+  - Keep the layout clean so the new AI summary JSON data is the star.
+
+- [x] **Task 13: Polish the Empty State**
+  - Adjust the empty state in `src/components/HomepageContent.tsx`.
+  - Style the Tumbleweed Lottie container to be responsive (max-w-xs or similar).
+  - Add a friendly, casual heading and subtext below the animation telling the user there are no active bills for that zip code.
