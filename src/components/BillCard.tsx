@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/card";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Sparkles, Link, Zap } from "lucide-react";
+import { RefreshCw, Sparkles, Link, Zap, Users, Wallet, Scale } from "lucide-react";
 import BillProgressStepper from "./BillProgressStepper";
 import BookmarkButton from "./BookmarkButton";
 import { toSentenceCase } from "../lib/utils";
@@ -52,8 +53,7 @@ const BillCard = ({
 	viewMode = "detailed",
 }: BillCardProps) => {
 	const {
-		summary,
-		impacts,
+		structured,
 		isLoading: summaryLoading,
 		error: summaryError,
 		generateSummary,
@@ -81,7 +81,7 @@ const BillCard = ({
 	}, [cleanup, bill.id]);
 
 	const handleDecodeClick = () => {
-		if (!summary && !summaryLoading && !summaryError) {
+		if (!structured && !summaryLoading && !summaryError) {
 			generateSummary();
 		}
 		setIsModalOpen(true);
@@ -99,12 +99,8 @@ const BillCard = ({
 			return (
 				<div className='flex flex-col items-center justify-center p-8 space-y-4 min-h-[200px]'>
 					<div className='w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin'></div>
-					<p className='text-lg font-medium text-foreground'>
-						Analyzing Legislation
-					</p>
-					<p className='text-sm text-muted-foreground'>
-						Our AI is decoding the details...
-					</p>
+					<p className='text-lg font-medium text-foreground'>Analyzing Legislation</p>
+					<p className='text-sm text-muted-foreground'>Our AI is decoding the details...</p>
 				</div>
 			);
 		}
@@ -112,9 +108,7 @@ const BillCard = ({
 		if (summaryError) {
 			return (
 				<div className='p-6 text-center'>
-					<p className='text-lg font-medium text-destructive mb-2'>
-						Analysis Failed
-					</p>
+					<p className='text-lg font-medium text-destructive mb-2'>Analysis Failed</p>
 					<p className='text-sm text-muted-foreground mb-4'>
 						Unable to generate the analysis at this time.
 					</p>
@@ -129,29 +123,75 @@ const BillCard = ({
 			);
 		}
 
-		if (summary) {
+		if (structured) {
+			const hasDebate =
+				structured.controversy.for.length > 0 ||
+				structured.controversy.against.length > 0;
+
 			return (
-				<div className='space-y-4 p-1'>
+				<div className='space-y-3 p-1'>
+					{/* The Gist */}
 					<div className='bg-muted border border-border rounded-lg p-4'>
-						<p className='text-base text-foreground leading-relaxed'>
-							{summary}
+						<p className='text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1'>
+							The Gist
 						</p>
+						<p className='text-sm text-foreground leading-relaxed'>{structured.gist}</p>
 					</div>
 
-					{impacts && impacts.length > 0 && (
-						<div className='bg-info/10 border border-info/20 rounded-lg p-4'>
-							<p className='text-sm font-bold text-info-foreground mb-3'>
-								Potential Impact if Passed
+					{/* Who it Affects */}
+					<div className='flex items-center gap-2 px-1'>
+						<Users className='h-4 w-4 text-muted-foreground flex-shrink-0' />
+						<span className='text-xs text-muted-foreground font-medium'>Who it Affects:</span>
+						<Badge variant='secondary' className='text-xs'>{structured.whoItAffects}</Badge>
+					</div>
+
+					{/* Wallet Impact */}
+					<div className='bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4'>
+						<div className='flex items-center gap-2 mb-1'>
+							<Wallet className='h-4 w-4 text-amber-600 dark:text-amber-400 flex-shrink-0' />
+							<p className='text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide'>
+								Wallet Impact
 							</p>
-							<div className='space-y-3'>
-								{impacts.map((impact, i) => (
-									<div key={i} className='flex items-start gap-3'>
-										<div className='w-1.5 h-1.5 bg-info rounded-full mt-1.5 flex-shrink-0'></div>
-										<p className='text-sm text-foreground/80 leading-relaxed'>
-											{impact}
-										</p>
+						</div>
+						<p className='text-sm text-foreground leading-relaxed'>{structured.walletImpact}</p>
+					</div>
+
+					{/* The Debate */}
+					{hasDebate && (
+						<div className='border border-border rounded-lg p-4'>
+							<div className='flex items-center gap-2 mb-3'>
+								<Scale className='h-4 w-4 text-muted-foreground flex-shrink-0' />
+								<p className='text-xs font-semibold text-muted-foreground uppercase tracking-wide'>
+									The Debate
+								</p>
+							</div>
+							<div className='grid grid-cols-2 gap-3'>
+								{structured.controversy.for.length > 0 && (
+									<div>
+										<p className='text-xs font-semibold text-green-600 dark:text-green-400 mb-1'>For</p>
+										<ul className='space-y-1'>
+											{structured.controversy.for.map((point, i) => (
+												<li key={i} className='flex items-start gap-1.5'>
+													<span className='text-green-500 mt-0.5 flex-shrink-0'>+</span>
+													<span className='text-xs text-foreground/80 leading-relaxed'>{point}</span>
+												</li>
+											))}
+										</ul>
 									</div>
-								))}
+								)}
+								{structured.controversy.against.length > 0 && (
+									<div>
+										<p className='text-xs font-semibold text-red-600 dark:text-red-400 mb-1'>Against</p>
+										<ul className='space-y-1'>
+											{structured.controversy.against.map((point, i) => (
+												<li key={i} className='flex items-start gap-1.5'>
+													<span className='text-red-500 mt-0.5 flex-shrink-0'>−</span>
+													<span className='text-xs text-foreground/80 leading-relaxed'>{point}</span>
+												</li>
+											))}
+										</ul>
+									</div>
+								)}
 							</div>
 						</div>
 					)}

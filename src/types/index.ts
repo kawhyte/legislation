@@ -94,9 +94,15 @@ export interface UseBillSummaryOptions {
   targetAge?: string;
 }
 
+export interface BillSummaryData {
+  gist: string;
+  whoItAffects: string;
+  walletImpact: string;
+  controversy: { for: string[]; against: string[] };
+}
+
 export interface UseBillSummaryReturn {
-  summary: string | null;
-  impacts: string[] | null;
+  structured: BillSummaryData | null;
   isLoading: boolean;
   error: string | null;
   generateSummary: () => void;

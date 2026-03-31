@@ -36,3 +36,16 @@
 - [x] **Task 7: Preserve User Context Post-Login**
   - Ensure that after a user successfully authenticates via the `AuthModal`, the modal closes and the app stays on the current homepage/search view. 
   - Do NOT force a redirect to `/dashboard` or `/profile-setup` if they are just trying to save a bill from the homepage.
+
+  - [x] **Task 8: Restructure the Gemini Prompt**
+  - Update `src/services/geminiServices.ts`.
+  - Rewrite the prompt. Instruct the AI to return ONLY valid JSON with this exact schema: `{ "gist": "1-2 sentences max", "whoItAffects": "Target demographic string", "walletImpact": "Direct financial impact string", "controversy": { "for": ["point"], "against": ["point"] } }`.
+
+- [x] **Task 9: Parse the AI Response**
+  - Update the parsing logic in `src/services/geminiServices.ts` to strip out markdown blocks (e.g., \`\`\`json) and use `JSON.parse()`.
+  - Add error handling: if parsing fails, fall back to displaying the raw text as the `gist`.
+
+- [x] **Task 10: Rebuild the Summary UI**
+  - Refactor the UI where the summary is displayed (e.g., `BillCard.tsx` or similar).
+  - Remove the single paragraph layout.
+  - Implement a clean, scannable UI using existing Tailwind/shadcn classes to display the parsed JSON fields. Make "Wallet Impact" stand out.

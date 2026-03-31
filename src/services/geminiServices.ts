@@ -1,18 +1,19 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import type { Bill } from '@/types'; // Import the Bill type
+import type { Bill, BillSummaryData } from '@/types';
 
-// Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
-// Enhanced cache with expiration
+// Internal alias — matches the JSON schema Gemini returns
+type SummaryResult = BillSummaryData;
+
 interface CacheEntry {
-  data: { summary: string; impacts: string[] };
+  data: SummaryResult;
   timestamp: number;
   expiresIn: number;
 }
 
 const summaryCache = new Map<string, CacheEntry>();
-const pendingRequests = new Map<string, Promise<{ summary: string; impacts: string[] }>>();
+const pendingRequests = new Map<string, Promise<SummaryResult>>();
 
 interface SummaryOptions {
   maxLength?: number;
@@ -20,10 +21,12 @@ interface SummaryOptions {
   useCache?: boolean;
 }
 
-interface SummaryResult {
-  summary: string;
-  impacts: string[];
-}
+const FALLBACK: SummaryResult = {
+  gist: "Summary unavailable at this time.",
+  whoItAffects: "General public",
+  walletImpact: "No direct cost impact.",
+  controversy: { for: [], against: [] },
+};
 
 export class GeminiService {
   private model;
@@ -36,7 +39,7 @@ export class GeminiService {
       model: "gemini-2.0-flash-exp",
       generationConfig: {
         temperature: 0.3,
-        maxOutputTokens: 300,
+        maxOutputTokens: 400,
       }
     });
   }
@@ -52,54 +55,32 @@ export class GeminiService {
   private async enforceRateLimit(): Promise<void> {
     const now = Date.now();
     const timeSinceLastRequest = now - this.lastRequestTime;
-    
     if (timeSinceLastRequest < GeminiService.REQUEST_DELAY) {
       const waitTime = GeminiService.REQUEST_DELAY - timeSinceLastRequest;
-      console.log(`[GeminiService] Rate limiting: waiting ${waitTime}ms`);
       await new Promise(resolve => setTimeout(resolve, waitTime));
     }
-    
     this.lastRequestTime = Date.now();
   }
 
   private parseResponse(text: string): SummaryResult {
+    // Strip markdown code fences (```json ... ``` or ``` ... ```)
+    const cleaned = text
+      .replace(/^```(?:json)?\s*/i, '')
+      .replace(/\s*```\s*$/, '')
+      .trim();
     try {
-      const impactMarkers = ['Impact if passed', 'Impacts if passed', 'If passed:', 'Impact:'];
-      let summaryText = text.trim();
-      let impactsText = '';
-
-      for (const marker of impactMarkers) {
-        const markerIndex = text.toLowerCase().indexOf(marker.toLowerCase());
-        if (markerIndex !== -1) {
-          summaryText = text.substring(0, markerIndex).trim();
-          impactsText = text.substring(markerIndex + marker.length).trim();
-          break;
-        }
-      }
-
-      const impacts = impactsText
-        .split('\n')
-        .map(line => line.trim())
-        .filter(line => line.startsWith('*') || line.startsWith('-') || line.startsWith('•'))
-        .map(line => line.replace(/^[*-•]\s*/, '').trim())
-        .filter(line => line.length > 0)
-        .slice(0, 3);
-
+      return JSON.parse(cleaned) as SummaryResult;
+    } catch {
+      console.warn('[GeminiService] JSON parse failed, using fallback. Raw:', text.slice(0, 100));
       return {
-        summary: summaryText || "This bill addresses legislative matters.",
-        impacts: impacts.length > 0 ? impacts : ["Legislative changes may affect current policies."]
-      };
-    } catch (error) {
-      console.error('Error parsing AI response:', error);
-      return {
-        summary: "This bill introduces new legislation.",
-        impacts: ["Policy changes may occur."]
+        ...FALLBACK,
+        gist: cleaned.slice(0, 300) || FALLBACK.gist,
       };
     }
   }
 
   async summarizeBillWithImpacts(
-    bill: Bill, // Changed from title: string to bill: Bill
+    bill: Bill,
     options: SummaryOptions = {}
   ): Promise<SummaryResult> {
     const { useCache = true } = options;
@@ -108,7 +89,6 @@ export class GeminiService {
     if (useCache) {
       const cachedEntry = summaryCache.get(cacheKey);
       if (cachedEntry && this.isCacheValid(cachedEntry)) {
-        console.log('[GeminiService] Using cached result for:', bill.title);
         return cachedEntry.data;
       }
     }
@@ -117,7 +97,7 @@ export class GeminiService {
       return await pendingRequests.get(cacheKey)!;
     }
 
-    const requestPromise = this.makeRequest(bill, options);
+    const requestPromise = this.makeRequest(bill);
     pendingRequests.set(cacheKey, requestPromise);
 
     try {
@@ -126,7 +106,7 @@ export class GeminiService {
         summaryCache.set(cacheKey, {
           data: result,
           timestamp: Date.now(),
-          expiresIn: GeminiService.CACHE_DURATION
+          expiresIn: GeminiService.CACHE_DURATION,
         });
       }
       return result;
@@ -135,12 +115,9 @@ export class GeminiService {
     }
   }
 
-  private async makeRequest(bill: Bill, options: SummaryOptions): Promise<SummaryResult> {
+  private async makeRequest(bill: Bill): Promise<SummaryResult> {
     await this.enforceRateLimit();
 
-    const { maxLength = 150, targetAge = "18-40" } = options;
-
-    // --- Build the new, richer context ---
     let context = `Bill Title: "${bill.title}"`;
     if (bill.abstracts && bill.abstracts.length > 0 && bill.abstracts[0].abstract) {
       context += `\nOfficial Abstract: "${bill.abstracts[0].abstract}"`;
@@ -152,51 +129,30 @@ export class GeminiService {
       context += `\nLatest Action: ${bill.latest_action_description}`;
     }
 
+    const prompt = `You are a legislative analyst. Respond ONLY with a valid JSON object — no markdown, no explanation, no extra text.
+
+Use this exact schema:
+{
+  "gist": "1-2 sentence plain-English summary of what this bill does",
+  "whoItAffects": "The primary group affected (e.g. homeowners, teachers, small businesses)",
+  "walletImpact": "Direct financial effect — costs, taxes, fines, or savings. If none, say 'No direct cost impact.'",
+  "controversy": {
+    "for": ["1-2 short bullet points supporting the bill"],
+    "against": ["1-2 short bullet points opposing the bill"]
+  }
+}
+
+Bill information:
+${context}`;
+
     try {
-      const prompt = `
-        You are an AI assistant that's great at breaking down complicated legal stuff for anyone to understand.
-        Your goal is to explain the following bill in a way that's casual and engaging for your target audience.
-
-        Here's what you need to do:
-        1. Write a short summary (no more than ${maxLength} characters). Keep it clear and to the point.
-        2. List exactly 3 bullet points on how this could actually affect people's lives if it passes.
-
-        Tone and Style Guidelines:
-        - Your target audience is aged ${targetAge}.
-        - Be conversational and approachable, like you're explaining it to a smart friend.
-        - Ditch the legal jargon. Use simple, everyday language.
-        - Get straight to what matters. Why should they care?
-        - You can start the summary with "Here's the deal with this bill:" or something similarly casual, instead of the formal "This bill...".
-
-        Format your response exactly like this:
-        [Your summary here]
-        
-        Impact if passed:
-        * [First impact]
-        * [Second impact]  
-        * [Third impact]
-        
-        --- Bill Information ---
-        ${context}
-      `;
-
       console.log('[GeminiService] Making API request for:', bill.title);
-      
       const result = await this.model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text().trim();
-      
+      const text = result.response.text().trim();
       return this.parseResponse(text);
     } catch (error) {
       console.error('[GeminiService] API request failed:', error);
-      return {
-        summary: "This bill introduces new legislation that may impact public policy.",
-        impacts: [
-          "Changes to regulations may occur.",
-          "Administrative processes may be updated.", 
-          "Public services may be affected."
-        ]
-      };
+      return FALLBACK;
     }
   }
 
@@ -217,7 +173,7 @@ export class GeminiService {
     return {
       size: summaryCache.size,
       pendingRequests: pendingRequests.size,
-      keys: Array.from(summaryCache.keys())
+      keys: Array.from(summaryCache.keys()),
     };
   }
 }

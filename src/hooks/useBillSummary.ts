@@ -1,16 +1,15 @@
 import { useState, useRef, useCallback } from 'react';
 import { GeminiService } from '../services/geminiServices';
-import type { Bill, UseBillSummaryOptions, UseBillSummaryReturn } from '@/types';
+import type { Bill, BillSummaryData, UseBillSummaryOptions, UseBillSummaryReturn } from '@/types';
 
 export const useBillSummary = (
   bill: Bill,
   options: UseBillSummaryOptions = {}
 ): UseBillSummaryReturn => {
-  const [summary, setSummary] = useState<string | null>(null);
-  const [impacts, setImpacts] = useState<string[] | null>(null);
+  const [structured, setStructured] = useState<BillSummaryData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const { maxLength = 150, targetAge = "30-40" } = options;
   const geminiService = useRef(new GeminiService());
   const abortController = useRef<AbortController | null>(null);
@@ -24,9 +23,9 @@ export const useBillSummary = (
   const generateSummary = useCallback(async () => {
     if (isLoading) return;
 
-    cleanup(); // Abort any previous request
+    cleanup();
     abortController.current = new AbortController();
-    
+
     setIsLoading(true);
     setError(null);
 
@@ -35,19 +34,17 @@ export const useBillSummary = (
         bill,
         { maxLength, targetAge, useCache: true }
       );
-      
+
       if (!abortController.current.signal.aborted) {
-        setSummary(result.summary);
-        setImpacts(result.impacts);
+        setStructured(result);
       }
     } catch (err) {
       if (err instanceof Error) {
         if (err.name !== 'AbortError') {
-          console.error('[useBillSummary] Error in generateSummary:', err);
+          console.error('[useBillSummary] Error:', err);
           setError(err.message);
         }
       } else {
-        console.error('[useBillSummary] Unexpected error in generateSummary:', err);
         setError('An unexpected error occurred');
       }
     } finally {
@@ -56,11 +53,10 @@ export const useBillSummary = (
   }, [bill, maxLength, targetAge, cleanup]);
 
   return {
-    summary,
-    impacts,
+    structured,
     isLoading,
     error,
     generateSummary,
-    cleanup
+    cleanup,
   };
 };
