@@ -100,7 +100,7 @@ export const useBillToast = () => {
   };
 
   const showAuthRequired = () => {
-    toast.info('Sign in to save bills', {
+    toast('Sign in to save bills', {
       description: 'Create an account to bookmark and track legislation',
       duration: 5000,
       icon: '🔐',
