@@ -232,9 +232,9 @@
   |--------------------------------------------------------------------------
   | Primary actions and interactive components
   */
-  --primary: #0061EF;                          /* Use for: Primary CTAs, main action buttons. Headspace blue */
-  --primary-foreground: #FFFFFF;               /* Use for: Text on primary buttons */
-  --primary-hover: #0040EA;                    /* Use for: Hover state of primary buttons */
+  --primary: #FFCE00;                          /* Use for: Primary CTAs, main action buttons. Yellow accent */
+  --primary-foreground: #2D2C2B;               /* Use for: Text on primary buttons. Dark on yellow */
+  --primary-hover: #FFDA33;                    /* Use for: Hover state of primary buttons */
 
   --secondary: #E2DED9;                        /* Use for: Secondary buttons, subtle backgrounds */
   --secondary-foreground: #44423F;             /* Use for: Text on secondary elements */
@@ -264,7 +264,7 @@
   */
   --border: #E2DED9;                           /* Use for: Card borders, dividers, form borders */
   --input: #FFFFFF;                            /* Use for: Form input backgrounds */
-  --ring: #0061EF;                             /* Use for: Focus rings, active states */
+  --ring: #2D2C2B;                             /* Use for: Focus rings, active states */
 
   /*
   |--------------------------------------------------------------------------

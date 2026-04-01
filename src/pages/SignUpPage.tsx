@@ -216,7 +216,7 @@ export default function SignUpPage() {
                 Already have an account?{' '}
                 <Link 
                   to="/sign-in" 
-                  className="font-medium text-blue-600 hover:text-blue-500"
+                  className="font-medium text-foreground underline underline-offset-2 hover:text-muted-foreground"
                   state={{ from: location.state?.from }}
                 >
                   Sign in
