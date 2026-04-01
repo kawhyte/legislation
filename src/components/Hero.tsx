@@ -61,7 +61,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 				</div>
 
 				{/* FEATURE PILLS */}
-				<div className='flex items-center justify-center gap-3 flex-wrap'>
+				<div className='hidden sm:flex items-center justify-center gap-3 flex-wrap'>
 					{FEATURE_PILLS.map(({ icon: Icon, label }) => (
 						<span
 							key={label}

@@ -91,8 +91,8 @@ const statusDotColor = {
                   ${isInProgress ? 'bg-card border-2 border-info' : ''}
                   ${stage.status === 'Pending' ? 'bg-border' : ''}
                 `}>
-              {isFailed && <X className="w-3.5 h-3.5 text-primary-foreground" />}
-                  {isCompleted && <Check className="w-3.5 h-3.5 text-primary-foreground" />}
+              {isFailed && <X className="w-3.5 h-3.5 text-white" />}
+                  {isCompleted && <Check className="w-3.5 h-3.5 text-white" />}
                   {isInProgress && <div className="w-2 h-2 rounded-full bg-info"></div>}
                 </div>
                 
