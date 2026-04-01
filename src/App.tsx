@@ -13,7 +13,6 @@ import { UserProvider, useUserData } from "./contexts/UserContext";
 import { DemoProvider } from "./contexts/DemoContext";
 import { Toaster } from "@/components/ui/sonner";
 import type { States } from "./components/JurisdictionSelector";
-import { getJurisdictionFromZip } from "./utils/zipToJurisdiction";
 import useBills from "./hooks/useBills";
 import BillCard from "./components/BillCard";
 import BillCardSkeleton from "./components/BillCardSkeleton";
@@ -43,7 +42,7 @@ const ZipBillResults: React.FC<{ jurisdiction: States; }> = ({ jurisdiction }) =
 					</Suspense>
 					<h3 className="text-xl font-bold text-foreground mt-2">Quiet out here.</h3>
 					<p className="text-muted-foreground mt-2 text-sm">
-						Nothing too wild happening in {jurisdiction.name} right now. Try a different zip code!
+						The {jurisdiction.name} legislature is pretty quiet right now. Try a different zip code!
 					</p>
 				</div>
 			</section>
@@ -52,8 +51,8 @@ const ZipBillResults: React.FC<{ jurisdiction: States; }> = ({ jurisdiction }) =
 
 	return (
 		<section className="container-legislation py-12">
-			<h2 className="text-2xl font-bold text-foreground mb-6">
-				Bills in {jurisdiction.name}
+			<h2 className="text-4xl font-black text-foreground mb-8 border-b-4 border-foreground pb-4">
+				Latest Bills in {jurisdiction.name}
 			</h2>
 			<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 				{bills.map(bill => (
@@ -66,40 +65,11 @@ const ZipBillResults: React.FC<{ jurisdiction: States; }> = ({ jurisdiction }) =
 
 const HomePage = () => {
 	const [jurisdiction, setJurisdiction] = useState<States | null>(null);
-	const [isSearching, setIsSearching] = useState(false);
-	const [searched, setSearched] = useState(false);
-
-	const handleSearch = async (zip: string) => {
-		setIsSearching(true);
-		setSearched(true);
-		const result = await getJurisdictionFromZip(zip);
-		setJurisdiction(result);
-		setIsSearching(false);
-	};
 
 	return (
 		<div className="bg-background text-foreground">
-			<Hero onSearch={handleSearch} />
-
-			{isSearching && (
-				<section className="container-legislation py-12">
-					<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-						{Array.from({ length: 6 }).map((_, i) => <BillCardSkeleton key={i} />)}
-					</div>
-				</section>
-			)}
-
-			{!isSearching && searched && !jurisdiction && (
-				<section className="container-legislation py-12 text-center">
-					<p className="text-xl font-bold text-foreground">Hmm, that zip didn't work.</p>
-					<p className="text-muted-foreground mt-2 text-sm">Double-check the zip code and try again.</p>
-				</section>
-			)}
-
-			{!isSearching && jurisdiction && (
-				<ZipBillResults jurisdiction={jurisdiction} />
-			)}
-
+			<Hero onSelectState={setJurisdiction} />
+			{jurisdiction && <ZipBillResults jurisdiction={jurisdiction} />}
 		</div>
 	);
 };

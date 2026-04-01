@@ -75,3 +75,28 @@
   - The homepage should essentially just be the search Hero, taking up at least `70vh` so it's vertically centered.
   - Supersize the search input: use classes like `text-2xl py-8 px-6`. Apply the neo-brutalist doodle art styling (`border-4 border-foreground shadow-[6px_6px_0px_0px_var(--tw-shadow-color)]`).
   - If a user hasn't searched yet, the space below the search bar should be completely clean (no Lotties, no grid). Only render the bill grid or the Tumbleweed empty state *after* a search submission.
+
+  - [x] **Task 17: Return State Name alongside Jurisdiction**
+  - Update `src/utils/zipToJurisdiction.ts`. 
+  - Modify the return type to include both the OpenStates jurisdiction ID and the plain English state name (e.g., `{ jurisdiction: 'ocd-jurisdiction/...', stateName: 'California' }`).
+
+- [x] **Task 18: Build the State Reveal Header**
+  - Update `src/components/HomepageContent.tsx` (or wherever the bill grid renders).
+  - When a search completes successfully, render a massive, neo-brutalist header above the `BillGrid` that says: "Latest Bills in [State Name]".
+  - If they search a zip code that has 0 bills in session, the empty state Lottie should explicitly say: "The [State Name] legislature is pretty quiet right now."
+
+- [x] **Task 19: Add a State Dropdown Fallback**
+  - Update `src/components/Hero.tsx`.
+  - Right below the massive Zip Code input, add a subtle "Or select your state" text link that toggles a simple shadcn `Select` dropdown for the 50 states, giving users an alternative way in.
+
+  - [x] **Task 20: Build the Omni-Search Parser**
+  - Update `src/utils/zipToJurisdiction.ts` (rename it to `locationParser.ts` if you want, or just add a new function).
+  - Create a new function `parseSearchInput(input: string)` that checks:
+    - If input is 5 digits: Run the existing Zip Code API fetch.
+    - If input is 2 letters: Match it against state abbreviations.
+    - If input is > 2 letters: Do a case-insensitive match against full state names.
+  - Return the `{ jurisdictionId, stateName }` object for all valid cases, or throw an error for invalid input.
+
+- [x] **Task 21: Update the Hero Search**
+  - Update the `onSubmit` handler in `src/components/Hero.tsx` to use the new `parseSearchInput` logic.
+  - Change the placeholder text in the massive input to: `"Enter Zip Code or State..."`.
