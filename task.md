@@ -178,3 +178,34 @@
   - Change the layout from a single column to a CSS Grid (e.g., `grid-cols-1 lg:grid-cols-4` or `lg:grid-cols-3`).
   - The `BillGrid` should take up the majority of the space (e.g., `lg:col-span-3`).
   - The `YourRepsWidget` should act as a sticky right-hand sidebar (`lg:col-span-1 sticky top-8`). On mobile, it should render at the top before the bills.
+
+  - [x] **Task 38: Build the `useRepVotes` Hook**
+  - Create `src/hooks/useRepVotes.ts`.
+  - Fetch from OpenStates: `/votes` with params `voter_id={repId}` and `per_page=50`.
+  - Parse the results to calculate the `reliability` (total votes vs "excused/not voting") and `stanceSplit` (Yes vs No percentage).
+
+- [x] **Task 39: Create the Scorecard Page & Routing**
+  - Create `src/pages/RepScorecardPage.tsx`.
+  - Add the route to `src/App.tsx`: `<Route path="/rep/:repId" element={<RepScorecardPage />} />`.
+  - Ensure the page can accept the `rep` profile data via React Router's `useLocation().state`.
+
+- [x] **Task 40: Link the Widget to the Page**
+  - Update `src/components/YourRepsWidget.tsx`.
+  - Wrap the "View Record" button in a React Router `<Link>` or use `Maps`.
+  - Point it to `/rep/${rep.id}` and pass the `rep` object in the state: `state: { rep }`.
+
+  - [x] **Task 41: Fix Scorecard Routing (URI Encoding)**
+  - Update `src/components/YourRepsWidget.tsx` to use `encodeURIComponent(rep.id)` in the link.
+  - Update `src/pages/RepScorecardPage.tsx` to `decodeURIComponent(repId)` before fetching.
+
+- [x] **Task 42: Neo-Brutalist Scorecard Header (Rebel Index)**
+  - In `RepScorecardPage.tsx`, build a top section showing the Rep's profile (Image, Name, Party).
+  - Create a "Voting Record" grid showing three thick-bordered, hard-shadow metric boxes: 
+    1. Total Votes (Attendance)
+    2. Voted YES (%)
+    3. Voted NO (%)
+
+- [x] **Task 43: The Top 5 Major Votes Feed**
+  - In `RepScorecardPage.tsx`, filter the `data` (raw votes) to remove junk (e.g., matching descriptions against "journal", "adjourn", "commending").
+  - Slice the top 5 most recent major votes.
+  - Render them as a list of mini neo-brutalist cards. Each card must clearly show the user's stance (e.g., a green "VOTED YES" badge or a red "VOTED NO" badge) next to the vote's motion/bill title.

@@ -4,6 +4,7 @@ import { useUser } from '@/hooks/useAuth';
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import AboutPage from "./pages/AboutPage";
+import RepScorecardPage from "./pages/RepScorecardPage";
 import DashboardPage from "./pages/DashboardPage";
 import TrendingBillsPage from "./pages/TrendingBillsPage";
 import ProfileSetupPage from "./pages/ProfileSetupPage";
@@ -155,6 +156,7 @@ const AppRoutes = () => {
 				<Route path='/' element={<HomePage />} />
 				<Route path='/about' element={<AboutPage />} />
 				<Route path='/trending' element={<TrendingBillsPage />} />
+				<Route path='/rep/:repId' element={<RepScorecardPage />} />
 				{/* <Route path='/why-this-matters' element={<WhyThisMattersPage />} /> */}
 
 				{/* Auth routes */}

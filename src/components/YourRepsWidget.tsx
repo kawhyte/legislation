@@ -1,4 +1,5 @@
 import { User } from "lucide-react";
+import { Link } from "react-router-dom";
 import useReps, { type Rep } from "../hooks/useReps";
 import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
@@ -40,9 +41,11 @@ function RepCard({ rep }: { rep: Rep }) {
 					</span>
 				</div>
 			</div>
-			<Button variant="outline" size="sm" className="w-full mt-3 border-2 border-foreground font-semibold text-xs">
-				View Record
-			</Button>
+			<Link to={`/rep/${encodeURIComponent(rep.id)}`} state={{ rep }}>
+				<Button variant="outline" size="sm" className="w-full mt-3 border-2 border-foreground font-semibold text-xs">
+					View Record
+				</Button>
+			</Link>
 		</div>
 	);
 }
