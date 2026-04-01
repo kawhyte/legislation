@@ -56,7 +56,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 						Laws that affect you,<br />explained plainly.
 					</h1>
 					<p className='text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed'>
-						Search active bills from your state and let AI translate the legal language into plain English — no background needed.
+						Search active bills from your state and let AI translate the legal language into plain English.
 					</p>
 				</div>
 
