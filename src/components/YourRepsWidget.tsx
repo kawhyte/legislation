@@ -68,7 +68,7 @@ function LoadingSkeleton() {
 }
 
 const YourRepsWidget: React.FC<Props> = ({ coords }) => {
-	const { data: reps, isLoading } = useReps(coords);
+	const { data: reps, isLoading, error } = useReps(coords);
 
 	return (
 		<div>
@@ -94,6 +94,12 @@ const YourRepsWidget: React.FC<Props> = ({ coords }) => {
 			{coords && !isLoading && reps && reps.length === 0 && (
 				<p className="text-sm text-muted-foreground text-center py-4">
 					No representatives found for this location.
+				</p>
+			)}
+
+			{coords && !isLoading && error && (
+				<p className="text-xs text-destructive border border-destructive rounded-lg px-3 py-2">
+					{error}
 				</p>
 			)}
 		</div>

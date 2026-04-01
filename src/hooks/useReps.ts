@@ -38,7 +38,7 @@ const useReps = (coords?: { lat: number; lng: number }) => {
 		apiClient
 			.get<PeopleResponse>("/people.geo", {
 				signal: controller.signal,
-				params: { lat: coords.lat, lng: coords.lng, include: ["party"] },
+				params: { lat: coords.lat, lng: coords.lng },
 			})
 			.then((res) => {
 				if (!controller.signal.aborted) {
