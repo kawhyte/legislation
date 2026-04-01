@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Plus, Trash2, Loader2 } from 'lucide-react';
+import { Bookmark, BookmarkCheck, Loader2 } from 'lucide-react';
 import { useUserData } from '../contexts/UserContext';
 import { useUser } from '@/hooks/useAuth';
 import type { Bill } from '@/types';
@@ -94,15 +93,15 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     }
   }, [bill, bookmarked, isSignedIn, isLoading, removeSavedBill, saveBill, onSaveSuccess, onSaveError, showToast, toastDuration, showAuthRequired, showRemoveSuccess, showSaveSuccess, showRemoveError, showSaveError]);
 
-  // Enhanced styling with better state management
-  const getButtonVariant = () => {
-    if (isLoading) return 'outline';
-    if (bookmarked) return 'destructive';
-    return 'default';
-  };
-  
-  const getAdditionalStyles = () => {
-    return "transition-all duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
+  const getButtonStyles = () => {
+    const base = "h-8 w-8 rounded-lg border-2 flex items-center justify-center transition-all duration-150 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none flex-shrink-0";
+    if (isLoading) {
+      return `${base} border-border bg-card text-muted-foreground`;
+    }
+    if (bookmarked) {
+      return `${base} border-foreground bg-accent-yellow text-text-on-yellow shadow-[2px_2px_0px_0px_hsl(var(--foreground))] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]`;
+    }
+    return `${base} border-border bg-card text-muted-foreground hover:border-foreground hover:text-foreground hover:bg-muted`;
   };
 
   const tooltipText = isLoading 
@@ -118,29 +117,27 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({
     <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
     <Tooltip delayDuration={300}>
       <TooltipTrigger asChild>
-        <Button
-          variant={getButtonVariant()}
-          size={size}
+        <button
           onClick={handleBookmarkToggle}
           disabled={isLoading}
           aria-label={buttonLabel}
           aria-pressed={bookmarked}
-          className={`${getAdditionalStyles()} ${className}`}
+          className={`${getButtonStyles()} ${className}`}
         >
           {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : bookmarked ? (
-            <Trash2 className="h-4 w-4" />
+            <BookmarkCheck className="h-4 w-4" />
           ) : (
-            <Plus className="h-4 w-4" />
+            <Bookmark className="h-4 w-4" />
           )}
           {showText && (
-            <span className="ml-2 text-xs font-medium">
-              {isLoading ? "..." : bookmarked ? "Saved" : "Save"}
+            <span className="ml-1.5 text-xs font-semibold">
+              {isLoading ? "…" : bookmarked ? "Saved" : "Save"}
             </span>
           )}
           <span className="sr-only">{buttonLabel}</span>
-        </Button>
+        </button>
       </TooltipTrigger>
       <TooltipContent className="bg-popover text-popover-foreground border border-border shadow-md">
         <p className="text-sm">{tooltipText}</p>
