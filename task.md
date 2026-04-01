@@ -130,3 +130,22 @@
   - Calculate a custom `relevanceScore`. Start with `momentum.score`.
   - Add +50 points if the bill title contains high-impact keywords (tax, healthcare, housing, gun, school, budget, fee, rent).
   - Sort the final array of bills by `relevanceScore` descending before returning it to the UI.
+
+  - [ ] **Task 29: Update Firestore Rules for Global Cache**
+  - Update `firestore.rules`.
+  - Add a new match block for `match /bill_summaries/{billId}` that allows public reads and writes (`allow read, write: if true;`). *Note: We are allowing public writes so unauthenticated users can trigger and cache the Gemini fetch.*
+
+- [ ] **Task 30: Implement Firestore Cache Service**
+  - Create a new file `src/services/cacheService.ts`.
+  - Export two functions using Firebase `getDoc` and `setDoc`: `getCachedSummary(billId)` and `cacheSummary(billId, summaryData)`.
+
+- [ ] **Task 31: Wire the Cache Interceptor**
+  - Update `src/hooks/useBillSummary.ts`.
+  - Modify the `generateSummary` function to accept `bill.id`.
+  - Logic flow: Check `getCachedSummary(bill.id)`. If exists, return it immediately. If null, call `GeminiService.summarizeBillWithImpacts`, then call `cacheSummary(bill.id, newSummary)`, then return it.
+
+- [ ] **Task 32: The "Magic" Placeholder UI**
+  - Update `src/components/BillCard.tsx`.
+  - If the AI summary is NOT loaded yet, hide the raw OpenStates abstract/summary. 
+  - Render a large, full-width button (dashed border, light blue background) with a `Sparkles` icon (from lucide-react) that says "✨ Translate to Plain English".
+  - Clicking this button triggers the `generateSummary` function.
