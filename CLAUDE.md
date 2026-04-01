@@ -8,6 +8,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run dev` - Start development server with hot reload
 - `npm run preview` - Preview production build locally
 
+### Rollup darwin-arm64 Missing Binary (Apple Silicon)
+If `npm run dev` fails with `Cannot find module @rollup/rollup-darwin-arm64`, it means npm installed the x64 binary (e.g. from a Rosetta shell). Fix with:
+```
+arch -arm64 npm install @rollup/rollup-darwin-arm64 --save-optional
+```
+Do NOT use `npm ci` alone — it will reinstall the wrong architecture if the shell is running under Rosetta.
+
 ### Building
 - `tsc -b && vite build` - Type check and build for production
 - `npm run build` - Same as above (via package.json script)

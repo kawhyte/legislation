@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Search } from "lucide-react";
+
 import usStates from "../data/usStates";
 import type { States } from "./JurisdictionSelector";
 import { parseLocationInput } from "../utils/zipToJurisdiction";
@@ -48,7 +48,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 						What laws are brewing<br />near you?
 					</h1>
 					<p className='text-lg text-muted-foreground max-w-md mx-auto'>
-						Enter your zip code or state — we'll show you exactly what's moving through your legislature.
+						Enter your US zip code or state — we'll show you exactly what's moving through your legislature.
 					</p>
 				</div>
 
@@ -102,9 +102,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 					)}
 				</div>
 
-				<p className='text-xs text-muted-foreground/60'>
-					Covers all 50 states · Powered by AI · Always free
-				</p>
+				
 			</div>
 		</div>
 	);

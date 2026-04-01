@@ -36,10 +36,10 @@ export class GeminiService {
 
   constructor() {
     this.model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash-exp",
+      model: "gemini-2.5-flash",
       generationConfig: {
         temperature: 0.3,
-        maxOutputTokens: 400,
+        maxOutputTokens: 1024,
       }
     });
   }
@@ -133,7 +133,7 @@ export class GeminiService {
 
 Use this exact schema:
 {
-  "gist": "1-2 sentence plain-English summary of what this bill does",
+  "gist": "1-3 sentence plain-English summary of what this bill does",
   "whoItAffects": "The primary group affected (e.g. homeowners, teachers, small businesses)",
   "walletImpact": "Direct financial effect — costs, taxes, fines, or savings. If none, say 'No direct cost impact.'",
   "controversy": {

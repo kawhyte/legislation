@@ -100,3 +100,15 @@
 - [x] **Task 21: Update the Hero Search**
   - Update the `onSubmit` handler in `src/components/Hero.tsx` to use the new `parseSearchInput` logic.
   - Change the placeholder text in the massive input to: `"Enter Zip Code or State..."`.
+
+  - [x] **Task 22: Fix Gemini Model Version (404 Error)**
+  - Update `src/services/geminiServices.ts`.
+  - Find where the model is initialized (likely `genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" })`).
+  - Change `"gemini-2.0-flash-exp"` to the stable `"gemini-1.5-flash"`.
+
+  - [x] **Task 23: Force Explicit Gemini Version**
+  - Update `src/services/geminiServices.ts`.
+  - Change the model string to `"gemini-1.5-flash-latest"`.
+
+- [x] **Task 24: Update Gemini SDK**
+  - Run `npm install @google/generative-ai@latest` to ensure the SDK is fully compatible with the v1beta 1.5 models.
