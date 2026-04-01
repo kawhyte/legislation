@@ -16,6 +16,7 @@ import type { States } from "./components/JurisdictionSelector";
 import useBills from "./hooks/useBills";
 import BillCard from "./components/BillCard";
 import BillCardSkeleton from "./components/BillCardSkeleton";
+import YourRepsWidget from "./components/YourRepsWidget";
 import tumbleweedData from "./assets/Tumbleweed Rolling.json";
 
 const Lottie = React.lazy(() => import("lottie-react"));
@@ -26,8 +27,15 @@ const ZipBillResults: React.FC<{ jurisdiction: States; }> = ({ jurisdiction }) =
 	if (isLoading) {
 		return (
 			<section className="container-legislation py-12">
-				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-					{Array.from({ length: 6 }).map((_, i) => <BillCardSkeleton key={i} />)}
+				<div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+					<div className="lg:col-span-3">
+						<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+							{Array.from({ length: 6 }).map((_, i) => <BillCardSkeleton key={i} />)}
+						</div>
+					</div>
+					<div className="lg:col-span-1 order-first lg:order-last">
+						<YourRepsWidget coords={jurisdiction.zipCoords} />
+					</div>
 				</div>
 			</section>
 		);
@@ -35,15 +43,22 @@ const ZipBillResults: React.FC<{ jurisdiction: States; }> = ({ jurisdiction }) =
 
 	if (!bills || bills.length === 0) {
 		return (
-			<section className="container-legislation py-16 text-center">
-				<div className="max-w-xs mx-auto">
-					<Suspense fallback={null}>
-						<Lottie animationData={tumbleweedData} loop className="w-full" />
-					</Suspense>
-					<h3 className="text-xl font-bold text-foreground mt-2">Quiet out here.</h3>
-					<p className="text-muted-foreground mt-2 text-sm">
-						The {jurisdiction.name} legislature is pretty quiet right now. Try a different zip code!
-					</p>
+			<section className="container-legislation py-12">
+				<div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+					<div className="lg:col-span-3 py-4 text-center">
+						<div className="max-w-xs mx-auto">
+							<Suspense fallback={null}>
+								<Lottie animationData={tumbleweedData} loop className="w-full" />
+							</Suspense>
+							<h3 className="text-xl font-bold text-foreground mt-2">Quiet out here.</h3>
+							<p className="text-muted-foreground mt-2 text-sm">
+								The {jurisdiction.name} legislature is pretty quiet right now. Try a different zip code!
+							</p>
+						</div>
+					</div>
+					<div className="lg:col-span-1 order-first lg:order-last">
+						<YourRepsWidget coords={jurisdiction.zipCoords} />
+					</div>
 				</div>
 			</section>
 		);
@@ -54,10 +69,17 @@ const ZipBillResults: React.FC<{ jurisdiction: States; }> = ({ jurisdiction }) =
 			<h2 className="text-4xl font-black text-foreground mb-8 border-b-4 border-foreground pb-4">
 				Latest Bills in {jurisdiction.name}
 			</h2>
-			<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-				{bills.map(bill => (
-					<BillCard key={bill.id} bill={bill} showSource showProgressBar viewMode="detailed" />
-				))}
+			<div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+				<div className="lg:col-span-3">
+					<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+						{bills.map(bill => (
+							<BillCard key={bill.id} bill={bill} showSource showProgressBar viewMode="detailed" />
+						))}
+					</div>
+				</div>
+				<div className="lg:col-span-1 order-first lg:order-last sticky top-6 self-start">
+					<YourRepsWidget coords={jurisdiction.zipCoords} />
+				</div>
 			</div>
 		</section>
 	);

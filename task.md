@@ -161,3 +161,20 @@
   - It should accept `coordinates: { lat: number, lng: number } | undefined`.
   - If `coordinates` exist, make a GET request to `https://v3.openstates.org/people.geo?lat={lat}&lng={lng}` using your `api-client.ts`.
   - Return the array of legislators (which will naturally be scoped down to just their specific local reps).
+
+  - [x] **Task 35: Build the `YourRepsWidget` Component**
+  - Create `src/components/YourRepsWidget.tsx`.
+  - Accept `coordinates` as a prop.
+  - Call the `useReps` hook inside this component.
+  - Handle 3 states: Loading (skeleton), Macro View (no coordinates provided -> show upsell to enter zip), and Hyper-Local View (render the fetched reps).
+
+- [x] **Task 36: Neo-Brutalist Styling for Reps**
+  - In the widget, style the legislator cards using our established doodle-art aesthetic (thick borders, hard offset shadows, rounded-xl).
+  - Add logic for the Party Badge: If Democrat, use a blue theme (`bg-blue-100 text-blue-800 border-blue-900`). If Republican, use a red theme (`bg-red-100 text-red-800 border-red-900`).
+  - Include the rep's photo (`image` from the OpenStates payload, with a fallback if null), Name, and a "View Record" outline button.
+
+- [x] **Task 37: Inject Widget into Layout**
+  - Update the component rendering the bill results (e.g., `HomepageContent.tsx` or `ZipBillResults.tsx`).
+  - Change the layout from a single column to a CSS Grid (e.g., `grid-cols-1 lg:grid-cols-4` or `lg:grid-cols-3`).
+  - The `BillGrid` should take up the majority of the space (e.g., `lg:col-span-3`).
+  - The `YourRepsWidget` should act as a sticky right-hand sidebar (`lg:col-span-1 sticky top-8`). On mobile, it should render at the top before the bills.

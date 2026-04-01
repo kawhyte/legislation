@@ -6,6 +6,7 @@ export interface Rep {
 	id: string;
 	name: string;
 	party: string;
+	image?: string | null;
 	current_role?: {
 		title: string;
 		district: string;
