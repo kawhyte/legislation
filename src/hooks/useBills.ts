@@ -20,6 +20,7 @@ const useBills = (selectedJurisdiction: States | null, selectedTopic: string | n
 		const baseParams: Record<string, string | number | string[]> = {
 			sort: 'updated_desc',
 			include: ['actions','sources','abstracts', 'votes', 'sponsorships'],
+			classification: 'bill',
 		};
 
 		console.log('[useBills] Selected jurisdiction:', selectedJurisdiction);
@@ -109,43 +110,51 @@ const useBills = (selectedJurisdiction: States | null, selectedTopic: string | n
 				filteredBills = recentActivityBills;
 			}
 			
-			// Sort by most recent activity for trending relevance
-			filteredBills.sort((a, b) => {
-				const dateA = new Date(a.latest_action_date || a.introduced);
-				const dateB = new Date(b.latest_action_date || b.introduced);
-				return dateB.getTime() - dateA.getTime();
-			});
-			
-			// Limit to reasonable number for trending display
-			filteredBills = filteredBills.slice(0, 20);
 		}
 
-		// SAFE: Keep existing enrichment logic unchanged
-		const enrichedBills = filteredBills.map(bill => {
-			// Ensure all expected properties exist for BillCard compatibility
-			const safeBill = {
-				...bill,
-				sources: bill.sources || [], // Ensure sources array exists
-				subject: bill.subject || [], // Ensure subject array exists
-				actions: bill.actions || [], // Ensure actions array exists
-				votes: bill.votes || [],
-				sponsorships: bill.sponsorships || [],
-			};
-			
-			const momentum = analyzeBillMomentum(safeBill);
-			const trendingReason = isBillTrending(safeBill) ? "Trending" : "";
-			return { ...safeBill, momentum, trendingReason };
-		});
-		
+		const HIGH_IMPACT = /tax|fee|rent|housing|health|medical|weapon|gun|school|education|zoning|abortion|appropriation|budget/i;
+		const JUNK = /mourning|congratulating|designating|commending|renaming|honoring|recognizing|celebrating|memorializing|declaring/i;
+		const sevenDaysAgo = new Date();
+		sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+		// Enrich, filter, and sort
+		const enrichedBills = filteredBills
+			.map(bill => {
+				const safeBill = {
+					...bill,
+					sources: bill.sources || [],
+					subject: bill.subject || [],
+					actions: bill.actions || [],
+					votes: bill.votes || [],
+					sponsorships: bill.sponsorships || [],
+				};
+				const momentum = analyzeBillMomentum(safeBill);
+				const trendingReason = isBillTrending(safeBill) ? "Trending" : "";
+				const relevanceScore = momentum.score + (HIGH_IMPACT.test(safeBill.title) ? 50 : 0);
+				return { ...safeBill, momentum, trendingReason, relevanceScore };
+			})
+			.filter(bill => {
+				if (JUNK.test(bill.title)) return false;
+				if (bill.momentum.level === 'Stalled' || bill.momentum.level === 'Enacted') {
+					const actionDate = bill.latest_action_date ? new Date(bill.latest_action_date) : null;
+					if (!actionDate || actionDate < sevenDaysAgo) return false;
+				}
+				return true;
+			})
+			.sort((a, b) => b.relevanceScore - a.relevanceScore);
+
+		// Nationwide: cap after relevance sort
+		const finalBills = !selectedJurisdiction ? enrichedBills.slice(0, 20) : enrichedBills;
+
 		console.log(`[useBills] Final result:`, {
 			mode: selectedJurisdiction ? 'State-specific' : 'Trending',
 			fetched: rawData.length,
 			filtered: filteredBills.length,
-			enriched: enrichedBills.length,
-			sampleTitles: enrichedBills.slice(0, 3).map(b => b.title)
+			enriched: finalBills.length,
+			sampleTitles: finalBills.slice(0, 3).map(b => b.title)
 		});
-		
-		return enrichedBills;
+
+		return finalBills;
 	}, [rawData, selectedJurisdiction]);
 
 	return { 

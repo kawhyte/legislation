@@ -112,3 +112,21 @@
 
 - [x] **Task 24: Update Gemini SDK**
   - Run `npm install @google/generative-ai@latest` to ensure the SDK is fully compatible with the v1beta 1.5 models.
+
+  - [x] **Task 25: The API Chokehold (Filter by Type)**
+  - Update `src/hooks/useBills.ts`.
+  - In the `baseParams` object, add `classification: 'bill'` to stop OpenStates from returning resolutions and memorials entirely.
+
+- [x] **Task 26: The "Junk" Bouncer (Negative Heuristics)**
+  - In `src/hooks/useBills.ts` inside the `processedData` logic, create a Regex pattern for junk keywords (e.g., mourning, congratulating, designating, honoring). 
+  - Filter out any bill whose title matches these keywords.
+
+- [x] **Task 27: The 7-Day Expiration Rule**
+  - In `src/hooks/useBills.ts`, check the `momentum.level` from `analyzeBillMomentum`.
+  - If the level is "Stalled" or "Enacted", check `latest_action_date`. 
+  - If that date is older than 7 days, filter the bill out of the results.
+
+- [x] **Task 28: The Impact Score (Sorting)**
+  - Calculate a custom `relevanceScore`. Start with `momentum.score`.
+  - Add +50 points if the bill title contains high-impact keywords (tax, healthcare, housing, gun, school, budget, fee, rent).
+  - Sort the final array of bills by `relevanceScore` descending before returning it to the UI.
