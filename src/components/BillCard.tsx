@@ -119,6 +119,14 @@ const BillCard = ({
 
 			return (
 				<div className='space-y-3 p-1'>
+						{/* Who it Affects */}
+					<div className='flex items-center gap-2 px-1'>
+						<Users className='h-4 w-4 text-muted-foreground flex-shrink-0' />
+						<span className='text-xs text-muted-foreground font-medium'>Who it Affects:</span>
+						<Badge className='text-xs border-2 border-foreground bg-background text-foreground font-semibold'>
+							{structured.whoItAffects}
+						</Badge>
+					</div>
 					{/* The Gist */}
 					<div className='bg-muted border-2 border-foreground rounded-xl p-4'>
 						<p className='text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1'>
@@ -127,20 +135,13 @@ const BillCard = ({
 						<p className='text-sm text-foreground leading-relaxed'>{structured.gist}</p>
 					</div>
 
-					{/* Who it Affects */}
-					<div className='flex items-center gap-2 px-1'>
-						<Users className='h-4 w-4 text-muted-foreground flex-shrink-0' />
-						<span className='text-xs text-muted-foreground font-medium'>Who it Affects:</span>
-						<Badge className='text-xs border-2 border-foreground bg-background text-foreground font-semibold'>
-							{structured.whoItAffects}
-						</Badge>
-					</div>
+				
 
 					{/* Wallet Impact — highlighted */}
 					<div className='bg-amber-50 dark:bg-amber-950/30 border-2 border-foreground rounded-xl p-4 shadow-[3px_3px_0px_0px_hsl(var(--foreground))]'>
 						<div className='flex items-center gap-2 mb-1'>
-							<Wallet className='h-4 w-4 text-amber-800 dark:text-amber-300 flex-shrink-0' />
-							<p className='text-xs font-bold text-amber-900 dark:text-amber-300 uppercase tracking-wide'>
+							<Wallet className='h-4 w-4 text-amber-800 dark:text-amber-600 flex-shrink-0' />
+							<p className='text-xs font-bold text-amber-900 dark:text-amber-600 uppercase tracking-wide'>
 								Wallet Impact
 							</p>
 						</div>
@@ -159,12 +160,12 @@ const BillCard = ({
 							<div className='grid grid-cols-2 gap-3'>
 								{structured.controversy.for.length > 0 && (
 									<div>
-										<p className='text-xs font-bold text-green-600 dark:text-green-400 mb-1'>For</p>
-										<ul className='space-y-1'>
+										<p className='text-sm font-bold text-green-600 dark:text-green-400 mb-2'>For</p>
+										<ul className='space-y-2'>
 											{structured.controversy.for.map((point, i) => (
 												<li key={i} className='flex items-start gap-1.5'>
 													<span className='text-green-500 mt-0.5 flex-shrink-0 font-bold'>+</span>
-													<span className='text-xs text-foreground/80 leading-relaxed'>{point}</span>
+													<span className='text-sm text-foreground leading-relaxed'>{point}</span>
 												</li>
 											))}
 										</ul>
@@ -172,12 +173,12 @@ const BillCard = ({
 								)}
 								{structured.controversy.against.length > 0 && (
 									<div>
-										<p className='text-xs font-bold text-red-600 dark:text-red-400 mb-1'>Against</p>
-										<ul className='space-y-1'>
+										<p className='text-sm font-bold text-red-600 dark:text-red-400 mb-2'>Against</p>
+										<ul className='space-y-2'>
 											{structured.controversy.against.map((point, i) => (
 												<li key={i} className='flex items-start gap-1.5'>
 													<span className='text-red-500 mt-0.5 flex-shrink-0 font-bold'>−</span>
-													<span className='text-xs text-foreground/80 leading-relaxed'>{point}</span>
+													<span className='text-sm text-foreground leading-relaxed'>{point}</span>
 												</li>
 											))}
 										</ul>

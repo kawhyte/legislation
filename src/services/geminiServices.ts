@@ -39,7 +39,8 @@ export class GeminiService {
       model: "gemini-2.5-flash",
       generationConfig: {
         temperature: 0.3,
-        maxOutputTokens: 1024,
+        maxOutputTokens: 8192,
+        responseMimeType: "application/json",
       }
     });
   }
@@ -63,19 +64,11 @@ export class GeminiService {
   }
 
   private parseResponse(text: string): SummaryResult {
-    // Strip markdown code fences (```json ... ``` or ``` ... ```)
-    const cleaned = text
-      .replace(/^```(?:json)?\s*/i, '')
-      .replace(/\s*```\s*$/, '')
-      .trim();
     try {
-      return JSON.parse(cleaned) as SummaryResult;
+      return JSON.parse(text) as SummaryResult;
     } catch {
-      console.warn('[GeminiService] JSON parse failed, using fallback. Raw:', text.slice(0, 100));
-      return {
-        ...FALLBACK,
-        gist: cleaned.slice(0, 300) || FALLBACK.gist,
-      };
+      console.error('[GeminiService] JSON parse failed. Raw response:', text.slice(0, 500));
+      return FALLBACK;
     }
   }
 
