@@ -105,25 +105,24 @@ const SavedBillsTab: React.FC<SavedBillsTabProps> = ({ onSwitchToExplore }) => {
 	if (savedBills.length === 0) {
 		return (
 			<div className='text-center py-20'>
-				<div className='flex justify-center mb-8'>
-					<div className='w-24 h-24 bg-muted/50 rounded-full flex items-center justify-center border border-border'>
-						<Bookmark className='h-12 w-12 text-muted-foreground' />
+				<div className='flex justify-center mb-6'>
+					<div className='w-20 h-20 bg-muted/50 rounded-full flex items-center justify-center border-2 border-border'>
+						<Bookmark className='h-10 w-10 text-muted-foreground' />
 					</div>
 				</div>
-				<h2 className='text-2xl sm:text-3xl font-bold text-foreground mb-6'>
-					No Saved Bills Yet
+				<h2 className='text-2xl font-bold text-foreground mb-3'>
+					No saved bills yet
 				</h2>
-				<p className='text-lg text-muted-foreground mb-8 max-w-md mx-auto leading-relaxed'>
-					Start bookmarking bills that interest you to keep track of
-					important legislation.
+				<p className='text-base text-muted-foreground mb-6 max-w-sm mx-auto leading-relaxed'>
+					Bookmark bills you care about so you can track them here.
 				</p>
-				<Button onClick={() => window.history.back()} className="px-6 py-3">Browse Bills</Button>
+				<Button onClick={onSwitchToExplore} className="px-6 py-3">Browse Bills</Button>
 			</div>
 		);
 	}
 
 	return (
-		<div className="space-y-12">
+		<div className="space-y-6">
 			{/* Header */}
 			<div className='space-y-4'>
 				<div className='flex items-center justify-between'>
@@ -162,14 +161,9 @@ const SavedBillsTab: React.FC<SavedBillsTabProps> = ({ onSwitchToExplore }) => {
 					/>
 				</div>
 
-				{/* Enhanced Search and Filters Section */}
-				<div className='bg-white border border-border rounded-lg p-6 space-y-6 hover:bg-accent/90 transition-all'>
-					<div className="flex items-center gap-3">
-						
-						<h3 className="text-lg font-semibold text-foreground">Search & Filter Your Bills</h3>
-					</div>
-					
-					<div className='flex flex-col lg:flex-row gap-6'>
+				{/* Search and Filters Section */}
+				<div className='bg-card border border-border rounded-lg p-4 space-y-4'>
+					<div className='flex flex-col lg:flex-row gap-4'>
 						{/* Search */}
 						<div className='relative flex-1'>
 							<Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground' />

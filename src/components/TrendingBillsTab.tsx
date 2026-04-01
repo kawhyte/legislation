@@ -55,19 +55,17 @@ const TrendingBillsTab: React.FC = () => {
   };
 
   return (
-    <div className='space-y-12'>
-      <div className="space-y-4">
-        <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-          Legislative Bills Trending Around The USA
-        </h2>
-        <p className="text-lg text-muted-foreground">
-          Bills that are currently gaining momentum nationwide.
-        </p>
-      </div>
-
-      {/* View Switcher */}
-      <div className="flex justify-between items-center">
-        <BillViewSwitcher 
+    <div className='space-y-6'>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div className="space-y-1">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+            Trending Nationwide
+          </h2>
+          <p className="text-base text-muted-foreground">
+            Bills gaining momentum across the country right now.
+          </p>
+        </div>
+        <BillViewSwitcher
           value={viewMode}
           onValueChange={setViewMode}
         />
