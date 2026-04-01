@@ -238,13 +238,22 @@ const BillCard = ({
 
 				<Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
 					<DialogTrigger asChild>
-						<Button
-							onClick={handleDecodeClick}
-							className='w-full border-2 border-foreground bg-primary text-primary-foreground font-semibold shadow-[3px_3px_0px_0px_hsl(var(--foreground))] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150'
-							size='sm'>
-							<Sparkles className='h-4 w-4 mr-1.5' />
-							Explain this Bill
-						</Button>
+						{!structured && !summaryLoading ? (
+							<button
+								onClick={handleDecodeClick}
+								className='w-full mt-4 p-6 bg-blue-50 border-2 border-foreground rounded-lg border-dashed hover:bg-blue-100 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer'>
+								<Sparkles size={24} />
+								<span className='font-bold text-lg'>Translate to Plain English</span>
+							</button>
+						) : (
+							<Button
+								onClick={handleDecodeClick}
+								className='w-full border-2 border-foreground bg-primary text-primary-foreground font-semibold shadow-[3px_3px_0px_0px_hsl(var(--foreground))] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150'
+								size='sm'>
+								<Sparkles className='h-4 w-4 mr-1.5' />
+								{summaryLoading ? 'Analyzing…' : 'View Analysis'}
+							</Button>
+						)}
 					</DialogTrigger>
 					<DialogContent className='bg-card border-2 border-foreground rounded-xl shadow-[6px_6px_0px_0px_hsl(var(--foreground))] sm:max-w-[625px]'>
 						<DialogHeader>

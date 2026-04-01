@@ -15,6 +15,11 @@ service cloud.firestore {
       }
     }
     
+    // Global AI summary cache — public read/write so unauthenticated users can populate it
+    match /bill_summaries/{billId} {
+      allow read, write: if true;
+    }
+
     // Deny access to all other documents
     match /{document=**} {
       allow read, write: if false;

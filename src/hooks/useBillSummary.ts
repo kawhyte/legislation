@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { GeminiService } from '../services/geminiServices';
+import { getCachedSummary, cacheSummary } from '../services/cacheService';
 import type { Bill, BillSummaryData, UseBillSummaryOptions, UseBillSummaryReturn } from '@/types';
 
 export const useBillSummary = (
@@ -30,12 +31,23 @@ export const useBillSummary = (
     setError(null);
 
     try {
+      // L2: check Firestore global cache first
+      const cached = await getCachedSummary(bill.id);
+      if (cached) {
+        if (!abortController.current.signal.aborted) {
+          setStructured(cached);
+        }
+        return;
+      }
+
+      // L1: call Gemini (has its own in-memory session cache)
       const result = await geminiService.current.summarizeBillWithImpacts(
         bill,
         { maxLength, targetAge, useCache: true }
       );
 
       if (!abortController.current.signal.aborted) {
+        await cacheSummary(bill.id, result);
         setStructured(result);
       }
     } catch (err) {
