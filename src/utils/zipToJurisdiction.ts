@@ -5,8 +5,17 @@ export async function getJurisdictionFromZip(zip: string): Promise<States | null
   const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
   if (!res.ok) return null;
   const data = await res.json();
-  const abbr: string = data.places[0]['state abbreviation'];
-  return (usStates.find(s => s.abbreviation === abbr) as States) ?? null;
+  const place = data.places[0];
+  const abbr: string = place['state abbreviation'];
+  const match = usStates.find(s => s.abbreviation === abbr) as States | undefined;
+  if (!match) return null;
+  return {
+    ...match,
+    zipCoords: {
+      lat: parseFloat(place.latitude),
+      lng: parseFloat(place.longitude),
+    },
+  };
 }
 
 /**

@@ -149,3 +149,15 @@
   - If the AI summary is NOT loaded yet, hide the raw OpenStates abstract/summary. 
   - Render a large, full-width button (dashed border, light blue background) with a `Sparkles` icon (from lucide-react) that says "✨ Translate to Plain English".
   - Clicking this button triggers the `generateSummary` function.
+
+  - [x] **Task 33: Upgrade Location Parser with Coordinates**
+  - Update the file handling the location search (e.g., `src/utils/zipToJurisdiction.ts` or `locationParser`).
+  - The Zippopotam API already returns `latitude` and `longitude` in its `places` array.
+  - Modify the return type of the parser to: `{ jurisdictionId: string, stateName: string, coordinates?: { lat: number, lng: number } }`.
+  - State name searches will simply return `coordinates: undefined`.
+
+- [x] **Task 34: Build the `useReps` Data Hook**
+  - Create a new file `src/hooks/useReps.ts`.
+  - It should accept `coordinates: { lat: number, lng: number } | undefined`.
+  - If `coordinates` exist, make a GET request to `https://v3.openstates.org/people.geo?lat={lat}&lng={lng}` using your `api-client.ts`.
+  - Return the array of legislators (which will naturally be scoped down to just their specific local reps).

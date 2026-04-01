@@ -17,6 +17,7 @@ export interface States {
     coords?: { lon: number; lat: number };
     zoom?: number;
     // mapUrl: string;
+    zipCoords?: { lat: number; lng: number };
 }
 interface Props {
     onSelectJurisdiction: (jurisdiction: States | null) => void;
