@@ -120,12 +120,10 @@ const BillCard = ({
 			return (
 				<div className='space-y-3 p-1'>
 						{/* Who it Affects */}
-					<div className='flex items-center gap-2 px-1'>
-						<Users className='h-4 w-4 text-muted-foreground flex-shrink-0' />
-						<span className='text-xs text-muted-foreground font-medium'>Who it Affects:</span>
-						<Badge className='text-xs border-2 border-foreground bg-background text-foreground font-semibold'>
-							{structured.whoItAffects}
-						</Badge>
+					<div className='flex items-start gap-2 px-1'>
+						<Users className='h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5' />
+						<span className='text-xs text-muted-foreground font-medium whitespace-nowrap'>Who it Affects:</span>
+						<span className='text-xs font-semibold text-foreground leading-snug'>{structured.whoItAffects}</span>
 					</div>
 					{/* The Gist */}
 					<div className='bg-muted border-2 border-foreground rounded-xl p-4'>
