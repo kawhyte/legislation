@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Sparkles, Link, Zap, Users, Wallet, Scale } from "lucide-react";
+import { RefreshCw, Sparkles, Link, Zap, Users, Wallet, Scale, Clock, User, Tag } from "lucide-react";
 import BillProgressStepper from "./BillProgressStepper";
 import BookmarkButton from "./BookmarkButton";
 import { toSentenceCase } from "../lib/utils";
@@ -30,7 +30,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { BillCardProps, BillSummaryData } from "@/types";
-import VoteByParty from "./VoteByParty";
 
 const getDomainFromUrl = (url: string) => {
 	try {
@@ -154,7 +153,6 @@ const AIAnalysisContent = ({ isLoading, error, structured, onRetry }: AIAnalysis
 const BillCard = ({
 	bill,
 	showProgressBar = true,
-	showVotes = false,
 	showSource = false,
 	showTrendingReason = false,
 	viewMode = "detailed",
@@ -195,6 +193,14 @@ const BillCard = ({
 	const flagUrl = stateInfo?.flagUrl || "https://placehold.co/32x24";
 	const flagAbbreviation = stateInfo?.abbreviation || "NA";
 
+	// Derived display data
+	const subjectTags = useMemo(() => bill.subject?.slice(0, 3) || [], [bill.subject]);
+	const primarySponsor = useMemo(
+		() => bill.sponsorships?.find((s) => s.primary),
+		[bill.sponsorships]
+	);
+	const hasLatestActivity = Boolean(bill.latest_action_description);
+
 	return (
 		<Card className='bg-card border-2 border-foreground rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))] flex flex-col h-full transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))]'>
 			<CardHeader className='p-4 space-y-3'>
@@ -221,7 +227,7 @@ const BillCard = ({
 					{toSentenceCase(bill.title)}
 				</CardTitle>
 
-				{/* MOMENTUM + TRENDING */}
+				{/* STATUS ROW: momentum + trending */}
 				<div className='flex gap-2 items-center flex-wrap'>
 					{bill.momentum && <MomentumBadge momentum={bill.momentum} />}
 					{showTrendingReason && bill.trendingReason === "Trending" && (
@@ -231,19 +237,56 @@ const BillCard = ({
 						</div>
 					)}
 				</div>
+
+				{/* SUBJECT TAGS */}
+				{subjectTags.length > 0 && (
+					<div className='flex items-center gap-1.5 flex-wrap'>
+						<Tag className='h-3 w-3 text-muted-foreground flex-shrink-0' />
+						{subjectTags.map((subject, i) => (
+							<span
+								key={i}
+								className='text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-md border border-border font-medium'>
+								{subject}
+							</span>
+						))}
+					</div>
+				)}
 			</CardHeader>
 
 			<CardContent className='flex-grow flex flex-col justify-end space-y-3 p-4 pt-0'>
+				{/* LATEST ACTIVITY */}
+				{hasLatestActivity && (
+					<div className='flex items-start gap-2 bg-muted/50 rounded-lg px-3 py-2'>
+						<Clock className='h-3.5 w-3.5 text-muted-foreground flex-shrink-0 mt-0.5' />
+						<p className='text-xs text-muted-foreground leading-snug line-clamp-2'>
+							{bill.latest_action_description}
+						</p>
+					</div>
+				)}
+
+				{/* PRIMARY SPONSOR */}
+				{primarySponsor?.person?.name && (
+					<div className='flex items-center gap-1.5'>
+						<User className='h-3 w-3 text-muted-foreground flex-shrink-0' />
+						<span className='text-xs text-muted-foreground'>
+							Sponsored by{" "}
+							<span className='font-semibold text-foreground'>{primarySponsor.person.name}</span>
+						</span>
+					</div>
+				)}
+
 				{shouldShowProgressBar && <BillProgressStepper bill={bill} />}
 
+				{/* AI ANALYSIS CTA */}
 				<Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
 					<DialogTrigger asChild>
 						{!structured && !summaryLoading ? (
 							<button
 								onClick={handleDecodeClick}
-								className='w-full mt-4 p-6 bg-blue-50 border-2 border-foreground rounded-lg border-dashed hover:bg-blue-100 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer'>
-								<Sparkles size={24} />
-								<span className='font-bold text-lg'>Translate to Plain English</span>
+								className='w-full mt-2 p-5 bg-muted border-2 border-dashed border-foreground/40 rounded-lg hover:bg-muted/80 hover:border-foreground/70 transition-all flex flex-col items-center justify-center gap-1.5 cursor-pointer group'>
+								<Sparkles size={20} className='text-primary group-hover:scale-110 transition-transform' />
+								<span className='font-bold text-sm text-foreground'>Translate to Plain English</span>
+								<span className='text-xs text-muted-foreground'>AI explains what this bill actually means</span>
 							</button>
 						) : (
 							<Button
@@ -275,14 +318,6 @@ const BillCard = ({
 					</DialogContent>
 				</Dialog>
 			</CardContent>
-
-			{showVotes && (
-				<VoteByParty
-					democratVotes={102}
-					republicanVotes={88}
-					otherVotes={12}
-				/>
-			)}
 
 			{shouldShowSource && (
 				<CardFooter className='p-4 pt-2 flex items-center justify-between'>
