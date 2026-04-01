@@ -65,7 +65,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 						disabled={!query.trim() || isSearching}
 						className='h-16 px-8 text-lg font-bold border-4 border-foreground rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] disabled:opacity-40 disabled:shadow-[4px_4px_0px_0px_hsl(var(--foreground))] disabled:translate-x-0 disabled:translate-y-0 transition-all duration-150 whitespace-nowrap bg-primary text-primary-foreground'
 					>
-						<Search className='h-5 w-5 mr-2' />
+						
 						{isSearching ? 'Searching…' : 'Find My Bills'}
 					</Button>
 				</form>
