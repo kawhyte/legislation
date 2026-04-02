@@ -1,5 +1,5 @@
-import React, { Suspense, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import React, { Suspense, useState, useEffect, useRef } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from "react-router-dom";
 import { useUser } from '@/hooks/useAuth';
 import Header from "./components/Header";
 import Hero from "./components/Hero";
@@ -12,19 +12,30 @@ import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import { UserProvider, useUserData } from "./contexts/UserContext";
 import { DemoProvider } from "./contexts/DemoContext";
+import { SearchCacheProvider, useSearchCache } from "./contexts/SearchCacheContext";
 import { Toaster } from "@/components/ui/sonner";
 import type { States } from "./components/JurisdictionSelector";
+import type { Bill } from "./types";
+import type { Rep } from "./hooks/useReps";
 import useBills from "./hooks/useBills";
 import BillCard from "./components/BillCard";
 import BillCardSkeleton from "./components/BillCardSkeleton";
 import YourRepsWidget from "./components/YourRepsWidget";
 import tumbleweedData from "./assets/Tumbleweed Rolling.json";
+import { parseLocationInput } from "./utils/zipToJurisdiction";
 
 const Lottie = React.lazy(() => import("lottie-react"));
 
-const ZipBillResults: React.FC<{ jurisdiction: States; }> = ({ jurisdiction }) => {
-	const { data: bills, isLoading } = useBills(jurisdiction, null);
+// ── Pure rendering layer — no fetching, no cache logic ──────────────────────
 
+interface DisplayProps {
+	jurisdiction: States;
+	bills: Bill[] | null;
+	isLoading: boolean;
+	cachedReps?: Rep[];
+}
+
+const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, isLoading, cachedReps }) => {
 	if (isLoading) {
 		return (
 			<section className="container-legislation py-12">
@@ -35,7 +46,7 @@ const ZipBillResults: React.FC<{ jurisdiction: States; }> = ({ jurisdiction }) =
 						</div>
 					</div>
 					<div className="lg:col-span-1 order-first lg:order-last">
-						<YourRepsWidget coords={jurisdiction.zipCoords} stateName={jurisdiction.name} />
+						<YourRepsWidget coords={jurisdiction.zipCoords} stateName={jurisdiction.name} cachedReps={cachedReps} />
 					</div>
 				</div>
 			</section>
@@ -58,7 +69,7 @@ const ZipBillResults: React.FC<{ jurisdiction: States; }> = ({ jurisdiction }) =
 						</div>
 					</div>
 					<div className="lg:col-span-1 order-first lg:order-last">
-						<YourRepsWidget coords={jurisdiction.zipCoords} stateName={jurisdiction.name} />
+						<YourRepsWidget coords={jurisdiction.zipCoords} stateName={jurisdiction.name} cachedReps={cachedReps} />
 					</div>
 				</div>
 			</section>
@@ -79,15 +90,71 @@ const ZipBillResults: React.FC<{ jurisdiction: States; }> = ({ jurisdiction }) =
 					</div>
 				</div>
 				<div className="lg:col-span-1 order-first lg:order-last lg:sticky lg:top-6 lg:self-start">
-					<YourRepsWidget coords={jurisdiction.zipCoords} stateName={jurisdiction.name} />
+					<YourRepsWidget coords={jurisdiction.zipCoords} stateName={jurisdiction.name} cachedReps={cachedReps} />
 				</div>
 			</div>
 		</section>
 	);
 };
 
+// ── Fetching layer — hits the API and writes results into the cache ───────────
+
+const ZipBillResultsFetch: React.FC<{ jurisdiction: States }> = ({ jurisdiction }) => {
+	const { setJurisdiction, setBills } = useSearchCache();
+	const { data: bills, isLoading } = useBills(jurisdiction, null);
+
+	// Register jurisdiction with cache (clears stale bills/reps if jurisdiction changed)
+	useEffect(() => {
+		setJurisdiction(jurisdiction);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [jurisdiction.name, jurisdiction.zipCoords?.lat, jurisdiction.zipCoords?.lng]);
+
+	// Write bills into cache once loaded
+	useEffect(() => {
+		if (bills && bills.length > 0) setBills(bills);
+	}, [bills, setBills]);
+
+	return <ZipBillResultsDisplay jurisdiction={jurisdiction} bills={bills} isLoading={isLoading} />;
+};
+
+// ── Smart wrapper — serves from cache or delegates to the fetching layer ──────
+
+const ZipBillResults: React.FC<{ jurisdiction: States }> = ({ jurisdiction }) => {
+	const { isMatch, cache } = useSearchCache();
+	const cacheHit = isMatch(jurisdiction) && cache.bills.length > 0;
+
+	if (cacheHit) {
+		return (
+			<ZipBillResultsDisplay
+				jurisdiction={jurisdiction}
+				bills={cache.bills}
+				isLoading={false}
+				cachedReps={cache.reps.length > 0 ? cache.reps : undefined}
+			/>
+		);
+	}
+
+	return <ZipBillResultsFetch jurisdiction={jurisdiction} />;
+};
+
+// ── Home page — restores last search from ?q= URL param on load ───────────────
+
 const HomePage = () => {
 	const [jurisdiction, setJurisdiction] = useState<States | null>(null);
+	const [searchParams, setSearchParams] = useSearchParams();
+	const didRestore = useRef(false);
+
+	useEffect(() => {
+		if (didRestore.current || jurisdiction) return;
+		const q = searchParams.get('q');
+		if (!q) return;
+		didRestore.current = true;
+		parseLocationInput(q)
+			.then(setJurisdiction)
+			.catch(() => setSearchParams({}, { replace: true }));
+	// Only run on mount
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	return (
 		<div className="bg-background text-foreground">
@@ -210,8 +277,10 @@ const App = () => {
 		<Router>
 			<UserProvider>
 				<DemoProvider>
-					<AppRoutes />
-					<Toaster />
+					<SearchCacheProvider>
+						<AppRoutes />
+						<Toaster />
+					</SearchCacheProvider>
 				</DemoProvider>
 			</UserProvider>
 		</Router>

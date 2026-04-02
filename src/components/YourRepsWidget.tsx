@@ -1,13 +1,17 @@
+import { useEffect } from "react";
 import { User } from "lucide-react";
 import { Link } from "react-router-dom";
 import useReps, { type Rep } from "../hooks/useReps";
 import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { useSearchCache } from "../contexts/SearchCacheContext";
 
 interface Props {
 	coords?: { lat: number; lng: number };
 	stateName?: string;
+	/** When provided, skip the API call and render directly from cache. */
+	cachedReps?: Rep[];
 }
 
 function partyBadgeClass(party: string) {
@@ -130,8 +134,21 @@ function LoadingSkeletonMobile() {
 
 // ── Main widget ──────────────────────────────────────────────────────────────
 
-const YourRepsWidget: React.FC<Props> = ({ coords, stateName }) => {
-	const { data: reps, isLoading, error } = useReps(coords);
+const YourRepsWidget: React.FC<Props> = ({ coords, stateName, cachedReps }) => {
+	const { setReps } = useSearchCache();
+
+	// Only hit the API when we don't already have cached reps
+	const { data: fetchedReps, isLoading: fetchLoading, error } = useReps(
+		cachedReps ? undefined : coords,
+	);
+
+	// Write freshly fetched reps into cache
+	useEffect(() => {
+		if (fetchedReps && fetchedReps.length > 0) setReps(fetchedReps);
+	}, [fetchedReps, setReps]);
+
+	const reps = cachedReps ?? fetchedReps;
+	const isLoading = cachedReps ? false : fetchLoading;
 
 	const noCoords = (
 		<div className="border-2 border-dashed border-foreground/40 rounded-xl p-4 text-center">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { MapPin, Sparkles, Bookmark } from "lucide-react";
@@ -21,6 +22,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 	const [isSearching, setIsSearching] = useState(false);
 	const [error, setError] = useState('');
 	const [selectedState, setSelectedState] = useState<States | null>(null);
+	const [, setSearchParams] = useSearchParams();
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -30,6 +32,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 		try {
 			const state = await parseLocationInput(query);
 			onSelectState(state);
+			setSearchParams({ q: query.trim() }, { replace: true });
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Something went wrong.');
 		} finally {
@@ -71,6 +74,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 							setSelectedState(state);
 							setError('');
 							onSelectState(state);
+							setSearchParams({ q: state.name }, { replace: true });
 						}
 					}}
 					triggerClassName='h-14 text-base border-4 border-foreground rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))] py-0 px-6'
