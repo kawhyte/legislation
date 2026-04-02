@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Sparkles, Link, Zap, Users, Wallet, Scale, User, Tag } from "lucide-react";
+import { RefreshCw, Sparkles, Link, Zap, Users, Wallet, Scale, User } from "lucide-react";
 import BillProgressStepper from "./BillProgressStepper";
 import BookmarkButton from "./BookmarkButton";
 import { toSentenceCase } from "../lib/utils";
@@ -194,11 +194,6 @@ const BillCard = ({
 	const flagAbbreviation = stateInfo?.abbreviation || "NA";
 
 	// Derived display data
-	const JUNK_TAGS = new Set(["subject index", "indexes", "index"]);
-	const subjectTags = useMemo(
-		() => (bill.subject || []).filter((s) => !JUNK_TAGS.has(s.toLowerCase())).slice(0, 3),
-		[bill.subject]
-	);
 	const primarySponsor = useMemo(
 		() => bill.sponsorships?.find((s) => s.primary),
 		[bill.sponsorships]
@@ -240,19 +235,6 @@ const BillCard = ({
 					)}
 				</div>
 
-				{/* SUBJECT TAGS */}
-				{subjectTags.length > 0 && (
-					<div className='flex items-center gap-1.5 flex-wrap'>
-						<Tag className='h-3 w-3 text-muted-foreground flex-shrink-0' />
-						{subjectTags.map((subject, i) => (
-							<span
-								key={i}
-								className='text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-md border border-border font-medium'>
-								{subject}
-							</span>
-						))}
-					</div>
-				)}
 			</CardHeader>
 
 			<CardContent className='flex-grow flex flex-col justify-end space-y-3 p-4 pt-0'>
@@ -273,13 +255,14 @@ const BillCard = ({
 				<Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
 					<DialogTrigger asChild>
 						{!structured && !summaryLoading ? (
-							<button
+							<Button
 								onClick={handleDecodeClick}
-								className='w-full mt-2 p-5 bg-muted border-2 border-dashed border-foreground/40 rounded-lg hover:bg-muted/80 hover:border-foreground/70 transition-all flex flex-col items-center justify-center gap-1.5 cursor-pointer group'>
-								<Sparkles size={20} className='text-primary group-hover:scale-110 transition-transform' />
-								<span className='font-bold text-sm text-foreground'>Translate to Plain English</span>
-								<span className='text-xs text-muted-foreground'>AI explains what this bill actually means</span>
-							</button>
+								variant='outline'
+								className='border-2 border-foreground bg-card font-semibold shadow-[3px_3px_0px_0px_hsl(var(--foreground))] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150'
+								size='sm'>
+								<Sparkles className='h-4 w-4 mr-1.5' />
+								Translate to Plain English
+							</Button>
 						) : (
 							<Button
 								onClick={handleDecodeClick}
