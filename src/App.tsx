@@ -78,7 +78,7 @@ const ZipBillResults: React.FC<{ jurisdiction: States; }> = ({ jurisdiction }) =
 						))}
 					</div>
 				</div>
-				<div className="lg:col-span-1 order-first lg:order-last sticky top-6 self-start">
+				<div className="lg:col-span-1 order-first lg:order-last lg:sticky lg:top-6 lg:self-start">
 					<YourRepsWidget coords={jurisdiction.zipCoords} stateName={jurisdiction.name} />
 				</div>
 			</div>
