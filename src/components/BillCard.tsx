@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Sparkles, Link, Zap, Users, Wallet, Scale, User } from "lucide-react";
+import { RefreshCw, Sparkles, Link, Zap, Users, Wallet, Scale, User, ChevronRight, Calendar } from "lucide-react";
 import BillProgressStepper from "./BillProgressStepper";
 import BookmarkButton from "./BookmarkButton";
 import { toSentenceCase } from "../lib/utils";
@@ -257,11 +257,11 @@ const BillCard = ({
 						{!structured && !summaryLoading ? (
 							<Button
 								onClick={handleDecodeClick}
-								variant='outline'
-								className='border-2 border-foreground bg-card font-semibold shadow-[3px_3px_0px_0px_hsl(var(--foreground))] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150'
+								className='w-full border-2 border-foreground bg-primary text-primary-foreground font-semibold shadow-[3px_3px_0px_0px_hsl(var(--foreground))] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150'
 								size='sm'>
 								<Sparkles className='h-4 w-4 mr-1.5' />
 								Translate to Plain English
+								{/* <ChevronRight className='h-4 w-4 ml-auto' /> */}
 							</Button>
 						) : (
 							<Button
@@ -295,15 +295,15 @@ const BillCard = ({
 			</CardContent>
 
 			{shouldShowSource && (
-				<CardFooter className='p-4 pt-2 flex items-center justify-between'>
+				<CardFooter className='p-4 pt-3 flex items-center justify-between gap-2 border-t border-foreground/20'>
 					{bill.sources && bill.sources.length > 0 && (
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<Button
 									variant='ghost'
 									size='sm'
-									className='text-xs text-muted-foreground hover:text-foreground'>
-									<Link className='h-3 w-3 mr-1.5' />
+									className='h-auto py-1 px-2.5 text-xs font-medium text-muted-foreground border border-border rounded-md bg-muted hover:bg-accent hover:text-foreground gap-1.5'>
+									<Link className='h-3 w-3' />
 									{bill.sources.length} Official Source{bill.sources.length > 1 ? "s" : ""}
 								</Button>
 							</DropdownMenuTrigger>
@@ -321,14 +321,16 @@ const BillCard = ({
 						</DropdownMenu>
 					)}
 					{bill.latest_action_date && (
-						<span className='text-xs text-muted-foreground'>
-							Updated{" "}
-							{new Date(bill.latest_action_date).toLocaleDateString("en-US", {
-								month: "short",
-								day: "numeric",
-								year: "numeric",
-							})}
-						</span>
+						<div className='flex items-center gap-1.5 text-xs font-medium text-muted-foreground border border-border rounded-md bg-muted px-2.5 py-1'>
+							<Calendar className='h-3 w-3' />
+							<span>
+								{new Date(bill.latest_action_date).toLocaleDateString("en-US", {
+									month: "short",
+									day: "numeric",
+									year: "numeric",
+								})}
+							</span>
+						</div>
 					)}
 				</CardFooter>
 			)}
