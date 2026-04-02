@@ -12,6 +12,11 @@ export interface Rep {
 		district: string;
 		org_classification: string;
 	};
+	jurisdiction?: {
+		id: string;
+		name: string;
+		classification: string; // "state" | "country"
+	};
 }
 
 interface PeopleResponse {

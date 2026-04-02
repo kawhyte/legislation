@@ -2,19 +2,17 @@ import { useEffect, useState } from "react";
 import apiClient from "../services/api-client";
 import { CanceledError } from "axios";
 
-interface VoteEntry {
-	voter_id: string;
-	voter_name: string;
-	option: string;
-}
-
-export interface VoteEvent {
+export interface RepVote {
 	id: string;
 	motion_text: string;
-	result: string;
+	vote_result: string;    // "pass" | "fail" — outcome of this specific vote
 	start_date: string;
-	bill?: { identifier: string; title: string };
-	votes: VoteEntry[];
+	option: string;         // this rep's choice: "yes" | "no" | "excused" | …
+	bill_id: string;
+	bill_identifier: string; // "HB 1325"
+	bill_title: string;
+	bill_status: string;    // most recent action description
+	primary_sponsor?: { name: string; party?: string };
 }
 
 export interface VoteStats {
@@ -22,20 +20,59 @@ export interface VoteStats {
 	yesVotes: number;
 	noVotes: number;
 	missedVotes: number;
+	partyLineVotes: number; // sponsor shares rep's party
 }
 
-interface VotesResponse {
-	results: VoteEvent[];
+// ── Raw OpenStates shapes ─────────────────────────────────────────────────────
+
+interface PersonVoteEntry {
+	option: string;
+	voter_name: string;
+	voter?: { id: string; name: string };
 }
 
-const useRepVotes = (repId: string | undefined) => {
-	const [votes, setVotes] = useState<VoteEvent[]>([]);
+interface VoteEvent {
+	id: string;
+	motion_text: string;
+	result: string;
+	start_date: string;
+	votes?: PersonVoteEntry[];
+}
+
+interface Sponsor {
+	name: string;
+	primary: boolean;
+	classification: string;
+	person?: { id: string; name: string; party?: string };
+}
+
+interface Action {
+	date: string;
+	description: string;
+	classification: string[];
+}
+
+interface Bill {
+	id: string;
+	identifier: string;
+	title?: string;
+	votes?: VoteEvent[];
+	sponsorships?: Sponsor[];
+	actions?: Action[];
+}
+
+interface BillsResponse {
+	results: Bill[];
+}
+
+const useRepVotes = (repId: string | undefined, stateName: string | undefined) => {
+	const [votes, setVotes] = useState<RepVote[]>([]);
 	const [stats, setStats] = useState<VoteStats | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState("");
 
 	useEffect(() => {
-		if (!repId) {
+		if (!repId || !stateName) {
 			setVotes([]);
 			setStats(null);
 			setIsLoading(false);
@@ -47,26 +84,61 @@ const useRepVotes = (repId: string | undefined) => {
 		setError("");
 
 		apiClient
-			.get<VotesResponse>("/votes", {
+			.get<BillsResponse>("/bills", {
 				signal: controller.signal,
-				params: { voter_id: repId, per_page: 50, sort: "updated_desc" },
+				params: {
+					jurisdiction: stateName,
+					include: ["votes", "sponsorships", "actions"],
+					per_page: 20,
+					classification: "bill",
+					sort: "updated_desc",
+				},
 			})
 			.then((res) => {
 				if (controller.signal.aborted) return;
-				const results = res.data.results;
 
-				let yes = 0, no = 0, missed = 0;
-				for (const event of results) {
-					const entry = event.votes?.find(v => v.voter_id === repId);
-					if (!entry) continue;
-					const opt = entry.option.toLowerCase();
-					if (opt === "yes") yes++;
-					else if (opt === "no") no++;
-					else if (opt === "excused" || opt === "not voting" || opt === "absent") missed++;
+				const repVotes: RepVote[] = [];
+
+				for (const bill of res.data.results) {
+					// Primary sponsor (first entry with primary=true or classification=primary)
+					const sponsor = bill.sponsorships?.find(s => s.primary || s.classification === "primary");
+					const primarySponsor = sponsor
+						? { name: sponsor.person?.name ?? sponsor.name, party: sponsor.person?.party }
+						: undefined;
+
+					// Latest action (last in array — OpenStates returns chronological order)
+					const latestAction = bill.actions?.at(-1);
+					const billStatus = latestAction?.description ?? "Status unknown";
+
+					for (const event of (bill.votes ?? [])) {
+						const entry = event.votes?.find(v => v.voter?.id === repId);
+						if (!entry) continue;
+
+						repVotes.push({
+							id: event.id,
+							motion_text: event.motion_text,
+							vote_result: event.result,
+							start_date: event.start_date,
+							option: entry.option.toLowerCase(),
+							bill_id: bill.id,
+							bill_identifier: bill.identifier ?? "",
+							bill_title: bill.title ?? "Untitled Bill",
+							bill_status: billStatus,
+							primary_sponsor: primarySponsor,
+						});
+					}
 				}
 
-				setVotes(results);
-				setStats({ totalVotes: results.length, yesVotes: yes, noVotes: no, missedVotes: missed });
+				let yes = 0, no = 0, missed = 0, partyLine = 0;
+				// We'll calculate partyLine in the page where we know the rep's party
+				for (const v of repVotes) {
+					if (v.option === "yes") yes++;
+					else if (v.option === "no") no++;
+					else if (["excused", "not voting", "absent"].includes(v.option)) missed++;
+				}
+
+				setVotes(repVotes);
+				setStats({ totalVotes: repVotes.length, yesVotes: yes, noVotes: no, missedVotes: missed, partyLineVotes: partyLine });
 				setIsLoading(false);
 			})
 			.catch((err) => {
@@ -78,7 +150,7 @@ const useRepVotes = (repId: string | undefined) => {
 			});
 
 		return () => controller.abort();
-	}, [repId]);
+	}, [repId, stateName]);
 
 	return { votes, stats, isLoading, error };
 };

@@ -7,6 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 interface Props {
 	coords?: { lat: number; lng: number };
+	stateName?: string;
 }
 
 function partyBadgeClass(party: string) {
@@ -16,7 +17,7 @@ function partyBadgeClass(party: string) {
 	return "bg-muted text-muted-foreground border-2 border-border";
 }
 
-function RepCard({ rep }: { rep: Rep }) {
+function RepCard({ rep, stateName }: { rep: Rep; stateName?: string }) {
 	const role = rep.current_role;
 	const initials = rep.name.split(" ").map(n => n[0]).slice(0, 2).join("");
 
@@ -41,7 +42,7 @@ function RepCard({ rep }: { rep: Rep }) {
 					</span>
 				</div>
 			</div>
-			<Link to={`/rep/${encodeURIComponent(rep.id)}`} state={{ rep }}>
+			<Link to={`/rep/${encodeURIComponent(rep.id)}`} state={{ rep, stateName }}>
 				<Button variant="outline" size="sm" className="w-full mt-3 border-2 border-foreground font-semibold text-xs">
 					View Record
 				</Button>
@@ -70,7 +71,7 @@ function LoadingSkeleton() {
 	);
 }
 
-const YourRepsWidget: React.FC<Props> = ({ coords }) => {
+const YourRepsWidget: React.FC<Props> = ({ coords, stateName }) => {
 	const { data: reps, isLoading, error } = useReps(coords);
 
 	return (
@@ -91,7 +92,7 @@ const YourRepsWidget: React.FC<Props> = ({ coords }) => {
 			{coords && isLoading && <LoadingSkeleton />}
 
 			{coords && !isLoading && reps && reps.length > 0 && (
-				reps.map(rep => <RepCard key={rep.id} rep={rep} />)
+				reps.map(rep => <RepCard key={rep.id} rep={rep} stateName={stateName} />)
 			)}
 
 			{coords && !isLoading && reps && reps.length === 0 && (
