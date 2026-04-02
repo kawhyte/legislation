@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { MapPin, Sparkles, Bookmark } from "lucide-react";
 
-import usStates from "../data/usStates";
-import type { States } from "./JurisdictionSelector";
+import JurisdictionSelector, { type States } from "./JurisdictionSelector";
 import { parseLocationInput } from "../utils/zipToJurisdiction";
 
 interface HeroSectionProps {
@@ -22,6 +20,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 	const [query, setQuery] = useState('');
 	const [isSearching, setIsSearching] = useState(false);
 	const [error, setError] = useState('');
+	const [selectedState, setSelectedState] = useState<States | null>(null);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -35,14 +34,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 			setError(err instanceof Error ? err.message : 'Something went wrong.');
 		} finally {
 			setIsSearching(false);
-		}
-	};
-
-	const handleStateSelect = (value: string) => {
-		const state = usStates.find(s => s.abbreviation === value) as States | undefined;
-		if (state) {
-			setError('');
-			onSelectState(state);
 		}
 	};
 
@@ -61,7 +52,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 				</div>
 
 				{/* FEATURE PILLS */}
-				<div className='hidden sm:flex items-center justify-center gap-3 flex-wrap'>
+				{/* <div className='hidden sm:flex items-center justify-center gap-3 flex-wrap'>
 					{FEATURE_PILLS.map(({ icon: Icon, label }) => (
 						<span
 							key={label}
@@ -70,21 +61,40 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 							{label}
 						</span>
 					))}
+				</div> */}
+
+				{/* PRIMARY: State flag dropdown — full width */}
+				<JurisdictionSelector
+					selectedJurisdiction={selectedState}
+					onSelectJurisdiction={(state) => {
+						if (state) {
+							setSelectedState(state);
+							setError('');
+							onSelectState(state);
+						}
+					}}
+					triggerClassName='h-14 text-base border-4 border-foreground rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))] py-0 px-6'
+				/>
+
+				{/* SECONDARY: ZIP search */}
+				<div className='flex items-center gap-3 text-muted-foreground/50 text-xs font-semibold uppercase tracking-widest'>
+					<span className='flex-1 h-px bg-border' />
+					or search by zip code
+					<span className='flex-1 h-px bg-border' />
 				</div>
 
-				{/* ZIP / STATE SEARCH */}
-				<form onSubmit={handleSubmit} className='flex flex-col sm:flex-row gap-3 items-stretch'>
+				<form onSubmit={handleSubmit} className='flex gap-3 items-stretch'>
 					<Input
 						type='text'
-						placeholder='Enter zip code or state name…'
+						placeholder='Enter zip code…'
 						value={query}
 						onChange={e => { setQuery(e.target.value); setError(''); }}
-						className='text-2xl h-16 px-6 border-4 border-foreground rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))] focus-visible:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] focus-visible:ring-0 transition-shadow placeholder:text-muted-foreground/40 placeholder:text-xl'
+						className='flex-1 text-lg h-14 px-6 border-4 border-foreground rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))] focus-visible:shadow-[6px_6px_0px_0px_hsl(var(--foreground))] focus-visible:ring-0 transition-shadow placeholder:text-muted-foreground/40'
 					/>
 					<Button
 						type='submit'
 						disabled={!query.trim() || isSearching}
-						className='h-16 px-8 text-lg font-bold border-4 border-foreground rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] disabled:opacity-40 disabled:shadow-[4px_4px_0px_0px_hsl(var(--foreground))] disabled:translate-x-0 disabled:translate-y-0 transition-all duration-150 whitespace-nowrap bg-primary text-primary-foreground'
+						className='h-14 px-8 text-lg font-bold border-4 border-foreground rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] disabled:opacity-40 disabled:shadow-[4px_4px_0px_0px_hsl(var(--foreground))] disabled:translate-x-0 disabled:translate-y-0 transition-all duration-150 whitespace-nowrap bg-primary text-primary-foreground'
 					>
 						{isSearching ? 'Searching…' : 'Find Bills'}
 					</Button>
@@ -95,27 +105,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 						{error}
 					</p>
 				)}
-
-				{/* DIVIDER */}
-				<div className='flex items-center gap-3 text-muted-foreground/50 text-xs font-semibold uppercase tracking-widest'>
-					<span className='flex-1 h-px bg-border' />
-					or browse by state
-					<span className='flex-1 h-px bg-border' />
-				</div>
-
-				{/* STATE SELECT — always visible */}
-				<Select onValueChange={handleStateSelect}>
-					<SelectTrigger className='w-full max-w-sm mx-auto h-12 border-2 border-foreground rounded-xl shadow-[3px_3px_0px_0px_hsl(var(--foreground))] text-base'>
-						<SelectValue placeholder='Choose a state…' />
-					</SelectTrigger>
-					<SelectContent>
-						{usStates.map(state => (
-							<SelectItem key={state.abbreviation} value={state.abbreviation}>
-								{state.name}
-							</SelectItem>
-						))}
-					</SelectContent>
-				</Select>
 
 			</div>
 		</div>
