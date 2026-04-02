@@ -4,29 +4,64 @@ import type { Bill, MomentumAnalysis } from "@/types";
 
 /**
  * Analyzes bill momentum based on its entire lifecycle.
+ *
+ * Priority order (highest to lowest):
+ *   1. Enacted  — governor signed / chapter assigned / became-law
+ *   2. Passed   — cleared both chambers
+ *   3. High     — cleared one chamber
+ *   4. Stalled  — definitively killed (withdrawn, vetoed, died in committee)
+ *   5. In-progress scoring (Medium / Low)
+ *
+ * SUCCESS always overrides FAILURE. A bill that had a procedural step
+ * fail mid-process (e.g. a committee substitute motion) but ultimately
+ * passed must not be marked Stalled.
  */
 export function analyzeBillMomentum(bill: Bill): MomentumAnalysis {
   const actions = bill.actions || [];
   const sortedActions = actions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  // --- Check 1: Definitive FAILURE outcome (must come first) ---
-  const failureKeywords = ["died", "failed", "rejected", "vetoed", "indefinitely postponed", "withdrawn"];
-  if (actions.some(a => failureKeywords.some(kw => a.description.toLowerCase().includes(kw)))) {
-    return { level: "Stalled", score: -100, reasons: ["Bill has failed or stalled"] };
-  }
-
-  // --- Check 2: Definitive SUCCESS outcome ---
-  if (bill.enacted_date || actions.some(a => a.classification.includes("became-law"))) {
+  // --- Check 1: Definitive ENACTED outcome (HIGHEST priority) ---
+  // Use description text because OpenStates doesn't reliably set enacted_date
+  // or became-law classification for all states (e.g. Florida).
+  const ENACTED_DESC = [
+    "approved by governor", "signed by governor", "signed into law",
+    "chapter no.", "chaptered", "became law", "veto override",
+  ];
+  const isEnacted =
+    !!bill.enacted_date
+    || actions.some(a => a.classification?.includes("became-law"))
+    || actions.some(a =>
+        ENACTED_DESC.some(kw => a.description?.toLowerCase().includes(kw))
+      );
+  if (isEnacted) {
     return { level: "Enacted", score: 100, reasons: ["Enacted into law"] };
   }
 
-  // --- Check 3: Major Legislative Milestones ---
+  // --- Check 2: Major Legislative Milestones (both / one chamber) ---
   if (bill.house_passage_date && bill.senate_passage_date) {
     return { level: "Passed", score: 90, reasons: ["Passed both chambers"] };
   }
   if (bill.house_passage_date || bill.senate_passage_date) {
     const chamber = bill.house_passage_date ? "House" : "Senate";
     return { level: "High", score: 75, reasons: [`Passed the ${chamber}`] };
+  }
+
+  // --- Check 3: Definitive FAILURE (only after ruling out all success states) ---
+  // Deliberately narrow keywords to avoid false positives from procedural steps
+  // (e.g. "CS passed; NAYS 20" or "Laid on Table under Rule 7.18(a)").
+  const FAILURE_KEYWORDS = [
+    "indefinitely postponed",
+    "withdrawn by author",
+    "died in committee",
+    "failed to pass",
+    "veto sustained",
+    "vetoed",
+  ];
+  const isStalled = actions.some(a =>
+    FAILURE_KEYWORDS.some(kw => a.description?.toLowerCase().includes(kw))
+  );
+  if (isStalled) {
+    return { level: "Stalled", score: -100, reasons: ["Bill failed or stalled"] };
   }
 
   // --- Check 3: In-Progress Scoring Model ---
