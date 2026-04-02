@@ -20,7 +20,7 @@ interface BookmarkButtonProps {
 
 const BookmarkButton: React.FC<BookmarkButtonProps> = ({ 
   bill, 
-  size = 'icon',
+  // size = 'icon',
   showText = false,
   className = "",
   onSaveSuccess,
