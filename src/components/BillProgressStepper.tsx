@@ -1,5 +1,5 @@
 import React from 'react';
-import { Gavel, Check, X } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { determineBillProgress } from '../utils/billProgress';
 import type { BillProgressStepperProps } from '@/types';
 
@@ -51,16 +51,11 @@ const statusDotColor = {
   }[progress.current.status] ?? "bg-border";
 
   return (
-    <div className={` border border-border rounded-lg p-3 ${className}`}>
-      <div className='flex items-center gap-2 mb-3'>
-      <Gavel className='h-3.5 w-3.5 text-muted-foreground' />
-        <span className='text-xs font-medium text-muted-foreground'>Progress</span>
-      </div>
-      
+    <div className={`border-2 border-foreground rounded-xl p-3 ${className}`}>
       <div className="relative">
-        <div className="absolute top-3 left-0 w-full h-0.5 bg-border" aria-hidden="true" />
-       <div 
-          className="absolute top-3 left-0 h-0.5 bg-success" 
+        <div className="absolute top-3 left-0 w-full h-1 bg-foreground/20" aria-hidden="true" />
+       <div
+          className="absolute top-3 left-0 h-1 bg-success"
           style={{ width: progressWidth }} 
           aria-hidden="true" 
         />
@@ -75,7 +70,7 @@ const statusDotColor = {
             const colors = {
               completed: 'text-success',
               inProgress: 'text-success',
-              pending: 'text-success',
+              pending: 'text-muted-foreground',
               failed: 'text-destructive'
             };
             
@@ -88,7 +83,7 @@ const statusDotColor = {
                   ${/* UPDATED: Replaced hardcoded backgrounds with theme variables */''}
                   ${isFailed ? 'bg-destructive' : ''}
                   ${isCompleted ? 'bg-success' : ''}
-                  ${isInProgress ? 'bg-card border-2 border-info' : ''}
+                  ${isInProgress ? 'bg-card border-2 border-foreground' : ''}
                   ${stage.status === 'Pending' ? 'bg-border' : ''}
                 `}>
               {isFailed && <X className="w-3.5 h-3.5 text-white" />}
@@ -97,7 +92,6 @@ const statusDotColor = {
                 </div>
                 
                 <div className="text-center mt-1.5">
-                <p className="text-[9px] text-muted-foreground tracking-wider font-medium">STEP {index + 1}</p>
                   <p className="text-[11px] font-semibold text-foreground">{stage.label}</p>
                   <p className={`text-[10px] font-medium ${statusColor}`}>{stage.status}</p>
                 </div>

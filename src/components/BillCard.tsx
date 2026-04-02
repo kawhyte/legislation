@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Sparkles, Link, Zap, Users, Wallet, Scale, Clock, User, Tag } from "lucide-react";
+import { RefreshCw, Sparkles, Link, Zap, Users, Wallet, Scale, User, Tag } from "lucide-react";
 import BillProgressStepper from "./BillProgressStepper";
 import BookmarkButton from "./BookmarkButton";
 import { toSentenceCase } from "../lib/utils";
@@ -194,13 +194,15 @@ const BillCard = ({
 	const flagAbbreviation = stateInfo?.abbreviation || "NA";
 
 	// Derived display data
-	const subjectTags = useMemo(() => bill.subject?.slice(0, 3) || [], [bill.subject]);
+	const JUNK_TAGS = new Set(["subject index", "indexes", "index"]);
+	const subjectTags = useMemo(
+		() => (bill.subject || []).filter((s) => !JUNK_TAGS.has(s.toLowerCase())).slice(0, 3),
+		[bill.subject]
+	);
 	const primarySponsor = useMemo(
 		() => bill.sponsorships?.find((s) => s.primary),
 		[bill.sponsorships]
 	);
-	const hasLatestActivity = Boolean(bill.latest_action_description);
-
 	return (
 		<Card className='bg-card border-2 border-foreground rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))] flex flex-col h-full transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))]'>
 			<CardHeader className='p-4 space-y-3'>
@@ -254,16 +256,6 @@ const BillCard = ({
 			</CardHeader>
 
 			<CardContent className='flex-grow flex flex-col justify-end space-y-3 p-4 pt-0'>
-				{/* LATEST ACTIVITY */}
-				{hasLatestActivity && (
-					<div className='flex items-start gap-2 bg-muted/50 rounded-lg px-3 py-2'>
-						<Clock className='h-3.5 w-3.5 text-muted-foreground flex-shrink-0 mt-0.5' />
-						<p className='text-xs text-muted-foreground leading-snug line-clamp-2'>
-							{bill.latest_action_description}
-						</p>
-					</div>
-				)}
-
 				{/* PRIMARY SPONSOR */}
 				{primarySponsor?.person?.name && (
 					<div className='flex items-center gap-1.5'>
