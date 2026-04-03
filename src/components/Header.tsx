@@ -48,7 +48,6 @@ const Header = () => {
 
 	const navLinks = [
 		{ label: "Home", path: "/" },
-		{ label: "Trending", path: "/trending" },
 		...(isSignedIn ? [{ label: "Dashboard", path: "/dashboard" }] : []),
 	];
 

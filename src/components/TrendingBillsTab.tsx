@@ -40,9 +40,9 @@ const TrendingBillsTab: React.FC = () => {
       return (
         <Alert variant="destructive" className="bg-red-500/10 border-red-500/30 text-red-400">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error Fetching Bills</AlertTitle>
+          <AlertTitle>Couldn't load trending bills</AlertTitle>
           <AlertDescription>
-            There was a problem loading the bill data. Please try again later.
+            There was a problem fetching the data. Try refreshing the page.
           </AlertDescription>
         </Alert>
       );

@@ -20,7 +20,7 @@ const buildParams = (topic: Topic, updatedSince: string) => ({
 	per_page: 20,
 	updated_since: updatedSince,
 	sort: "updated_desc",
-	include: ["actions", "sources", "abstracts", "votes", "sponsorships"],
+	include: ["actions", "sources", "abstracts"],
 	classification: "bill",
 });
 
