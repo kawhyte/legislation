@@ -2,6 +2,7 @@ import React, { Suspense, useState, useEffect, useRef } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from "react-router-dom";
 import { useUser } from '@/hooks/useAuth';
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import Hero from "./components/Hero";
 import AboutPage from "./pages/AboutPage";
 import RepScorecardPage from "./pages/RepScorecardPage";
@@ -216,8 +217,9 @@ const AppRoutes = () => {
 	}
 
 	return (
-		<div className='min-h-screen'>
+		<div className='min-h-screen flex flex-col'>
 			<Header />
+			<main className='flex-1'>
 			<Routes>
 				{/* Public routes — no auth redirect; AuthModal handles soft-gating */}
 				<Route path='/' element={<HomePage />} />
@@ -268,6 +270,8 @@ const AppRoutes = () => {
 					}
 				/>
 			</Routes>
+			</main>
+			<Footer />
 		</div>
 	);
 };
