@@ -48,6 +48,7 @@ export const createUserPreferences = async (
     userId,
     displayName: preferences.displayName.trim(),
     selectedState: preferences.selectedState.toUpperCase(),
+    ...(preferences.zipCode ? { zipCode: preferences.zipCode.trim() } : {}),
     profileSetupCompleted: true,
     createdAt: now,
     updatedAt: now
@@ -85,6 +86,7 @@ export const getUserPreferences = async (userId: string): Promise<UserPreference
     userId: data.userId,
     displayName: data.displayName,
     selectedState: data.selectedState,
+    ...(data.zipCode ? { zipCode: data.zipCode } : {}),
     profileSetupCompleted: data.profileSetupCompleted || false,
     createdAt,
     updatedAt

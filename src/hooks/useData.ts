@@ -39,8 +39,11 @@ const useData = <T>(
 		}
 
 		// Check cache before making a network request
+		// Reps and jurisdictions change very rarely — use a 24-hour TTL for them
+		const LONG_TTL = 24 * 60 * 60 * 1000;
+		const cacheTtl = (endpoint === '/people.geo' || endpoint === '/jurisdictions') ? LONG_TTL : undefined;
 		const cacheKey = makeCacheKey(endpoint, requestConfigRef.current?.params || {});
-		const cached = getCached<T>(cacheKey);
+		const cached = getCached<T>(cacheKey, cacheTtl);
 		if (cached) {
 			setData(cached);
 			setLoading(false);
@@ -64,7 +67,7 @@ const useData = <T>(
 				// Only update state if request wasn't aborted
 				if (!signal.aborted) {
 					setData(res.data.results);
-					setCached(cacheKey, res.data.results);
+					setCached(cacheKey, res.data.results); // TTL is set on read, not write
 					setLoading(false);
 				}
 			})

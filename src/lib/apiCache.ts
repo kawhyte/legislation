@@ -17,11 +17,12 @@ const store = new Map<string, CacheEntry>();
 export const makeCacheKey = (endpoint: string, params: object): string =>
 	`${endpoint}::${JSON.stringify(params)}`;
 
-/** Return cached data if present and not expired; otherwise null. */
-export const getCached = <T>(key: string): T[] | null => {
+/** Return cached data if present and not expired; otherwise null.
+ *  Pass a custom ttlMs to override the default 30-minute TTL. */
+export const getCached = <T>(key: string, ttlMs: number = TTL_MS): T[] | null => {
 	const entry = store.get(key);
 	if (!entry) return null;
-	if (Date.now() - entry.timestamp > TTL_MS) {
+	if (Date.now() - entry.timestamp > ttlMs) {
 		store.delete(key);
 		return null;
 	}

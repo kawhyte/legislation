@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { MapPin, Sparkles, Bookmark } from "lucide-react";
+// import { MapPin, Sparkles, Bookmark } from "lucide-react";
 
 import JurisdictionSelector, { type States } from "./JurisdictionSelector";
 import { parseLocationInput } from "../utils/zipToJurisdiction";
@@ -11,11 +11,11 @@ interface HeroSectionProps {
 	onSelectState: (state: States) => void;
 }
 
-const FEATURE_PILLS = [
-	{ icon: MapPin,     label: "All 50 US states"    },
-	{ icon: Sparkles,   label: "State Legislations in plain English with AI "  },
-	{ icon: Bookmark,   label: "Save  and track bills"        },
-] as const;
+// const FEATURE_PILLS = [
+// 	{ icon: MapPin,     label: "All 50 US states"    },
+// 	{ icon: Sparkles,   label: "State Legislations in plain English with AI "  },
+// 	{ icon: Bookmark,   label: "Save  and track bills"        },
+// ] as const;
 
 const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 	const [query, setQuery] = useState('');
