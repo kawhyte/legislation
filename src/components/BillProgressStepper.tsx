@@ -62,7 +62,7 @@ const statusDotColor = {
 
         <div className="relative flex justify-between">
        
-          {stages.map((stage, index) => {
+          {stages.map((stage) => {
             const isCompleted = stage.status === 'Completed';
             const isInProgress = stage.status === 'In Progress';
             const isFailed = stage.status === 'Failed';

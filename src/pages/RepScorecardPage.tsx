@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import {  useLocation, useNavigate, useParams } from "react-router-dom";
 import { User, CheckCircle2, XCircle, CalendarDays, UserRound } from "lucide-react";
 import type { Rep } from "../hooks/useReps";
 import useRepVotes, { type RepVote } from "../hooks/useRepVotes";
