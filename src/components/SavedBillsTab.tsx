@@ -23,7 +23,7 @@ interface SavedBillsTabProps {
 }
 
 const MOMENTUM_ORDER: Record<string, number> = {
-	enacted: 5, passed: 4, high: 3, medium: 2, low: 1, stalled: 0,
+	'Enacted': 5, 'Passed': 4, 'High': 3, 'Medium': 2, 'Low': 1, 'Stalled': 0,
 };
 
 const SavedBillsTab: React.FC<SavedBillsTabProps> = ({ onSwitchToExplore }) => {
@@ -45,7 +45,7 @@ const SavedBillsTab: React.FC<SavedBillsTabProps> = ({ onSwitchToExplore }) => {
 
 	const savedGainingMomentum = savedBills.filter((sb) =>
 		sb.billData.momentum?.level != null &&
-		["high", "passed", "enacted"].includes(sb.billData.momentum.level)
+		["High", "Passed", "Enacted"].includes(sb.billData.momentum.level)
 	).length;
 
 	// Filter

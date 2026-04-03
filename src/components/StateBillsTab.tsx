@@ -70,7 +70,7 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 	}).length ?? 0;
 
 	const gainingMomentumCount = allBills?.filter((b) =>
-		b.momentum?.level != null && ['high', 'passed', 'enacted'].includes(b.momentum.level)
+		b.momentum?.level != null && ['High', 'Passed', 'Enacted'].includes(b.momentum.level)
 	).length ?? 0;
 
 	if (!userPreferences?.selectedState) {

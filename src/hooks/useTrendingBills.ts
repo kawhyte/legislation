@@ -1,0 +1,115 @@
+import { useState, useEffect } from "react";
+import apiClient from "../services/api-client";
+import { analyzeBillMomentum } from "../utils/billMomentum";
+import { isBillTrending } from "../utils/isBillTrending";
+import { getPastDate } from "@/lib/utils";
+import type { Bill } from "@/types";
+import { stringify } from "qs";
+
+const TOPICS = ["health", "housing", "education", "tax"] as const;
+
+const HIGH_IMPACT =
+	/tax|fee|rent|housing|health|medical|weapon|gun|school|education|zoning|abortion|appropriation|budget/i;
+const JUNK =
+	/mourning|congratulating|designating|commending|renaming|honoring|recognizing|celebrating|memorializing|declaring/i;
+
+const useTrendingBills = () => {
+	const [data, setData] = useState<Bill[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string>("");
+
+	useEffect(() => {
+		const controller = new AbortController();
+		const signal = controller.signal;
+		const updatedSince = getPastDate(30, "days");
+
+		const fetchAll = async () => {
+			setIsLoading(true);
+			setError("");
+
+			try {
+				const responses = await Promise.all(
+					TOPICS.map((topic) =>
+						apiClient.get<{ results: Bill[] }>("/bills", {
+							signal,
+							params: {
+								q: topic,
+								per_page: 20,
+								updated_since: updatedSince,
+								sort: "updated_desc",
+								include: ["actions", "sources", "abstracts", "votes", "sponsorships"],
+								classification: "bill",
+							},
+							paramsSerializer: (p) => stringify(p, { arrayFormat: "repeat" }),
+						})
+					)
+				);
+
+				if (signal.aborted) return;
+
+				// Merge and deduplicate
+				const seen = new Set<string>();
+				const combined: Bill[] = [];
+				for (const res of responses) {
+					for (const bill of res.data.results) {
+						if (!seen.has(bill.id)) {
+							seen.add(bill.id);
+							combined.push(bill);
+						}
+					}
+				}
+
+				const sevenDaysAgo = new Date();
+				sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+				// Enrich, filter, sort — same logic as useBills nationwide branch
+				const enriched = combined
+					.map((bill) => {
+						const safe = {
+							...bill,
+							sources: bill.sources || [],
+							subject: bill.subject || [],
+							actions: bill.actions || [],
+							votes: bill.votes || [],
+							sponsorships: bill.sponsorships || [],
+						};
+						const momentum = analyzeBillMomentum(safe);
+						const trendingReason = isBillTrending(safe) ? "Trending" : "";
+						const relevanceScore =
+							momentum.score + (HIGH_IMPACT.test(safe.title) ? 50 : 0);
+						return { ...safe, momentum, trendingReason, relevanceScore };
+					})
+					.filter((bill) => {
+						if (JUNK.test(bill.title)) return false;
+						if (
+							bill.momentum.level === "Stalled" ||
+							bill.momentum.level === "Enacted"
+						) {
+							const actionDate = bill.latest_action_date
+								? new Date(bill.latest_action_date)
+								: null;
+							if (!actionDate || actionDate < sevenDaysAgo) return false;
+						}
+						return true;
+					})
+					.sort((a, b) => b.relevanceScore - a.relevanceScore);
+
+				setData(enriched);
+			} catch (err: unknown) {
+				if (signal.aborted) return;
+				const message =
+					err instanceof Error ? err.message : "Failed to load trending bills";
+				setError(message);
+			} finally {
+				if (!signal.aborted) setIsLoading(false);
+			}
+		};
+
+		fetchAll();
+		return () => controller.abort();
+	}, []);
+
+	return { data, isLoading, error };
+};
+
+export default useTrendingBills;

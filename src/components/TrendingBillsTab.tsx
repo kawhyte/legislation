@@ -1,16 +1,32 @@
-import React, { useState } from 'react';
-import useBills from '../hooks/useBills';
+import React, { useMemo, useState } from 'react';
 import BillCard from './BillCard';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import BillCardSkeleton from './BillCardSkeleton';
 import BillViewSwitcher from './BillViewSwitcher';
 import { isBillTrending } from '@/utils/isBillTrending';
+import useTrendingBills from '@/hooks/useTrendingBills';
 import type { BillViewMode } from '@/types';
 
+const LEVEL_SCORE: Record<string, number> = {
+  'Enacted': 100, 'Passed': 90, 'High': 75, 'Medium': 50, 'Low': 25, 'Stalled': 0,
+};
+
 const TrendingBillsTab: React.FC = () => {
-  const { data, error, isLoading } = useBills(null, null);
+  const { data, isLoading, error } = useTrendingBills();
   const [viewMode, setViewMode] = useState<BillViewMode>('quick');
+
+  // Filter to trending only, sort with enacted pinned first, cap at 9
+  const trendingBills = useMemo(() => {
+    return data
+      .filter(isBillTrending)
+      .sort((a, b) => {
+        const aScore = LEVEL_SCORE[a.momentum?.level ?? ''] ?? 0;
+        const bScore = LEVEL_SCORE[b.momentum?.level ?? ''] ?? 0;
+        return bScore - aScore;
+      })
+      .slice(0, 9);
+  }, [data]);
 
   const renderContent = () => {
     if (isLoading) {
@@ -35,8 +51,6 @@ const TrendingBillsTab: React.FC = () => {
       );
     }
 
-    const trendingBills = data?.filter(isBillTrending) ?? [];
-
     if (trendingBills.length === 0) {
       return (
         <div className="text-center py-10">
@@ -47,7 +61,7 @@ const TrendingBillsTab: React.FC = () => {
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {trendingBills.slice(0, 9).map((bill) => (
+        {trendingBills.map((bill) => (
           <BillCard key={bill.id} bill={bill} showSource={true} showProgressBar={true} showTrendingReason={true} viewMode={viewMode} />
         ))}
       </div>

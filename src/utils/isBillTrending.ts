@@ -9,51 +9,49 @@ export const isBillTrending = (bill: Bill): boolean => {
 		: [];
 	const actionDates = sortedActions.map(a => new Date(a.date));
 
-	// Criterion 1: Speed of actions
-    if (actionDates.length >= 2) {
-        const twentyDaysAgo = getPastDate(14, 'days');
-        const recentActions = actionDates.filter(d => d > new Date(twentyDaysAgo));
-        if (recentActions.length >= 2) {
-            return true;
-        }
-    }
+	// Criterion 1: Speed of actions — 3+ actions in last 14 days (tightened from 2)
+	if (actionDates.length >= 3) {
+		const fourteenDaysAgo = new Date(getPastDate(14, 'days'));
+		const recentActions = actionDates.filter(d => d > fourteenDaysAgo);
+		if (recentActions.length >= 3) return true;
+	}
 
-	// Criterion 2: High sponsorship and recent action
+	// Criterion 2a: Passed a chamber within the last 30 days
+	const thirtyDaysAgo = new Date(getPastDate(30, 'days'));
+	if (bill.house_passage_date && new Date(bill.house_passage_date) > thirtyDaysAgo) return true;
+	if (bill.senate_passage_date && new Date(bill.senate_passage_date) > thirtyDaysAgo) return true;
+
+	// Criterion 2b: High sponsorship and very recent action
 	const lastActionDate = actionDates.length > 0 ? actionDates[0] : null;
 	if (lastActionDate) {
-		const twentyDaysAgo = new Date(getPastDate(5, 'days'));
-		if (lastActionDate > twentyDaysAgo) {
+		const fiveDaysAgo = new Date(getPastDate(5, 'days'));
+		if (lastActionDate > fiveDaysAgo) {
 			const sponsorCount = bill.sponsorships?.length || 0;
 			const jurisdictionName = bill.jurisdiction?.name;
-			// FIX: Get chamber from the latest action's organization
 			const latestAction = sortedActions[0];
 			const chamber = latestAction?.organization?.classification;
 
 			if (jurisdictionName && chamber && legislatureSizes[jurisdictionName]) {
 				const chamberInfo = legislatureSizes[jurisdictionName];
-                if ('unicameral' in chamberInfo) {
-                    if (sponsorCount > 0.6 * chamberInfo.unicameral) return true;
-                } else if (chamber === 'upper' || chamber === 'lower') { // Ensure chamber is valid
-                    const chamberSize = chamberInfo[chamber];
-				    if (chamberSize && sponsorCount > 0.6 * chamberSize) {
-				    	return true;
-				    }
-                }
+				if ('unicameral' in chamberInfo) {
+					if (sponsorCount > 0.6 * chamberInfo.unicameral) return true;
+				} else if (chamber === 'upper' || chamber === 'lower') {
+					const chamberSize = chamberInfo[chamber];
+					if (chamberSize && sponsorCount > 0.6 * chamberSize) return true;
+				}
 			}
 		}
 	}
 
-	// Criterion 3: Close vote
+	// Criterion 3: Close vote — ≤5 vote margin in last 14 days (loosened from ≤3 in 5 days)
 	if (bill.votes) {
-		const tenDaysAgo = new Date(getPastDate(5, 'days'));
+		const fourteenDaysAgo = new Date(getPastDate(14, 'days'));
 		for (const vote of bill.votes) {
 			const voteDate = new Date(vote.date);
-			if (voteDate > tenDaysAgo) {
+			if (voteDate > fourteenDaysAgo) {
 				const yesCount = vote.counts.find(c => c.option === 'yes')?.value || 0;
 				const noCount = vote.counts.find(c => c.option === 'no')?.value || 0;
-				if ((yesCount > 0 || noCount > 0) && Math.abs(yesCount - noCount) <= 3) {
-					return true;
-				}
+				if ((yesCount > 0 || noCount > 0) && Math.abs(yesCount - noCount) <= 5) return true;
 			}
 		}
 	}
