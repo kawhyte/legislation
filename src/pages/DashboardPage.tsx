@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useUserData } from "../contexts/UserContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +23,8 @@ const STATE_NAMES: Record<string, string> = {
 
 const DashboardPage: React.FC = () => {
 	const { userPreferences, savedBills } = useUserData();
-	const [activeTab, setActiveTab] = useState("state");
+	const [searchParams] = useSearchParams();
+	const [activeTab, setActiveTab] = useState(searchParams.get('tab') ?? 'state');
 
 	const stateAbbr = userPreferences?.selectedState ?? "";
 	const userStateName = STATE_NAMES[stateAbbr] || stateAbbr || "Your State";

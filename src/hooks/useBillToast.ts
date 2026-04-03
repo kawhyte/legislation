@@ -1,5 +1,7 @@
+import React from 'react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { BookmarkCheck, BookmarkX, AlertCircle, Lock } from 'lucide-react';
 import type { Bill } from '@/types';
 
 interface ToastOptions {
@@ -12,64 +14,55 @@ export const useBillToast = () => {
   
   const showSaveSuccess = (bill: Bill, options: ToastOptions = {}) => {
     const { showBillInfo = true, duration = 4000 } = options;
-    
-    const billTitle = bill.title.length > 50 
-      ? `${bill.title.substring(0, 50)}...` 
+
+    const billTitle = bill.title.length > 45
+      ? `${bill.title.substring(0, 45)}...`
       : bill.title;
-    
-    toast.success(
-      showBillInfo ? `Saved "${billTitle}"` : 'Bill saved successfully',
-      {
-        description: showBillInfo 
-          ? `${bill.jurisdiction?.name} ${bill.identifier} added to your saved bills`
-          : 'Added to your saved bills',
-        duration,
-        icon: '📑',
-        action: {
-          label: 'View Saved',
-          onClick: () => {
-            navigate('/saved');
-          },
-        },
-      }
-    );
+
+    toast.success('Bill saved', {
+      description: showBillInfo
+        ? `"${billTitle}" added to your saved bills`
+        : 'Added to your saved bills',
+      duration,
+      icon: React.createElement(BookmarkCheck, { className: "h-4 w-4" }),
+      action: {
+        label: 'View Saved',
+        onClick: () => navigate('/dashboard?tab=saved'),
+      },
+    });
   };
 
   const showRemoveSuccess = (bill: Bill, options: ToastOptions = {}) => {
     const { showBillInfo = true, duration = 4000 } = options;
-    
-    const billTitle = bill.title.length > 50 
-      ? `${bill.title.substring(0, 50)}...` 
+
+    const billTitle = bill.title.length > 45
+      ? `${bill.title.substring(0, 45)}...`
       : bill.title;
-    
-    toast.success(
-      showBillInfo ? `Removed "${billTitle}"` : 'Bill removed successfully',
-      {
-        description: showBillInfo 
-          ? `${bill.jurisdiction?.name} ${bill.identifier} removed from saved bills`
-          : 'Removed from your saved bills',
-        duration,
-        icon: '🗑️',
-        action: {
-          label: 'Undo',
-          onClick: () => {
-            // This could trigger a re-save action if implemented
-            toast.info('Undo functionality coming soon');
-          },
+
+    toast.success('Removed from saved', {
+      description: showBillInfo
+        ? `"${billTitle}" removed from your saved bills`
+        : 'Removed from your saved bills',
+      duration,
+      icon: React.createElement(BookmarkX, { className: "h-4 w-4" }),
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          toast.info('Undo functionality coming soon');
         },
-      }
-    );
+      },
+    });
   };
 
   const showSaveError = (bill: Bill, error?: Error) => {
-    const billTitle = bill.title.length > 40 
-      ? `${bill.title.substring(0, 40)}...` 
+    const billTitle = bill.title.length > 40
+      ? `${bill.title.substring(0, 40)}...`
       : bill.title;
-    
-    toast.error(`Failed to save "${billTitle}"`, {
-      description: error?.message || 'Please try again. Check your internet connection.',
+
+    toast.error('Failed to save bill', {
+      description: error?.message || `Could not save "${billTitle}". Please try again.`,
       duration: 6000,
-      icon: '❌',
+      icon: React.createElement(AlertCircle, { className: "h-4 w-4" }),
       action: {
         label: 'Retry',
         onClick: () => {
@@ -81,14 +74,14 @@ export const useBillToast = () => {
   };
 
   const showRemoveError = (bill: Bill, error?: Error) => {
-    const billTitle = bill.title.length > 40 
-      ? `${bill.title.substring(0, 40)}...` 
+    const billTitle = bill.title.length > 40
+      ? `${bill.title.substring(0, 40)}...`
       : bill.title;
-    
-    toast.error(`Failed to remove "${billTitle}"`, {
-      description: error?.message || 'Please try again. Check your internet connection.',
+
+    toast.error('Failed to remove bill', {
+      description: error?.message || `Could not remove "${billTitle}". Please try again.`,
       duration: 6000,
-      icon: '❌',
+      icon: React.createElement(AlertCircle, { className: "h-4 w-4" }),
       action: {
         label: 'Retry',
         onClick: () => {
@@ -103,7 +96,7 @@ export const useBillToast = () => {
     toast('Sign in to save bills', {
       description: 'Create an account to bookmark and track legislation',
       duration: 5000,
-      icon: '🔐',
+      icon: React.createElement(Lock, { className: "h-4 w-4" }),
       action: {
         label: 'Sign In',
         onClick: () => {

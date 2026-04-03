@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Sparkles, Link, Zap, Users, Wallet, Scale, User, ChevronRight, Calendar } from "lucide-react";
+import { RefreshCw, Sparkles, Link, Zap, Users, Wallet, Scale, User, Calendar } from "lucide-react";
 import BillProgressStepper from "./BillProgressStepper";
 import BookmarkButton from "./BookmarkButton";
 import { toSentenceCase } from "../lib/utils";
