@@ -59,10 +59,10 @@ const TrendingBillsTab: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div className="space-y-1">
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-            Trending Nationwide
+            What's Hot Right Now
           </h2>
           <p className="text-base text-muted-foreground">
-            Bills gaining momentum across the country right now.
+            Bills gaining momentum across the country — the ones everyone's watching.
           </p>
         </div>
         <BillViewSwitcher

@@ -67,13 +67,7 @@ const DashboardPage: React.FC = () => {
 							value="trending"
 							className="flex-1 rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-medium data-[state=active]:font-bold px-3 sm:px-5 py-3 border-b-[3px] border-transparent data-[state=active]:border-accent-yellow -mb-[2px] transition-colors text-sm sm:text-base"
 						>
-							Trending
-						</TabsTrigger>
-						<TabsTrigger
-							value="explore"
-							className="flex-1 rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-medium data-[state=active]:font-bold px-3 sm:px-5 py-3 border-b-[3px] border-transparent data-[state=active]:border-accent-yellow -mb-[2px] transition-colors text-sm sm:text-base"
-						>
-							Explore
+							What's Hot
 						</TabsTrigger>
 					</TabsList>
 
