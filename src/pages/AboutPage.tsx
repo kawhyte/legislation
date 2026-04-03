@@ -1,4 +1,4 @@
-import { Search, Sparkles, Bookmark, ArrowRight } from "lucide-react";
+import { Search, Sparkles, Bookmark, ArrowRight, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import ExpertsCarousel from "@/components/ExpertsCarousel";
@@ -21,6 +21,12 @@ const howItWorksSteps = [
 		number: "03",
 		title: "Save & Track",
 		description: "Bookmark bills you care about and follow their progress through the legislative process from your personal dashboard.",
+	},
+	{
+		icon: Users,
+		number: "04",
+		title: "Know Who Represents You",
+		description: "See your local representatives and check how they've voted on the bills that matter to you — no political science degree required.",
 	},
 ];
 
@@ -103,9 +109,9 @@ const AboutPage = () => (
 			<div className="container-legislation">
 				<div className="text-center mb-10 space-y-2">
 					<h2 className="text-3xl sm:text-4xl font-bold text-foreground">How It Works</h2>
-					<p className="text-base text-muted-foreground">Three steps to go from confused to informed</p>
+					<p className="text-base text-muted-foreground">Four steps to go from confused to informed</p>
 				</div>
-				<div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+				<div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
 					{howItWorksSteps.map((item) => {
 						const Icon = item.icon;
 						return (
@@ -180,7 +186,7 @@ const AboutPage = () => (
 					Ready to get started?
 				</h2>
 				<p className="text-base text-text-on-yellow/80 leading-relaxed">
-					Search bills from your state, read plain-English summaries, and save the ones that matter to you. Free, always.
+					Search bills from your state, read plain-English summaries, see how your reps voted, and save the bills that matter to you. Free, always.
 				</p>
 				<div className="flex flex-wrap justify-center gap-3">
 					<Button

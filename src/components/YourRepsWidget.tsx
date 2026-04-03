@@ -59,7 +59,7 @@ function RepCard({ rep, stateName }: { rep: Rep; stateName?: string }) {
 			</div>
 			<Link to={`/rep/${encodeURIComponent(rep.id)}`} state={{ rep, stateName }}>
 				<Button variant="outline" size="sm" className="w-full mt-3 border-2 border-foreground font-semibold text-xs">
-					View Record
+					See Their Votes
 				</Button>
 			</Link>
 		</div>
@@ -154,9 +154,9 @@ const YourRepsWidget: React.FC<Props> = ({ coords, stateName, cachedReps, layout
 
 	const noCoords = (
 		<div className="border-2 border-dashed border-foreground/40 rounded-xl p-4 text-center">
-			<p className="font-bold text-sm text-foreground">Viewing State Bills</p>
+			<p className="font-bold text-sm text-foreground">Want to see how your reps vote?</p>
 			<p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-				Search your Zip Code to see how your specific lawmakers vote.
+				Add your zip code to see who represents you and how they vote on these bills.
 			</p>
 		</div>
 	);
@@ -167,9 +167,9 @@ const YourRepsWidget: React.FC<Props> = ({ coords, stateName, cachedReps, layout
 			<div>
 				{!coords && (
 					<div className="border-2 border-dashed border-foreground/40 rounded-xl p-4 text-center">
-						<p className="font-bold text-sm text-foreground">Viewing State Bills</p>
+						<p className="font-bold text-sm text-foreground">Want to see how your reps vote?</p>
 						<p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-							Search your Zip Code to see how your specific lawmakers vote.
+							Add your zip code to see who represents you and how they vote on these bills.
 						</p>
 					</div>
 				)}
@@ -236,9 +236,9 @@ const YourRepsWidget: React.FC<Props> = ({ coords, stateName, cachedReps, layout
 
 				{!coords && (
 					<div className="border-2 border-dashed border-foreground/40 rounded-xl p-5 text-center">
-						<p className="font-bold text-sm text-foreground">Viewing State Bills</p>
+						<p className="font-bold text-sm text-foreground">Want to see how your reps vote?</p>
 						<p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-							Search your Zip Code to see how your specific lawmakers vote.
+							Add your zip code to see who represents you and how they vote on these bills.
 						</p>
 					</div>
 				)}

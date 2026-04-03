@@ -40,7 +40,7 @@ const DashboardPage: React.FC = () => {
 						{firstName ? `Welcome back, ${firstName}` : "Your Dashboard"}
 					</h1>
 					<p className='text-base text-muted-foreground'>
-						Tracking legislation in {userStateName} and beyond.
+						Here's what's happening in {userStateName} and across the country.
 					</p>
 				</div>
 
@@ -50,8 +50,7 @@ const DashboardPage: React.FC = () => {
 							value="state"
 							className="flex-1 rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-medium data-[state=active]:font-bold px-3 sm:px-5 py-3 border-b-[3px] border-transparent data-[state=active]:border-accent-yellow -mb-[2px] transition-colors text-sm sm:text-base"
 						>
-							{/* {stateAbbr ? `My ${stateAbbr}` : "My State"} */}
-							{ "My State"}
+							My Area
 						</TabsTrigger>
 						<TabsTrigger
 							value="saved"
@@ -68,7 +67,13 @@ const DashboardPage: React.FC = () => {
 							value="trending"
 							className="flex-1 rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-medium data-[state=active]:font-bold px-3 sm:px-5 py-3 border-b-[3px] border-transparent data-[state=active]:border-accent-yellow -mb-[2px] transition-colors text-sm sm:text-base"
 						>
-							What's Hot
+							Trending
+						</TabsTrigger>
+						<TabsTrigger
+							value="explore"
+							className="flex-1 rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-medium data-[state=active]:font-bold px-3 sm:px-5 py-3 border-b-[3px] border-transparent data-[state=active]:border-accent-yellow -mb-[2px] transition-colors text-sm sm:text-base"
+						>
+							Discover
 						</TabsTrigger>
 					</TabsList>
 

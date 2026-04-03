@@ -7,10 +7,10 @@ const TrendingBillsPage: React.FC = () => {
       <div className="container-legislation container-section">
         <div className="mb-12 text-center">
           <h1 className="text-3xl font-bold text-foreground mb-4">
-            Legislative Bills Trending Around The USA
+            Bills Everyone's Watching Right Now
           </h1>
           <p className="text-8px-rhythm-lg text-muted-foreground">
-            Bills that are currently gaining momentum nationwide.
+            The most active legislation across the country, updated in real time.
           </p>
         </div>
 

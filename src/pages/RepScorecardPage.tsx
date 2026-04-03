@@ -74,7 +74,7 @@ function VoteCard({ vote, repParty }: { vote: RepVote; repParty: string }) {
 						)}
 						{sponsorParty && repParty && (
 							<span className={`text-xs font-bold px-1.5 py-0.5 rounded ${isPartyLine ? "bg-yellow-100 text-yellow-800 border border-yellow-700" : "bg-purple-100 text-purple-800 border border-purple-700"}`}>
-								{isPartyLine ? "Party-Line Vote" : "Cross-Party Vote"}
+								{isPartyLine ? "Voted with their party" : "Voted against their party"}
 							</span>
 						)}
 					</div>
@@ -192,7 +192,7 @@ const RepScorecardPage = () => {
 									{ label: "Votes Tracked",  value: String(stats?.totalVotes ?? 0) },
 									{ label: "Voted YES",      value: stats?.totalVotes ? `${Math.round((stats.yesVotes / stats.totalVotes) * 100)}%` : "—" },
 									{ label: "Voted NO",       value: stats?.totalVotes ? `${Math.round((stats.noVotes  / stats.totalVotes) * 100)}%` : "—" },
-									{ label: "Party-Line",     value: data.length ? `${partyLinePct}%` : "—" },
+									{ label: "With Party",     value: data.length ? `${partyLinePct}%` : "—" },
 								].map(({ label, value }) => (
 									<div key={label} className="border-2 border-black shadow-[4px_4px_0px_0px_#000] p-5 rounded-xl bg-white text-center">
 										<p className="text-4xl font-black text-foreground">{value}</p>

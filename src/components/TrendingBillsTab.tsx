@@ -69,10 +69,10 @@ const TrendingBillsTab: React.FC = () => {
     <div className='space-y-6'>
       <div className="space-y-1">
         <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-          What's Hot Right Now
+          Trending Across the Country
         </h2>
         <p className="text-base text-muted-foreground">
-          Bills gaining momentum across the country — the ones everyone's watching.
+          The bills getting attention nationwide right now.
         </p>
       </div>
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Users } from "lucide-react";
 // import { MapPin, Sparkles, Bookmark } from "lucide-react";
 
 import JurisdictionSelector, { type States } from "./JurisdictionSelector";
@@ -52,6 +53,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 					<p className='text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed'>
 						Search active bills from your state and let AI translate the legal language into plain English.
 					</p>
+					<div className='inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground bg-muted border border-border rounded-full px-3 py-1.5'>
+						<Users className='h-3.5 w-3.5' />
+						New: See how your reps voted on any bill
+					</div>
 				</div>
 
 				{/* FEATURE PILLS */}

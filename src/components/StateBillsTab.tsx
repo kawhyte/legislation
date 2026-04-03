@@ -102,16 +102,16 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 					What's happening in {userStateName}
 				</h2>
 				<p className="text-base text-muted-foreground">
-					Active legislation from your state legislature, sorted by recent activity.
+					Bills your state is working on right now, sorted by latest activity.
 				</p>
 			</div>
 
 			{/* Stats strip */}
 			<div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
 				<div className="bg-card border-2 border-foreground rounded-xl p-4 shadow-[3px_3px_0px_0px_hsl(var(--foreground))]">
-					<p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Gaining Momentum</p>
+					<p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Moving Fast</p>
 					<p className="text-3xl font-black text-foreground">{allBills ? gainingMomentumCount : "—"}</p>
-					<p className="text-xs text-muted-foreground mt-0.5">bills moving fast right now</p>
+					<p className="text-xs text-muted-foreground mt-0.5">bills picking up speed</p>
 				</div>
 				<div className="bg-card border-2 border-foreground rounded-xl p-4 shadow-[3px_3px_0px_0px_hsl(var(--foreground))]">
 					<p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Updated This Week</p>
@@ -128,7 +128,7 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 					<p className="text-3xl font-black text-foreground">
 						{allBills?.filter((b) => b.trendingReason === "Trending").length ?? "—"}
 					</p>
-					<p className="text-xs text-muted-foreground mt-0.5">gaining momentum now</p>
+					<p className="text-xs text-muted-foreground mt-0.5">bills in the spotlight</p>
 				</div>
 			</div>
 
@@ -146,9 +146,9 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 						<p className="text-xs text-muted-foreground mt-1">
 							Add your zip code in{" "}
 							<Link to="/profile-setup" className="underline font-medium hover:text-foreground transition-colors">
-								Profile Settings
+								Profile
 							</Link>{" "}
-							to see your local representatives here.
+							to see who represents you and how they vote.
 						</p>
 					</div>
 				)}
@@ -199,7 +199,7 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 					<TrendingUp className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
 					<p className="font-semibold text-foreground mb-1">No bills found</p>
 					<p className="text-sm text-muted-foreground">
-						No {activeTopic !== "all" ? activeTopic : ""} bills are currently active in {userStateName}.
+						No {activeTopic !== "all" ? activeTopic : ""} bills are active in {userStateName} right now.
 					</p>
 				</div>
 			)}
@@ -214,7 +214,7 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 				<div className="space-y-4 pt-4 border-t-2 border-border">
 					<div className="flex items-center gap-2">
 						<Activity className="h-5 w-5 text-muted-foreground" />
-						<h3 className="text-lg font-bold text-foreground">Your saved bills — recent updates</h3>
+						<h3 className="text-lg font-bold text-foreground">Recent updates on your saved bills</h3>
 					</div>
 					<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 						{savedBills

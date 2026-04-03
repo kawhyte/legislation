@@ -14,6 +14,11 @@ const Footer = () => (
 						className='text-sm text-muted-foreground hover:text-foreground transition-colors'>
 						About
 					</Link>
+					<Link
+						to='/trending'
+						className='text-sm text-muted-foreground hover:text-foreground transition-colors'>
+						Trending
+					</Link>
 				</nav>
 				<p className='text-xs text-muted-foreground'>© 2026 Billhound</p>
 			</div>
