@@ -4,6 +4,7 @@ import SimpleHero from "./SimpleHero";
 import BillGrid from "./BillGrid";
 import BillViewSwitcher from "./BillViewSwitcher";
 import type { BillViewMode } from "@/types";
+import { MapPin } from "lucide-react";
 
 const ExploreBillsTab: React.FC = () => {
 	const [selectedJurisdiction, setSelectedJurisdiction] = useState<States | null>(null);
@@ -30,10 +31,10 @@ const ExploreBillsTab: React.FC = () => {
 			{/* Header */}
 			<div className='space-y-4'>
 				<h2 className='text-2xl sm:text-3xl font-bold text-foreground'>
-					Explore Bills Nationwide
+					Discover More Bills
 				</h2>
 				<p className='text-lg text-muted-foreground'>
-					Discover legislation from all 50 states. Search by state and topic to find bills that matter to you.
+					Pick any state and topic below to find bills worth tracking.
 				</p>
 			</div>
 
@@ -75,23 +76,29 @@ const ExploreBillsTab: React.FC = () => {
 				/>
 			</div>
 
-			{/* Results */} 
-			<div ref={resultsRef} >
-				{(selectedJurisdiction || (!selectedJurisdiction && !selectedTopic)) && (
+			{/* Results */}
+			<div ref={resultsRef}>
+				{selectedJurisdiction ? (
 					<div className="space-y-6">
-						{/* View Switcher */}
 						<div className="flex justify-between items-center">
-							<BillViewSwitcher 
+							<BillViewSwitcher
 								value={viewMode}
 								onValueChange={setViewMode}
 							/>
 						</div>
-						
 						<BillGrid
 							selectedJurisdiction={selectedJurisdiction}
 							selectedTopic={selectedTopic}
 							viewMode={viewMode}
 						/>
+					</div>
+				) : (
+					<div className="text-center py-16 border-2 border-dashed border-border rounded-xl">
+						<MapPin className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+						<p className="font-semibold text-foreground mb-1">Select a state to see bills</p>
+						<p className="text-sm text-muted-foreground">
+							Pick any state above and click Search Bills to explore legislation
+						</p>
 					</div>
 				)}
 			</div>

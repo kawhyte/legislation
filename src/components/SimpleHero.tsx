@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import StateSelector, { type States } from "./JurisdictionSelector";
 import TopicSelector from "./TopicSelector";
 import { Button } from "./ui/button";
+import { Lightbulb } from "lucide-react";
 
 interface SimpleHeroProps {
 	setSelectedJurisdiction: (jurisdiction: States | null) => void;
@@ -35,7 +36,7 @@ const SimpleHero = ({
 	return (
 		<div className="w-full">
 			{/* Enhanced selector card with better CTA */}
-			<div className='w-full flex flex-col gap-8 border border-border bg-card px-6 md:px-8 py-8 md:py-10 rounded-2xl shadow-lg hover:shadow-xl hover:border-primary/20 transition-all'>
+			<div className='w-full flex flex-col gap-8 border-2 border-foreground bg-card px-6 md:px-8 py-8 md:py-10 rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))]'>
 				{/* Enhanced Text Block */}
 				<div className='text-center space-y-4'>
 					<h3 className='text-xl md:text-2xl font-bold text-foreground'>
@@ -44,9 +45,10 @@ const SimpleHero = ({
 					<p className='text-lg md:text-xl font-medium text-muted-foreground max-w-3xl mx-auto leading-relaxed'>
 						Select your state and a topic to see a real-time feed of relevant bills.
 					</p>
-					<div className="bg-accent border border-border rounded-lg p-4 max-w-2xl mx-auto">
+					<div className="bg-accent border border-border rounded-lg p-4 max-w-2xl mx-auto flex items-center gap-2">
+						<Lightbulb className="h-4 w-4 text-foreground flex-shrink-0" />
 						<p className="text-sm text-accent-foreground">
-							✨ <strong>Quick start:</strong> Choose any state + "All Topics" for maximum results!
+							<strong>Quick start:</strong> Choose any state + "All Topics" for maximum results!
 						</p>
 					</div>
 				</div>
@@ -70,7 +72,7 @@ const SimpleHero = ({
 						<Button
 							onClick={handleSearch}
 							size='lg'
-							className='w-full py-4 text-lg font-semibold bg-primary hover:bg-primary-hover text-primary-foreground shadow-md hover:shadow-lg transition-all'>
+							className='w-full py-4 text-lg font-semibold border-2 border-foreground bg-primary text-primary-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150'>
 							Search Bills
 						</Button>
 					</div>
