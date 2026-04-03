@@ -17,7 +17,7 @@ const JUNK =
 
 const buildParams = (topic: Topic, updatedSince: string) => ({
 	q: topic,
-	per_page: 20,
+	per_page: 10,
 	updated_since: updatedSince,
 	sort: "updated_desc",
 	include: ["actions", "sources", "abstracts"],
@@ -48,33 +48,48 @@ const useTrendingBills = () => {
 
 				const uncached = topicResults.filter((r) => r.cached === null);
 
-				// Only fetch topics not in cache
-				const freshResponses =
-					uncached.length > 0
-						? await Promise.all(
-								uncached.map((r) =>
-									apiClient.get<{ results: Bill[] }>("/bills", {
-										signal,
-										params: r.params,
-										paramsSerializer: (p) => stringify(p, { arrayFormat: "repeat" }),
-									})
-								)
+				// Only fetch topics not in cache — use allSettled so one failure doesn't kill everything
+				const settledResponses = uncached.length > 0
+					? await Promise.allSettled(
+							uncached.map((r) =>
+								apiClient.get<{ results: Bill[] }>("/bills", {
+									signal,
+									params: r.params,
+									paramsSerializer: (p) => stringify(p, { arrayFormat: "repeat" }),
+								})
 							)
-						: [];
+						)
+					: [];
 
 				if (signal.aborted) return;
 
-				// Populate cache for fresh results
+				// Cache only the topics that succeeded
 				uncached.forEach((r, i) => {
-					setCached(makeCacheKey("/bills", r.params), freshResponses[i].data.results);
+					const result = settledResponses[i];
+					if (result.status === "fulfilled") {
+						setCached(makeCacheKey("/bills", r.params), result.value.data.results);
+					}
 				});
 
-				// Merge cached + fresh, then deduplicate
+				// If every uncached topic failed, surface an error
+				const allFailed =
+					settledResponses.length > 0 &&
+					settledResponses.every((r) => r.status === "rejected");
+				if (allFailed) {
+					setError("Couldn't load trending bills. Try refreshing.");
+					return;
+				}
+
+				// Merge cached + fresh (treat failed topics as empty), then deduplicate
 				const seen = new Set<string>();
 				const combined: Bill[] = [];
 
 				for (const r of topicResults) {
-					const bills = r.cached ?? freshResponses[uncached.indexOf(r)]?.data.results ?? [];
+					const freshIdx = uncached.indexOf(r);
+					const settled = freshIdx >= 0 ? settledResponses[freshIdx] : null;
+					const bills =
+						r.cached ??
+						(settled?.status === "fulfilled" ? settled.value.data.results : []);
 					for (const bill of bills) {
 						if (!seen.has(bill.id)) {
 							seen.add(bill.id);

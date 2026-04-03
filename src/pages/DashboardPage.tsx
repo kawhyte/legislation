@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import SavedBillsTab from "../components/SavedBillsTab";
 import StateBillsTab from "../components/StateBillsTab";
 import ExploreBillsTab from "../components/ExploreBillsTab";
-import TrendingBillsTab from "../components/TrendingBillsTab";
 
 const STATE_NAMES: Record<string, string> = {
 	"AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas", "CA": "California",
@@ -64,12 +63,6 @@ const DashboardPage: React.FC = () => {
 							)}
 						</TabsTrigger>
 						<TabsTrigger
-							value="trending"
-							className="flex-1 rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-medium data-[state=active]:font-bold px-3 sm:px-5 py-3 border-b-[3px] border-transparent data-[state=active]:border-accent-yellow -mb-[2px] transition-colors text-sm sm:text-base"
-						>
-							Trending
-						</TabsTrigger>
-						<TabsTrigger
 							value="explore"
 							className="flex-1 rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-medium data-[state=active]:font-bold px-3 sm:px-5 py-3 border-b-[3px] border-transparent data-[state=active]:border-accent-yellow -mb-[2px] transition-colors text-sm sm:text-base"
 						>
@@ -85,12 +78,8 @@ const DashboardPage: React.FC = () => {
 						<SavedBillsTab onSwitchToExplore={() => setActiveTab("explore")} />
 					</TabsContent>
 
-					<TabsContent value="trending" className="mt-0">
-						<TrendingBillsTab />
-					</TabsContent>
-
 					<TabsContent value="explore" className="mt-0">
-						<ExploreBillsTab />
+						{activeTab === 'explore' && <ExploreBillsTab />}
 					</TabsContent>
 				</Tabs>
 			</div>
