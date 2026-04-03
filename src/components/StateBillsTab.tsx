@@ -62,11 +62,16 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 	const { bills: activeBills, loading: isLoading } = billsMap[activeTopic];
 
 	const recentlyActiveCount = allBills?.filter((bill) => {
-		const d = new Date(bill.latest_action_date || bill.introduced);
+		if (!bill.latest_action_date) return false;
+		const d = new Date(bill.latest_action_date);
 		const weekAgo = new Date();
 		weekAgo.setDate(weekAgo.getDate() - 7);
 		return d > weekAgo;
 	}).length ?? 0;
+
+	const gainingMomentumCount = allBills?.filter((b) =>
+		b.momentum?.level != null && ['high', 'passed', 'enacted'].includes(b.momentum.level)
+	).length ?? 0;
 
 	if (!userPreferences?.selectedState) {
 		return (
@@ -94,9 +99,9 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 			{/* Stats strip */}
 			<div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
 				<div className="bg-card border-2 border-foreground rounded-xl p-4 shadow-[3px_3px_0px_0px_hsl(var(--foreground))]">
-					<p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Active Bills</p>
-					<p className="text-3xl font-black text-foreground">{allBills?.length ?? "—"}</p>
-					<p className="text-xs text-muted-foreground mt-0.5">in {userStateName} right now</p>
+					<p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Gaining Momentum</p>
+					<p className="text-3xl font-black text-foreground">{allBills ? gainingMomentumCount : "—"}</p>
+					<p className="text-xs text-muted-foreground mt-0.5">bills moving fast right now</p>
 				</div>
 				<div className="bg-card border-2 border-foreground rounded-xl p-4 shadow-[3px_3px_0px_0px_hsl(var(--foreground))]">
 					<p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Updated This Week</p>
