@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import apiClient from "../services/api-client";
 import { CanceledError, type AxiosRequestConfig } from "axios";
+import { getCached, setCached, makeCacheKey } from "../lib/apiCache";
 
 interface FetchResponse<T> {
 	results: T[];
@@ -37,23 +38,33 @@ const useData = <T>(
 			return;
 		}
 
+		// Check cache before making a network request
+		const cacheKey = makeCacheKey(endpoint, requestConfigRef.current?.params || {});
+		const cached = getCached<T>(cacheKey);
+		if (cached) {
+			setData(cached);
+			setLoading(false);
+			return;
+		}
+
 		const controller = new AbortController();
 		const signal = controller.signal;
-		
+
 		setLoading(true);
 		setError("");
 
 		apiClient
-			.get<FetchResponse<T>>(endpoint, { 
-				signal, 
-				...requestConfigRef.current 
+			.get<FetchResponse<T>>(endpoint, {
+				signal,
+				...requestConfigRef.current
 			})
 			.then((res) => {
 				console.log("[useData] Got response:", res.data.results);
-				
+
 				// Only update state if request wasn't aborted
 				if (!signal.aborted) {
 					setData(res.data.results);
+					setCached(cacheKey, res.data.results);
 					setLoading(false);
 				}
 			})
