@@ -1,11 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import TrendingBillGrid from '../components/TrendingBillGrid';
-import BillViewSwitcher from '../components/BillViewSwitcher';
-import type { BillViewMode } from '@/types';
 
 const TrendingBillsPage: React.FC = () => {
-  const [viewMode, setViewMode] = useState<BillViewMode>('quick');
-
   return (
     <div className="min-h-screen">
       <div className="container-legislation container-section">
@@ -18,17 +14,7 @@ const TrendingBillsPage: React.FC = () => {
           </p>
         </div>
 
-        {/* View Switcher */}
-        <div className="flex justify-between items-center mb-8">
-          <BillViewSwitcher 
-            value={viewMode}
-            onValueChange={setViewMode}
-          />
-        </div>
-
-        <TrendingBillGrid
-          viewMode={viewMode}
-        />
+        <TrendingBillGrid viewMode="detailed" />
       </div>
     </div>
   );

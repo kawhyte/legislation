@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useUserData } from "../contexts/UserContext";
 import useBills from "../hooks/useBills";
 import BillCard from "@/components/BillCard";
 import BillCardSkeleton from "@/components/BillCardSkeleton";
-import BillViewSwitcher from "./BillViewSwitcher";
+import YourRepsWidget from "./YourRepsWidget";
+import { parseLocationInput } from "../utils/zipToJurisdiction";
 import {
 	Activity,
 	HeartPulse,
@@ -13,10 +15,10 @@ import {
 	Leaf,
 	LayoutGrid,
 	TrendingUp,
+	Users,
 } from "lucide-react";
 import usStates from "../data/usStates";
 import type { States } from "./JurisdictionSelector";
-import type { BillViewMode } from "@/types";
 
 interface StateBillsTabProps {
 	userStateName: string;
@@ -35,12 +37,20 @@ type TopicValue = typeof TOPICS[number]["value"];
 
 const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 	const { userPreferences, savedBills } = useUserData();
-	const [viewMode, setViewMode] = useState<BillViewMode>("detailed");
 	const [activeTopic, setActiveTopic] = useState<TopicValue>("all");
 
 	const userStateObj = userPreferences?.selectedState
 		? (usStates.find((s) => s.abbreviation === userPreferences.selectedState) as States | null)
 		: null;
+
+	// Resolve stored zip code to lat/lng coords for rep lookup
+	const [zipCoords, setZipCoords] = useState<{ lat: number; lng: number } | null>(null);
+	useEffect(() => {
+		if (!userPreferences?.zipCode) { setZipCoords(null); return; }
+		parseLocationInput(userPreferences.zipCode)
+			.then(result => { if (result.zipCoords) setZipCoords(result.zipCoords); })
+			.catch(() => setZipCoords(null));
+	}, [userPreferences?.zipCode]);
 
 	// All topic data pre-fetched in background
 	const { data: allBills,         isLoading: loadingAll         } = useBills(userStateObj, null);
@@ -122,6 +132,28 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 				</div>
 			</div>
 
+			{/* Your Representatives */}
+			<div className="space-y-3">
+				<div className="flex items-center gap-2">
+					<Users className="h-5 w-5 text-muted-foreground" />
+					<h3 className="text-lg font-bold text-foreground">Your Representatives</h3>
+				</div>
+				{zipCoords ? (
+					<YourRepsWidget coords={zipCoords} stateName={userStateName} layout="horizontal" />
+				) : (
+					<div className="border-2 border-dashed border-border rounded-xl p-4 text-center">
+						<p className="text-sm font-semibold text-foreground">See who represents you in {userStateName}</p>
+						<p className="text-xs text-muted-foreground mt-1">
+							Add your zip code in{" "}
+							<Link to="/profile-setup" className="underline font-medium hover:text-foreground transition-colors">
+								Profile Settings
+							</Link>{" "}
+							to see your local representatives here.
+						</p>
+					</div>
+				)}
+			</div>
+
 			{/* Topic filter pills */}
 			<div className="flex items-center gap-2 flex-wrap">
 				{TOPICS.map(({ label, value, icon: Icon }) => (
@@ -139,15 +171,10 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 				))}
 			</div>
 
-			{/* View switcher + count */}
-			<div className="flex items-center justify-between">
-				<p className="text-sm text-muted-foreground">
-					{isLoading
-						? "Loading…"
-						: `${activeBills?.length ?? 0} bill${activeBills?.length !== 1 ? "s" : ""}`}
-				</p>
-				<BillViewSwitcher value={viewMode} onValueChange={setViewMode} />
-			</div>
+			{/* Bill count */}
+			<p className="text-sm text-muted-foreground">
+				{isLoading ? "Loading…" : `${activeBills?.length ?? 0} bill${activeBills?.length !== 1 ? "s" : ""}`}
+			</p>
 
 			{/* Bills grid */}
 			{isLoading ? (
@@ -163,7 +190,7 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 							showSource
 							showProgressBar
 							showTrendingReason
-							viewMode={viewMode}
+							viewMode="detailed"
 						/>
 					))}
 				</div>
@@ -204,7 +231,7 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 									bill={sb.billData}
 									showSource
 									showProgressBar
-									viewMode={viewMode}
+									viewMode="detailed"
 								/>
 							))}
 					</div>

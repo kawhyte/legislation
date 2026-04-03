@@ -15,6 +15,7 @@ const ProfileSetupPage: React.FC = () => {
   
   const [displayName, setDisplayName] = useState('');
   const [selectedState, setSelectedState] = useState('');
+  const [zipCode, setZipCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -23,6 +24,7 @@ const ProfileSetupPage: React.FC = () => {
     if (userPreferences) {
       setDisplayName(userPreferences.displayName || '');
       setSelectedState(userPreferences.selectedState || '');
+      setZipCode(userPreferences.zipCode || '');
     }
   }, [userPreferences]);
 
@@ -41,11 +43,17 @@ const ProfileSetupPage: React.FC = () => {
       return;
     }
 
+    if (zipCode.trim() && !/^\d{5}$/.test(zipCode.trim())) {
+      setError('Zip code must be exactly 5 digits');
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       await completeProfileSetup({
         displayName: displayName.trim(),
-        selectedState
+        selectedState,
+        zipCode: zipCode.trim() || undefined,
       });
       
       // Redirect to dashboard page after saving profile changes
@@ -150,6 +158,26 @@ const ProfileSetupPage: React.FC = () => {
               </Select>
               <p className="text-xs text-muted-foreground">
                 We'll show you legislation from your state first
+              </p>
+            </div>
+
+            {/* Zip Code (optional) */}
+            <div className="space-y-2">
+              <label htmlFor="zipCode" className="text-sm font-medium text-foreground">
+                Your Zip Code <span className="text-muted-foreground font-normal">(optional)</span>
+              </label>
+              <Input
+                id="zipCode"
+                type="text"
+                placeholder="e.g. 90210"
+                value={zipCode}
+                onChange={(e) => setZipCode(e.target.value.replace(/\D/g, '').slice(0, 5))}
+                disabled={isLoading}
+                className="w-full"
+                maxLength={5}
+              />
+              <p className="text-xs text-muted-foreground">
+                Used to show your local representatives on your state dashboard
               </p>
             </div>
 

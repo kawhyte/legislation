@@ -4,8 +4,6 @@ import BillCard from "@/components/BillCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import BillViewSwitcher from "./BillViewSwitcher";
-import type { BillViewMode } from "@/types";
 import {
 	Search,
 	Bookmark,
@@ -30,7 +28,6 @@ const SavedBillsTab: React.FC<SavedBillsTabProps> = ({ onSwitchToExplore }) => {
 	const { savedBills, removeSavedBill } = useUserData();
 	const [searchQuery, setSearchQuery] = useState("");
 	const [sortBy, setSortBy] = useState<"date" | "title" | "state" | "momentum">("date");
-	const [viewMode, setViewMode] = useState<BillViewMode>("detailed");
 
 	const bills = savedBills.map((sb) => sb.billData);
 
@@ -189,8 +186,7 @@ const SavedBillsTab: React.FC<SavedBillsTabProps> = ({ onSwitchToExplore }) => {
 							{label}
 						</button>
 					))}
-					<BillViewSwitcher value={viewMode} onValueChange={setViewMode} />
-				</div>
+					</div>
 			</div>
 
 			{/* Search results count */}
@@ -204,7 +200,7 @@ const SavedBillsTab: React.FC<SavedBillsTabProps> = ({ onSwitchToExplore }) => {
 			{sortedBills.length > 0 ? (
 				<div className='grid grid-cols-[repeat(auto-fill,minmax(380px,1fr))] gap-6'>
 					{sortedBills.map((bill) => (
-						<BillCard showSource key={bill.id} bill={bill} viewMode={viewMode} />
+						<BillCard showSource key={bill.id} bill={bill} viewMode="detailed" />
 					))}
 				</div>
 			) : (

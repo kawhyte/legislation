@@ -1,12 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import BillCard from './BillCard';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import BillCardSkeleton from './BillCardSkeleton';
-import BillViewSwitcher from './BillViewSwitcher';
 import { isBillTrending } from '@/utils/isBillTrending';
 import useTrendingBills from '@/hooks/useTrendingBills';
-import type { BillViewMode } from '@/types';
 
 const LEVEL_SCORE: Record<string, number> = {
   'Enacted': 100, 'Passed': 90, 'High': 75, 'Medium': 50, 'Low': 25, 'Stalled': 0,
@@ -14,7 +12,6 @@ const LEVEL_SCORE: Record<string, number> = {
 
 const TrendingBillsTab: React.FC = () => {
   const { data, isLoading, error } = useTrendingBills();
-  const [viewMode, setViewMode] = useState<BillViewMode>('quick');
 
   // Filter to trending only, sort with enacted pinned first, cap at 9
   const trendingBills = useMemo(() => {
@@ -62,7 +59,7 @@ const TrendingBillsTab: React.FC = () => {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {trendingBills.map((bill) => (
-          <BillCard key={bill.id} bill={bill} showSource={true} showProgressBar={true} showTrendingReason={true} viewMode={viewMode} />
+          <BillCard key={bill.id} bill={bill} showSource={true} showProgressBar={true} showTrendingReason={true} viewMode="detailed" />
         ))}
       </div>
     );
@@ -70,19 +67,13 @@ const TrendingBillsTab: React.FC = () => {
 
   return (
     <div className='space-y-6'>
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <div className="space-y-1">
-          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-            What's Hot Right Now
-          </h2>
-          <p className="text-base text-muted-foreground">
-            Bills gaining momentum across the country — the ones everyone's watching.
-          </p>
-        </div>
-        <BillViewSwitcher
-          value={viewMode}
-          onValueChange={setViewMode}
-        />
+      <div className="space-y-1">
+        <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+          What's Hot Right Now
+        </h2>
+        <p className="text-base text-muted-foreground">
+          Bills gaining momentum across the country — the ones everyone's watching.
+        </p>
       </div>
 
       {renderContent()}

@@ -12,6 +12,8 @@ interface Props {
 	stateName?: string;
 	/** When provided, skip the API call and render directly from cache. */
 	cachedReps?: Rep[];
+	/** 'horizontal' forces the compact horizontal strip on all screen sizes. Default 'auto' uses mobile strip + desktop sidebar. */
+	layout?: 'horizontal' | 'auto';
 }
 
 function partyBadgeClass(party: string) {
@@ -134,7 +136,7 @@ function LoadingSkeletonMobile() {
 
 // ── Main widget ──────────────────────────────────────────────────────────────
 
-const YourRepsWidget: React.FC<Props> = ({ coords, stateName, cachedReps }) => {
+const YourRepsWidget: React.FC<Props> = ({ coords, stateName, cachedReps, layout = 'auto' }) => {
 	const { setReps } = useSearchCache();
 
 	// Only hit the API when we don't already have cached reps
@@ -158,6 +160,40 @@ const YourRepsWidget: React.FC<Props> = ({ coords, stateName, cachedReps }) => {
 			</p>
 		</div>
 	);
+
+	// Forced horizontal layout (e.g. inside State tab — no sidebar)
+	if (layout === 'horizontal') {
+		return (
+			<div>
+				{!coords && (
+					<div className="border-2 border-dashed border-foreground/40 rounded-xl p-4 text-center">
+						<p className="font-bold text-sm text-foreground">Viewing State Bills</p>
+						<p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+							Search your Zip Code to see how your specific lawmakers vote.
+						</p>
+					</div>
+				)}
+				{coords && isLoading && <LoadingSkeletonMobile />}
+				{coords && !isLoading && reps && reps.length > 0 && (
+					<div className="flex gap-3 overflow-x-auto pb-2">
+						{reps.map(rep => (
+							<RepCardMobile key={rep.id} rep={rep} stateName={stateName} />
+						))}
+					</div>
+				)}
+				{coords && !isLoading && reps && reps.length === 0 && (
+					<p className="text-sm text-muted-foreground text-center py-3">
+						No representatives found for this location.
+					</p>
+				)}
+				{coords && !isLoading && error && (
+					<p className="text-xs text-destructive border border-destructive rounded-lg px-3 py-2">
+						{error}
+					</p>
+				)}
+			</div>
+		);
+	}
 
 	return (
 		<>

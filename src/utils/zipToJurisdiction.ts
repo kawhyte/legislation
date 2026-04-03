@@ -1,7 +1,13 @@
 import usStates from '../data/usStates';
 import type { States } from '../components/JurisdictionSelector';
 
+// Session-level cache: zip string → resolved States object (including coords).
+// Zip→coords is a stable, deterministic mapping so no TTL is needed.
+const zipCache = new Map<string, States>();
+
 export async function getJurisdictionFromZip(zip: string): Promise<States | null> {
+  if (zipCache.has(zip)) return zipCache.get(zip)!;
+
   const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
   if (!res.ok) return null;
   const data = await res.json();
@@ -9,13 +15,15 @@ export async function getJurisdictionFromZip(zip: string): Promise<States | null
   const abbr: string = place['state abbreviation'];
   const match = usStates.find(s => s.abbreviation === abbr) as States | undefined;
   if (!match) return null;
-  return {
+  const result: States = {
     ...match,
     zipCoords: {
       lat: parseFloat(place.latitude),
       lng: parseFloat(place.longitude),
     },
   };
+  zipCache.set(zip, result);
+  return result;
 }
 
 /**

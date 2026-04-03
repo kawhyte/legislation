@@ -141,6 +141,7 @@ export interface UserPreferences {
   userId: string;
   displayName: string;
   selectedState: string; // State abbreviation (e.g., "CA", "TX")
+  zipCode?: string; // Optional — used for local representative lookup
   profileSetupCompleted: boolean;
   createdAt: string; // ISO string
   updatedAt: string; // ISO string
@@ -150,11 +151,13 @@ export interface UserPreferences {
 export interface CreateUserPreferencesDTO {
   displayName: string;
   selectedState: string;
+  zipCode?: string;
 }
 
 export interface UpdateUserPreferencesDTO {
   displayName?: string;
   selectedState?: string;
+  zipCode?: string;
   profileSetupCompleted?: boolean;
 }
 
