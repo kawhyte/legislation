@@ -74,10 +74,10 @@ const useData = <T>(
 				}
 			})
 			.catch((err) => {
-				console.error("[useData] Fetch error:", err.message);
-
 				// Don't handle canceled requests
 				if (err instanceof CanceledError) return;
+
+				console.error("[useData] Fetch error:", err.message);
 
 				// Only update state if request wasn't aborted
 				if (!signal.aborted) {
