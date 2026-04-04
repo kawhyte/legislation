@@ -1,6 +1,6 @@
 'use client';
 
-import {  useLocation, useNavigate, useParams } from "react-router-dom";
+import { useParams, useRouter } from "next/navigation";
 import { User, CheckCircle2, XCircle, CalendarDays, UserRound } from "lucide-react";
 import type { Rep } from "../hooks/useReps";
 import useRepVotes, { type RepVote } from "../hooks/useRepVotes";
@@ -106,17 +106,14 @@ function VoteCard({ vote, repParty }: { vote: RepVote; repParty: string }) {
 }
 
 const RepScorecardPage = () => {
-	const { repId } = useParams<{ repId: string }>();
+	const params = useParams();
+	const repId = params?.repId as string | undefined;
 	const decodedId = decodeURIComponent(repId || "");
-	const location = useLocation();
-	const navigate = useNavigate();
+	const router = useRouter();
 	const { cache } = useSearchCache();
 
-	// Fallback chain: navigation state → in-memory cache → sessionStorage (survives refresh)
-	const rep: Rep | null =
-		(location.state as { rep?: Rep } | null)?.rep ??
-		cache.repsMap[decodedId] ??
-		null;
+	// Rep data comes from in-memory search cache (populated when user came from the widget)
+	const rep: Rep | null = cache.repsMap[decodedId] ?? null;
 
 	const isFederal = rep?.jurisdiction?.classification === "country";
 	const jurisdictionName = isFederal ? undefined : rep?.jurisdiction?.name;
@@ -127,7 +124,7 @@ const RepScorecardPage = () => {
 		return (
 			<div className="container-legislation py-12">
 				<p className="text-muted-foreground">Representative data not found.</p>
-				<button onClick={() => navigate(-1)} className="text-primary underline text-sm mt-2 inline-block">← Back to home</button>
+				<button onClick={() => router.back()} className="text-primary underline text-sm mt-2 inline-block">← Back to home</button>
 			</div>
 		);
 	}
@@ -146,7 +143,7 @@ const RepScorecardPage = () => {
 		<div className="container-legislation py-12">
 
 			{/* ── Header ── */}
-			<button onClick={() => navigate(-1)} className="text-sm text-muted-foreground hover:underline mb-6 inline-block">← Back</button>
+			<button onClick={() => router.back()} className="text-sm text-muted-foreground hover:underline mb-6 inline-block">← Back</button>
 			<div className="flex items-center gap-6">
 				<Avatar className="size-20 border-2 border-foreground shrink-0">
 					<AvatarImage src={rep.image ?? undefined} alt={rep.name} />

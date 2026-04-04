@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { BookmarkCheck, BookmarkX, AlertCircle, Lock } from 'lucide-react';
 import type { Bill } from '@/types';
 
@@ -12,8 +12,8 @@ interface ToastOptions {
 }
 
 export const useBillToast = () => {
-  const navigate = useNavigate();
-  
+  const router = useRouter();
+
   const showSaveSuccess = (bill: Bill, options: ToastOptions = {}) => {
     const { showBillInfo = true, duration = 4000 } = options;
 
@@ -29,7 +29,7 @@ export const useBillToast = () => {
       icon: React.createElement(BookmarkCheck, { className: "h-4 w-4" }),
       action: {
         label: 'View Saved',
-        onClick: () => navigate('/dashboard?tab=saved'),
+        onClick: () => router.push('/dashboard?tab=saved'),
       },
     });
   };
@@ -68,7 +68,6 @@ export const useBillToast = () => {
       action: {
         label: 'Retry',
         onClick: () => {
-          // This would re-trigger the save action
           toast.info('Please try clicking the save button again');
         },
       },
@@ -87,7 +86,6 @@ export const useBillToast = () => {
       action: {
         label: 'Retry',
         onClick: () => {
-          // This would re-trigger the remove action
           toast.info('Please try clicking the remove button again');
         },
       },
@@ -101,9 +99,7 @@ export const useBillToast = () => {
       icon: React.createElement(Lock, { className: "h-4 w-4" }),
       action: {
         label: 'Sign In',
-        onClick: () => {
-          navigate('/sign-in');
-        },
+        onClick: () => router.push('/sign-in'),
       },
     });
   };

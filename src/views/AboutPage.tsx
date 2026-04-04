@@ -1,7 +1,7 @@
 'use client';
 
 import { Search, Sparkles, Bookmark, ArrowRight, Users } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import ExpertsCarousel from "@/components/ExpertsCarousel";
 
@@ -196,7 +196,7 @@ const AboutPage = () => (
 						size="lg"
 						className="bg-foreground text-background hover:bg-foreground/90 font-bold border-2 border-foreground shadow-[3px_3px_0px_0px_rgba(0,0,0,0.25)]"
 					>
-						<Link to="/sign-up">
+						<Link href="/sign-up">
 							Create Free Account
 							<ArrowRight className="h-4 w-4 ml-2" />
 						</Link>
@@ -207,7 +207,7 @@ const AboutPage = () => (
 						size="lg"
 						className="border-2 border-foreground bg-transparent hover:bg-foreground/10 font-semibold text-foreground"
 					>
-						<Link to="/">Browse Bills First</Link>
+						<Link href="/">Browse Bills First</Link>
 					</Button>
 				</div>
 			</div>

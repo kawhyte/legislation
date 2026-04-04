@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { useUserData } from '@/contexts/UserContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,7 @@ import usStates from '@/data/usStates';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 
 const ProfileSetupPage: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { completeProfileSetup, isLoadingPreferences, userPreferences } = useUserData();
   
   const [displayName, setDisplayName] = useState('');
@@ -59,7 +59,7 @@ const ProfileSetupPage: React.FC = () => {
       });
       
       // Redirect to dashboard page after saving profile changes
-      navigate('/dashboard');
+      router.push('/dashboard');
     } catch (err) {
       console.error('Profile setup error:', err);
       console.error('Error details:', {

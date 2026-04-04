@@ -53,10 +53,17 @@
 ---
 
 ### Step 6 — Routing Migration
-- [ ] Convert React Router routes to Next.js file-based routing (`app/[route]/page.tsx`)
-- [ ] Replace `<Link>` from `react-router-dom` with `next/link`
+- [x] Created `src/app/page.tsx` (HomePage), `about`, `trending`, `sign-in`, `sign-up`, `profile-setup`, `dashboard`, `rep/[repId]`
+- [x] Replaced `Link` from react-router-dom → `next/link` (`href=` instead of `to=`)
+- [x] Replaced `useNavigate` → `useRouter` from `next/navigation`
+- [x] Replaced `useLocation` → `usePathname` from `next/navigation`
+- [x] Replaced `useParams` → `useParams` from `next/navigation`
+- [x] Replaced `useSearchParams` → `useSearchParams` from `next/navigation` (with Suspense boundaries)
+- [x] Removed `[[...slug]]` catch-all (no longer needed)
+- [x] Added Header + Footer to `src/app/layout.tsx`
+- [x] Protected routes implemented client-side in dashboard/profile-setup pages
 
-**Status: PENDING**
+**Status: COMPLETE**
 
 ---
 

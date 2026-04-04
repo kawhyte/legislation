@@ -1,6 +1,6 @@
 'use client';
 
-import { Link } from "react-router-dom";
+import Link from 'next/link';
 
 const Footer = () => (
 	<footer className='border-t border-border bg-background'>
@@ -12,7 +12,7 @@ const Footer = () => (
 				</div>
 				<nav className='flex items-center gap-6'>
 					<Link
-						to='/about'
+						href='/about'
 						className='text-sm text-muted-foreground hover:text-foreground transition-colors'>
 						About
 					</Link>

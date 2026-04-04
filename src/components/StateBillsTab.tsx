@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { useUserData } from "../contexts/UserContext";
 import useBills from "../hooks/useBills";
 import BillCard from "@/components/BillCard";
@@ -147,7 +147,7 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 						<p className="text-sm font-semibold text-foreground">See who represents you in {userStateName}</p>
 						<p className="text-xs text-muted-foreground mt-1">
 							Add your zip code in{" "}
-							<Link to="/profile-setup" className="underline font-medium hover:text-foreground transition-colors">
+							<Link href="/profile-setup" className="underline font-medium hover:text-foreground transition-colors">
 								Profile
 							</Link>{" "}
 							to see who represents you and how they vote.

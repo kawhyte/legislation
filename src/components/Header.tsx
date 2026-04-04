@@ -2,7 +2,7 @@
 
 // src/components/Header.tsx
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useRouter, usePathname } from "next/navigation";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
@@ -23,12 +23,12 @@ const Header = () => {
 
 	const { userPreferences } = useUserData();
 	const { isSignedIn, user } = useUser();
-	const navigate = useNavigate();
-	const location = useLocation();
+	const router = useRouter();
+	const pathname = usePathname();
 
 	// Active page detection
 	const isActive = (path: string) =>
-		path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
+		path === "/" ? pathname === "/" : pathname.startsWith(path);
 
 	// Scroll shadow
 	useEffect(() => {
@@ -46,7 +46,7 @@ const Header = () => {
 	// Close drawer on route change
 	useEffect(() => {
 		setIsMobileMenuOpen(false);
-	}, [location.pathname]);
+	}, [pathname]);
 
 	const navLinks = [
 		{ label: "Home", path: "/" },
@@ -55,7 +55,7 @@ const Header = () => {
 	];
 
 	const Logo = () => (
-		<div className='flex items-center gap-2 cursor-pointer' onClick={() => navigate("/")}>
+		<div className='flex items-center gap-2 cursor-pointer' onClick={() => router.push("/")}>
 			<img src='/favicon.png' alt='Billhound' className='w-8 h-8' />
 			<span className='text-lg font-bold text-foreground'>Billhound</span>
 		</div>
@@ -66,7 +66,7 @@ const Header = () => {
 			{navLinks.map(({ label, path }) => (
 				<button
 					key={path}
-					onClick={() => navigate(path)}
+					onClick={() => router.push(path)}
 					className={`relative px-4 py-2 text-sm font-medium rounded-md transition-colors ${
 						isActive(path)
 							? "text-foreground"
@@ -122,11 +122,11 @@ const Header = () => {
 							)}
 						</div>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem onClick={() => navigate("/dashboard")}>
+						<DropdownMenuItem onClick={() => router.push("/dashboard")}>
 							<Bookmark className='mr-2 h-4 w-4' />
 							Dashboard
 						</DropdownMenuItem>
-						<DropdownMenuItem onClick={() => navigate("/profile-setup")}>
+						<DropdownMenuItem onClick={() => router.push("/profile-setup")}>
 							<Settings className='mr-2 h-4 w-4' />
 							Edit Profile
 						</DropdownMenuItem>
@@ -141,12 +141,12 @@ const Header = () => {
 				<>
 					<Button
 						variant='ghost'
-						onClick={() => navigate("/sign-in")}
+						onClick={() => router.push("/sign-in")}
 						className='hidden sm:inline-flex text-sm text-muted-foreground hover:bg-accent hover:text-foreground'>
 						Log In
 					</Button>
 					<Button
-						onClick={() => navigate("/sign-up")}
+						onClick={() => router.push("/sign-up")}
 						className='text-sm bg-primary text-primary-foreground hover:bg-primary/90'>
 						Sign Up
 					</Button>
@@ -209,7 +209,7 @@ const Header = () => {
 					{navLinks.map(({ label, path }) => (
 						<button
 							key={path}
-							onClick={() => navigate(path)}
+							onClick={() => router.push(path)}
 							className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
 								isActive(path)
 									? "bg-accent text-foreground font-semibold"
@@ -225,7 +225,7 @@ const Header = () => {
 					{isSignedIn ? (
 						<>
 							<button
-								onClick={() => navigate("/profile-setup")}
+								onClick={() => router.push("/profile-setup")}
 								className='w-full text-left flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-foreground hover:bg-accent transition-colors'>
 								<Settings className='h-4 w-4 text-muted-foreground flex-shrink-0' />
 								Edit Profile
@@ -240,12 +240,12 @@ const Header = () => {
 					) : (
 						<>
 							<button
-								onClick={() => navigate("/sign-in")}
+								onClick={() => router.push("/sign-in")}
 								className='w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-foreground hover:bg-accent transition-colors'>
 								Log In
 							</button>
 							<button
-								onClick={() => navigate("/sign-up")}
+								onClick={() => router.push("/sign-up")}
 								className='w-full text-center px-4 py-3 rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors'>
 								Sign Up
 							</button>

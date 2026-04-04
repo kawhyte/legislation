@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Users } from "lucide-react";
@@ -25,7 +25,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 	const [isSearching, setIsSearching] = useState(false);
 	const [error, setError] = useState('');
 	const [selectedState, setSelectedState] = useState<States | null>(null);
-	const [, setSearchParams] = useSearchParams();
+	const searchParams = useSearchParams();
+	void searchParams; // accessed by parent via URL; we only need the setter here
+	const router = useRouter();
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const setSearchParams = (params: Record<string, string>, _opts?: object) => {
+		const qs = new URLSearchParams(params).toString();
+		router.replace(`?${qs}`);
+	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();

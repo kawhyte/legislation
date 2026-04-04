@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,17 +22,13 @@ export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
   const { isSignedIn } = useAuth();
 
   // Redirect if already signed in
   React.useEffect(() => {
-    if (isSignedIn) {
-      const from = location.state?.from?.pathname || '/';
-      navigate(from, { replace: true });
-    }
-  }, [isSignedIn, navigate, location]);
+    if (isSignedIn) router.replace('/');
+  }, [isSignedIn, router]);
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,8 +39,7 @@ export default function SignInPage() {
 
     try {
       await signInWithEmail(email, password);
-      const from = location.state?.from?.pathname || '/';
-      navigate(from, { replace: true });
+      router.replace('/');
     } catch (error: unknown) {
       setError(getAuthErrorMessage(error));
     } finally {
@@ -57,8 +53,7 @@ export default function SignInPage() {
 
     try {
       await signInWithGoogle();
-      const from = location.state?.from?.pathname || '/';
-      navigate(from, { replace: true });
+      router.replace('/');
     } catch (error: unknown) {
       setError(getAuthErrorMessage(error));
     } finally {
@@ -177,17 +172,16 @@ export default function SignInPage() {
             <div className="text-center space-y-4">
               <p className="text-sm text-gray-600">
                 Don't have an account?{' '}
-                <Link 
-                  to="/sign-up" 
+                <Link
+                  href="/sign-up"
                   className="font-medium text-foreground underline underline-offset-2 hover:text-muted-foreground"
-                  state={{ from: location.state?.from }}
                 >
                   Sign up
                 </Link>
               </p>
               <p className="text-sm">
-                <Link 
-                  to="/reset-password" 
+                <Link
+                  href="/reset-password"
                   className="font-medium text-foreground underline underline-offset-2 hover:text-muted-foreground"
                 >
                   Forgot your password?

@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PlayCircle, RefreshCw, ArrowRight } from 'lucide-react';
 import { useDemo } from '@/contexts/DemoContext';
 import DemoBillCard from './DemoBillCard';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 const DemoPlayground: React.FC = () => {
   const { 
@@ -184,13 +184,13 @@ const DemoPlayground: React.FC = () => {
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Button asChild className="bg-primary text-primary-foreground hover:bg-primary-hover">
-                <Link to="/sign-up">
+                <Link href="/sign-up">
                   Create Free Account
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Link>
               </Button>
               <Button variant="outline" asChild>
-                <Link to="/sign-in">Sign In</Link>
+                <Link href="/sign-in">Sign In</Link>
               </Button>
             </div>
           </div>

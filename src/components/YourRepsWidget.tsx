@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { User } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import useReps, { type Rep } from "../hooks/useReps";
 import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
@@ -34,7 +34,7 @@ function partyAbbr(party: string) {
 
 // ── Desktop: full vertical card ──────────────────────────────────────────────
 
-function RepCard({ rep, stateName }: { rep: Rep; stateName?: string }) {
+function RepCard({ rep }: { rep: Rep }) {
 	const role = rep.current_role;
 	const initials = rep.name.split(" ").map(n => n[0]).slice(0, 2).join("");
 
@@ -59,7 +59,7 @@ function RepCard({ rep, stateName }: { rep: Rep; stateName?: string }) {
 					</span>
 				</div>
 			</div>
-			<Link to={`/rep/${encodeURIComponent(rep.id)}`} state={{ rep, stateName }}>
+			<Link href={`/rep/${encodeURIComponent(rep.id)}`}>
 				<Button variant="outline" size="sm" className="w-full mt-3 border-2 border-foreground font-semibold text-xs">
 					See Their Votes
 				</Button>
@@ -90,14 +90,13 @@ function LoadingSkeleton() {
 
 // ── Mobile: compact horizontal card ─────────────────────────────────────────
 
-function RepCardMobile({ rep, stateName }: { rep: Rep; stateName?: string }) {
+function RepCardMobile({ rep }: { rep: Rep }) {
 	const role = rep.current_role;
 	const initials = rep.name.split(" ").map(n => n[0]).slice(0, 2).join("");
 
 	return (
 		<Link
-			to={`/rep/${encodeURIComponent(rep.id)}`}
-			state={{ rep, stateName }}
+			href={`/rep/${encodeURIComponent(rep.id)}`}
 			className="flex-shrink-0 w-24 flex flex-col items-center gap-1.5 p-2.5 rounded-xl border-2 border-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] bg-white hover:shadow-[1px_1px_0px_0px_hsl(var(--foreground))] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
 		>
 			<Avatar className="size-10 border-2 border-foreground shrink-0">
@@ -138,7 +137,7 @@ function LoadingSkeletonMobile() {
 
 // ── Main widget ──────────────────────────────────────────────────────────────
 
-const YourRepsWidget: React.FC<Props> = ({ coords, stateName, cachedReps, layout = 'auto' }) => {
+const YourRepsWidget: React.FC<Props> = ({ coords, cachedReps, layout = 'auto' }) => {
 	const { setReps } = useSearchCache();
 
 	// Only hit the API when we don't already have cached reps
@@ -179,7 +178,7 @@ const YourRepsWidget: React.FC<Props> = ({ coords, stateName, cachedReps, layout
 				{coords && !isLoading && reps && reps.length > 0 && (
 					<div className="flex gap-3 overflow-x-auto pb-2">
 						{reps.map(rep => (
-							<RepCardMobile key={rep.id} rep={rep} stateName={stateName} />
+							<RepCardMobile key={rep.id} rep={rep} />
 						))}
 					</div>
 				)}
@@ -212,7 +211,7 @@ const YourRepsWidget: React.FC<Props> = ({ coords, stateName, cachedReps, layout
 				{coords && !isLoading && reps && reps.length > 0 && (
 					<div className="flex gap-3 overflow-x-auto pb-2">
 						{reps.map(rep => (
-							<RepCardMobile key={rep.id} rep={rep} stateName={stateName} />
+							<RepCardMobile key={rep.id} rep={rep} />
 						))}
 					</div>
 				)}
@@ -248,7 +247,7 @@ const YourRepsWidget: React.FC<Props> = ({ coords, stateName, cachedReps, layout
 				{coords && isLoading && <LoadingSkeleton />}
 
 				{coords && !isLoading && reps && reps.length > 0 && (
-					reps.map(rep => <RepCard key={rep.id} rep={rep} stateName={stateName} />)
+					reps.map(rep => <RepCard key={rep.id} rep={rep} />)
 				)}
 
 				{coords && !isLoading && reps && reps.length === 0 && (

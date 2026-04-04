@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,22 +24,19 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
   const { isSignedIn } = useAuth();
 
   // Redirect if already signed in
   React.useEffect(() => {
-    if (isSignedIn) {
-      navigate('/profile-setup', { replace: true });
-    }
-  }, [isSignedIn, navigate]);
+    if (isSignedIn) router.replace('/profile-setup');
+  }, [isSignedIn, router]);
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email.trim() || !password.trim() || !confirmPassword.trim()) return;
-    
+
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -54,7 +52,7 @@ export default function SignUpPage() {
 
     try {
       await signUpWithEmail(email, password, displayName.trim() || undefined);
-      navigate('/profile-setup', { replace: true });
+      router.replace('/profile-setup');
     } catch (error: unknown) {
       setError(getAuthErrorMessage(error));
     } finally {
@@ -68,7 +66,7 @@ export default function SignUpPage() {
 
     try {
       await signInWithGoogle();
-      navigate('/profile-setup', { replace: true });
+      router.replace('/profile-setup');
     } catch (error: unknown) {
       setError(getAuthErrorMessage(error));
     } finally {
@@ -216,10 +214,9 @@ export default function SignUpPage() {
             <div className="text-center">
               <p className="text-sm text-gray-600">
                 Already have an account?{' '}
-                <Link 
-                  to="/sign-in" 
+                <Link
+                  href="/sign-in"
                   className="font-medium text-foreground underline underline-offset-2 hover:text-muted-foreground"
-                  state={{ from: location.state?.from }}
                 >
                   Sign in
                 </Link>
