@@ -80,7 +80,7 @@
 ---
 
 ### Step 8 — Cleanup
-- [ ] Remove leftover Vite config files (`vite.config.ts`, `index.html`, etc.)
-- [ ] Run final `npm run build` to ensure production readiness
+- [x] Remove leftover Vite config files (`vite.config.ts`, `index.html`, etc.)
+- [x] Run final `npm run build` to ensure production readiness
 
-**Status: PENDING**
+**Status: COMPLETE**
