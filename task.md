@@ -32,11 +32,15 @@
 ---
 
 ### Step 4 — Layout & Root Setup
-- [ ] Create the `app` directory
-- [ ] Migrate `index.html` + global providers into `app/layout.tsx`
-- [ ] Migrate Vite entry point to `app/page.tsx`
+- [x] Create `src/app/` directory (inside src to match project structure)
+- [x] Migrate `index.html` + global providers into `src/app/layout.tsx`
+- [x] Created `src/app/providers.tsx` ("use client" wrapper for UserProvider, DemoProvider, SearchCacheProvider)
+- [x] Created `src/app/[[...slug]]/page.tsx` (catch-all, renders App via dynamic import with ssr:false)
+- [x] Added `next.config.ts` and `postcss.config.mjs`
+- [x] Renamed `src/pages/` → `src/views/` to avoid Next.js Pages Router conflict
+- [x] Fixed ESLint config, lightningcss ARM64 binary, and pre-existing lint issues
 
-**Status: PENDING**
+**Status: COMPLETE**
 
 ---
 
