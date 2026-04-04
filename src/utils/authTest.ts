@@ -70,15 +70,9 @@ export const testEnvironmentVariables = (): {
 export const logConfiguration = (): void => {
   const envTest = testEnvironmentVariables();
 
-  console.group('Authentication Configuration');
-  console.log('Firebase configured:', envTest.firebaseConfigured);
-
   if (envTest.missingVars.length > 0) {
     console.warn('Missing environment variables:', envTest.missingVars);
   }
-
-  console.log('Firebase project ID:', process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
-  console.groupEnd();
 };
 
 // Auto-run configuration check in development

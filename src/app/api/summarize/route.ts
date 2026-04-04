@@ -92,7 +92,6 @@ Bill information:
 ${context}`;
 
   try {
-    console.log('[/api/summarize] Calling Gemini for:', bill.title);
     const result = await model.generateContent(prompt);
     return parseResponse(result.response.text().trim());
   } catch (error) {
@@ -119,7 +118,6 @@ export async function POST(request: NextRequest) {
   // L1: in-memory server cache
   const cached = summaryCache.get(cacheKey);
   if (cached && isCacheValid(cached)) {
-    console.log('[/api/summarize] Cache hit for:', bill.title);
     return NextResponse.json(cached.data);
   }
 

@@ -139,7 +139,6 @@ Bill information:
 ${context}`;
 
     try {
-      console.log('[GeminiService] Making API request for:', bill.title);
       const result = await this.model.generateContent(prompt);
       const text = result.response.text().trim();
       return this.parseResponse(text);

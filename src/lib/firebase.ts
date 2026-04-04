@@ -34,10 +34,4 @@ export const googleProvider = new GoogleAuthProvider();
 googleProvider.addScope('email');
 googleProvider.addScope('profile');
 
-// Debug Firebase initialization
-console.log('Firebase initialized with config:', {
-  projectId: firebaseConfig.projectId,
-  authDomain: firebaseConfig.authDomain
-});
-
 export default app;

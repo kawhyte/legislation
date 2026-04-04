@@ -30,8 +30,6 @@ const useData = <T>(
 	);
 
 	useEffect(() => {
-		console.log("[useData] Running effect. Endpoint:", endpoint);
-		
 		// Early return if no endpoint
 		if (!endpoint) {
 			setData([]);
@@ -64,8 +62,6 @@ const useData = <T>(
 				...requestConfigRef.current
 			})
 			.then((res) => {
-				console.log("[useData] Got response:", res.data.results);
-
 				// Only update state if request wasn't aborted
 				if (!signal.aborted) {
 					setData(res.data.results);
@@ -88,7 +84,6 @@ const useData = <T>(
 
 		// Cleanup function to abort request on unmount or dependency change
 		return () => {
-			console.log("[useData] Aborting request for:", endpoint);
 			controller.abort();
 		};
 	}, [endpoint, stableDeps, stableParams]);
