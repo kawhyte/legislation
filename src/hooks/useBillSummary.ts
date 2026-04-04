@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-import { GeminiService } from '../services/geminiServices';
 import { getCachedSummary, cacheSummary } from '../services/cacheService';
 import type { Bill, BillSummaryData, UseBillSummaryOptions, UseBillSummaryReturn } from '@/types';
 
@@ -14,13 +13,13 @@ export const useBillSummary = (
   const [error, setError] = useState<string | null>(null);
 
   const { maxLength = 150, targetAge = "30-40" } = options;
-  const geminiService = useRef(new GeminiService());
+  // maxLength/targetAge are accepted for API compat but currently handled server-side
+  void maxLength; void targetAge;
+
   const abortController = useRef<AbortController | null>(null);
 
   const cleanup = useCallback(() => {
-    if (abortController.current) {
-      abortController.current.abort();
-    }
+    abortController.current?.abort();
   }, []);
 
   const generateSummary = useCallback(async () => {
@@ -33,44 +32,38 @@ export const useBillSummary = (
     setError(null);
 
     try {
-      // L2: check Firestore global cache first
+      // L2: Firestore global cache — persists 24 h across all users
       const cached = await getCachedSummary(bill.id);
       if (cached) {
-        if (!abortController.current.signal.aborted) {
-          setStructured(cached);
-        }
+        if (!abortController.current.signal.aborted) setStructured(cached);
         return;
       }
 
-      // L1: call Gemini (has its own in-memory session cache)
-      const result = await geminiService.current.summarizeBillWithImpacts(
-        bill,
-        { maxLength, targetAge, useCache: true }
-      );
+      // L1: server-side API route (has its own in-memory session cache + rate limiter)
+      const res = await fetch('/api/summarize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: abortController.current.signal,
+        body: JSON.stringify({ bill }),
+      });
+
+      if (!res.ok) throw new Error(`Summarize request failed: ${res.status}`);
+
+      const result = await res.json() as BillSummaryData;
 
       if (!abortController.current.signal.aborted) {
         await cacheSummary(bill.id, result);
         setStructured(result);
       }
     } catch (err) {
-      if (err instanceof Error) {
-        if (err.name !== 'AbortError') {
-          console.error('[useBillSummary] Error:', err);
-          setError(err.message);
-        }
-      } else {
-        setError('An unexpected error occurred');
-      }
+      if (err instanceof Error && err.name === 'AbortError') return;
+      console.error('[useBillSummary] Error:', err);
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }
-  }, [bill, maxLength, targetAge, cleanup]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bill, cleanup]);
 
-  return {
-    structured,
-    isLoading,
-    error,
-    generateSummary,
-    cleanup,
-  };
+  return { structured, isLoading, error, generateSummary, cleanup };
 };

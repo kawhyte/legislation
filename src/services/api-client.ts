@@ -1,19 +1,13 @@
 import axios from "axios";
 import { stringify } from "qs";
 
+/**
+ * All requests go through /api/openstates which proxies to v3.openstates.org
+ * and injects the API key server-side — key never reaches the browser.
+ */
 export default axios.create({
-	baseURL: "https://v3.openstates.org",
-	headers: {
-		"X-API-KEY": process.env.OPENSTATES_API_KEY,
-	},
+	baseURL: "/api/openstates",
 	paramsSerializer: params => {
 		return stringify(params, { arrayFormat: 'repeat' })
 	}
-	// params: {
-	// 	// q: "Budget",
-	// 	jurisdiction: "Ohio",
-	// 	// identifier: "",
-	// 	subject:["health care"],
-	// 	sort: "updated_desc",
-	// },
 });
