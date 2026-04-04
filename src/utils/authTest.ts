@@ -16,7 +16,7 @@ export const testFirebaseConnection = async (): Promise<{
     // Test Firestore connection
     const testDoc = doc(db, 'test', 'connection');
     await getDoc(testDoc);
-    
+
     // Test auth state
     return new Promise((resolve) => {
       const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -45,21 +45,20 @@ export const testEnvironmentVariables = (): {
   missingVars: string[];
 } => {
   const requiredVars = [
-    'VITE_CLERK_PUBLISHABLE_KEY',
-    'VITE_FIREBASE_API_KEY',
-    'VITE_FIREBASE_AUTH_DOMAIN',
-    'VITE_FIREBASE_PROJECT_ID',
-    'VITE_FIREBASE_STORAGE_BUCKET',
-    'VITE_FIREBASE_MESSAGING_SENDER_ID',
-    'VITE_FIREBASE_APP_ID',
+    'NEXT_PUBLIC_FIREBASE_API_KEY',
+    'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
+    'NEXT_PUBLIC_FIREBASE_PROJECT_ID',
+    'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET',
+    'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID',
+    'NEXT_PUBLIC_FIREBASE_APP_ID',
   ];
 
   const missingVars = requiredVars.filter(
-    (varName) => !import.meta.env[varName]
+    (varName) => !process.env[varName]
   );
 
   return {
-    clerkConfigured: !!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
+    clerkConfigured: false,
     firebaseConfigured: missingVars.length === 0,
     missingVars,
   };
@@ -70,23 +69,19 @@ export const testEnvironmentVariables = (): {
  */
 export const logConfiguration = (): void => {
   const envTest = testEnvironmentVariables();
-  
-  console.group('🔧 Authentication Configuration');
-  console.log('Clerk configured:', envTest.clerkConfigured);
+
+  console.group('Authentication Configuration');
   console.log('Firebase configured:', envTest.firebaseConfigured);
-  
+
   if (envTest.missingVars.length > 0) {
     console.warn('Missing environment variables:', envTest.missingVars);
   }
-  
-  console.log('Firebase project ID:', import.meta.env.VITE_FIREBASE_PROJECT_ID);
-  console.log('Clerk publishable key (first 20 chars):', 
-    import.meta.env.VITE_CLERK_PUBLISHABLE_KEY?.substring(0, 20) + '...'
-  );
+
+  console.log('Firebase project ID:', process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
   console.groupEnd();
 };
 
 // Auto-run configuration check in development
-if (import.meta.env.DEV) {
+if (process.env.NODE_ENV === 'development') {
   logConfiguration();
 }

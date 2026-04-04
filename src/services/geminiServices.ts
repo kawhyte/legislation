@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { Bill, BillSummaryData } from '@/types';
 
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? '');
 
 // Internal alias — matches the JSON schema Gemini returns
 type SummaryResult = BillSummaryData;

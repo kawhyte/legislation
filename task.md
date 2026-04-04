@@ -13,21 +13,21 @@
 ---
 
 ### Step 2 — Dependency & Script Updates
-- [ ] Install `next`, update `react` and `react-dom` to compatible versions
-- [ ] Remove `vite`, `@vitejs/plugin-react` from dependencies
-- [ ] Update `package.json` scripts (`dev`, `build`, `start`)
-- [ ] Update `tsconfig.json` for Next.js compatibility
+- [x] Install `next`, update `react` and `react-dom` to compatible versions
+- [x] Remove `vite`, `@vitejs/plugin-react` from dependencies
+- [x] Update `package.json` scripts (`dev`, `build`, `start`)
+- [x] Update `tsconfig.json` for Next.js compatibility
 
-**Status: PENDING**
+**Status: COMPLETE**
 
 ---
 
 ### Step 3 — Environment Variable Migration
-- [ ] Rename all `VITE_FIREBASE_*` → `NEXT_PUBLIC_FIREBASE_*` in `.env` and codebase
-- [ ] Remove `VITE_` prefix from `VITE_GEMINI_API_KEY` and `VITE_OPENSTATES_API_KEY` (keep as server-side secrets)
-- [ ] Replace all `import.meta.env` with `process.env` globally
+- [x] Rename all `VITE_FIREBASE_*` → `NEXT_PUBLIC_FIREBASE_*` in `.env` and codebase
+- [x] Remove `VITE_` prefix from `VITE_GEMINI_API_KEY` and `VITE_OPENSTATES_API_KEY` (keep as server-side secrets)
+- [x] Replace all `import.meta.env` with `process.env` globally
 
-**Status: PENDING**
+**Status: COMPLETE**
 
 ---
 
