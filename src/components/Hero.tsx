@@ -57,10 +57,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 				{/* HEADLINE */}
 				<div className='space-y-3'>
 					<h1 className='text-5xl sm:text-6xl font-black text-foreground leading-tight tracking-tight'>
-						Laws that affect you,<br />explained plainly.
+						US laws that affect you,<br />explained plainly.
 					</h1>
 					<p className='text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed'>
-						Search active bills from your state and let AI translate the legal language into plain English.
+						Search active US bills from your state and let AI translate the legal language into plain English.
 					</p>
 					<div className='inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground bg-muted border border-border rounded-full px-3 py-1.5'>
 						<Users className='h-3.5 w-3.5' />

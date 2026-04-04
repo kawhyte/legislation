@@ -12,7 +12,7 @@ const TrendingBillsPage: React.FC = () => {
             Bills Everyone's Watching Right Now
           </h1>
           <p className="text-8px-rhythm-lg text-muted-foreground">
-            The most active legislation across the country, updated in real time.
+            The most active legislation across the USA, updated in real time.
           </p>
         </div>
 
