@@ -1,3 +1,5 @@
+'use client';
+
 import { createContext, useContext, useState, useCallback } from "react";
 import type { States } from "@/components/JurisdictionSelector";
 import type { Bill } from "@/types";

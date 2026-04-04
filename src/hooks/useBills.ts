@@ -1,3 +1,5 @@
+'use client';
+
 import type { States } from "@/components/JurisdictionSelector";
 import useData from "./useData";
 import { useMemo } from "react";

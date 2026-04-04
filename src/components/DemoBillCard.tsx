@@ -1,3 +1,5 @@
+'use client';
+
 // src/components/DemoBillCard.tsx
 import { useState } from "react";
 import usStates from "../data/usStates";

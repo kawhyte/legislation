@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useRef, useCallback } from 'react';
 import { GeminiService } from '../services/geminiServices';
 import { getCachedSummary, cacheSummary } from '../services/cacheService';

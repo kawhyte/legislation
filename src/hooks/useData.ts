@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState, useRef, useMemo } from "react";
 import apiClient from "../services/api-client";
 import { CanceledError, type AxiosRequestConfig } from "axios";

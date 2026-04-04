@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useRef } from "react";
 import { type States } from "./JurisdictionSelector";
 import JurisdictionSelector from "./JurisdictionSelector";

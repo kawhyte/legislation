@@ -1,3 +1,5 @@
+'use client';
+
 import React, { Suspense, useState, useEffect, useRef } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from "react-router-dom";
 import { useUser } from '@/hooks/useAuth';

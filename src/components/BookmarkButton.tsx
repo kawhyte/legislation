@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useCallback } from 'react';
 import { Bookmark, BookmarkCheck, Loader2 } from 'lucide-react';
 import { useUserData } from '../contexts/UserContext';

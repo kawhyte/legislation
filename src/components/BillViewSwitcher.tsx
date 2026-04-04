@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { FileText, Zap } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';

@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect } from "react";
 import { User } from "lucide-react";
 import { Link } from "react-router-dom";

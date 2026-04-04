@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from "react";
 import apiClient from "../services/api-client";
 import { analyzeBillMomentum } from "../utils/billMomentum";

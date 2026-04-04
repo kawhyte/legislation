@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from "react";
 import { useUserData } from "../contexts/UserContext";
 import BillCard from "@/components/BillCard";

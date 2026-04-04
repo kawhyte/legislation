@@ -1,3 +1,5 @@
+'use client';
+
 // src/components/BillCard.tsx
 import { useCallback, useEffect, useMemo, useState } from "react";
 import usStates from "../data/usStates";

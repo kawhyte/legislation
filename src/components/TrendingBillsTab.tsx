@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useMemo } from 'react';
 import BillCard from './BillCard';
 import { AlertCircle } from 'lucide-react';

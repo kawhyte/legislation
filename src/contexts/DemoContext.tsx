@@ -1,3 +1,5 @@
+'use client';
+
 // src/contexts/DemoContext.tsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';

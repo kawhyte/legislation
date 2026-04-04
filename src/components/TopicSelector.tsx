@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { BrainCircuit, Gavel, HeartPulse, GraduationCap, Leaf, type LucideIcon } from 'lucide-react';

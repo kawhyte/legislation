@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useUserData } from "../contexts/UserContext";

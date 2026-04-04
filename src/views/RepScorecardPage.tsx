@@ -1,3 +1,5 @@
+'use client';
+
 import {  useLocation, useNavigate, useParams } from "react-router-dom";
 import { User, CheckCircle2, XCircle, CalendarDays, UserRound } from "lucide-react";
 import type { Rep } from "../hooks/useReps";

@@ -1,3 +1,5 @@
+'use client';
+
 import React from "react";
 import useBills from "../hooks/useBills";
 import BillCard from "./BillCard";

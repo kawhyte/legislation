@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Check, X } from 'lucide-react';
 import { determineBillProgress } from '../utils/billProgress';

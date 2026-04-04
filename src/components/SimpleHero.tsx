@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from "react";
 import StateSelector, { type States } from "./JurisdictionSelector";
 import TopicSelector from "./TopicSelector";
