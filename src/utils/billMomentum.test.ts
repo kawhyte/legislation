@@ -35,6 +35,19 @@ describe('analyzeBillMomentum', () => {
     expect(result.level).toBe('Passed');
   });
 
+  it('marks a bill Enacted on an executive-signature action even with no enacted_date/passage dates', () => {
+    // Real-world case (NY S 10188): OpenStates left enacted_date/house_passage_date/
+    // senate_passage_date all null, and the signing action's description was
+    // "SIGNED CHAP.169" — matched by neither ENACTED_DESC keyword.
+    const bill = makeBill({
+      actions: [
+        { id: 'a1', organization: { id: 'o1', name: 'Governor', classification: 'executive' }, description: 'SIGNED CHAP.169', date: '2026-07-17', classification: ['executive-signature'], order: 1 },
+      ],
+    });
+    const result = analyzeBillMomentum(bill);
+    expect(result.level).toBe('Enacted');
+  });
+
   it('marks a bill Stalled on definitive failure keywords', () => {
     const bill = makeBill({
       actions: [
