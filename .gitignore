@@ -25,4 +25,9 @@ dist-ssr
 *.sw?
 .vercel
 .next
-task.md
+
+# Only README.md, CLAUDE.md, and the roadmap are pushed — all other
+# Markdown docs (plans, notes, setup guides) stay local.
+*.md
+!README.md
+!CLAUDE.md
