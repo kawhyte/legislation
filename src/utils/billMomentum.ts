@@ -18,7 +18,7 @@ import type { Bill, MomentumAnalysis } from "@/types";
  */
 export function analyzeBillMomentum(bill: Bill): MomentumAnalysis {
   const actions = bill.actions || [];
-  const sortedActions = actions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const sortedActions = [...actions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   // --- Check 1: Definitive ENACTED outcome (HIGHEST priority) ---
   // Use description text because OpenStates doesn't reliably set enacted_date
