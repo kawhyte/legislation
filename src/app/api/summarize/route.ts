@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { Bill, BillSummaryData } from '@/types';
+import { getAdminDb } from '@/lib/firebase-admin';
 
 // ── Singleton AI client (module-level = one instance per server process) ──────
 
@@ -108,7 +109,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json() as { bill: Bill };
     bill = body.bill;
-    if (!bill?.title) throw new Error('Missing bill.title');
+    if (!bill?.title || typeof bill.title !== 'string') throw new Error('Missing bill.title');
+    if (!bill?.id || typeof bill.id !== 'string') throw new Error('Missing bill.id');
   } catch {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
@@ -133,6 +135,15 @@ export async function POST(request: NextRequest) {
   try {
     const data = await requestPromise;
     summaryCache.set(cacheKey, { data, timestamp: Date.now() });
+
+    // L2: write to the shared Firestore cache server-side (clients can no longer write this directly)
+    try {
+      await getAdminDb().collection('bill_summaries').doc(encodeURIComponent(bill.id)).set(data);
+    } catch (err) {
+      console.error('[/api/summarize] Failed to write Firestore cache:', err);
+      // Non-fatal: the client still gets the summary even if the shared cache write fails
+    }
+
     return NextResponse.json(data);
   } finally {
     pendingRequests.delete(cacheKey);

@@ -15,9 +15,11 @@ service cloud.firestore {
       }
     }
     
-    // Global AI summary cache — public read/write so unauthenticated users can populate it
+    // Global AI summary cache — public read (served to all users), write only via
+    // the server (Firebase Admin SDK in /api/summarize), never directly from a client.
     match /bill_summaries/{billId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if false;
     }
 
     // Deny access to all other documents

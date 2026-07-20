@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-import { getCachedSummary, cacheSummary } from '../services/cacheService';
+import { getCachedSummary } from '../services/cacheService';
 import type { Bill, BillSummaryData, UseBillSummaryOptions, UseBillSummaryReturn } from '@/types';
 
 export const useBillSummary = (
@@ -52,7 +52,6 @@ export const useBillSummary = (
       const result = await res.json() as BillSummaryData;
 
       if (!abortController.current.signal.aborted) {
-        await cacheSummary(bill.id, result);
         setStructured(result);
       }
     } catch (err) {
