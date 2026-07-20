@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Billhound — Build Roadmap</title>
+<style>
+  :root{
+    --cream:#f3f1e8; --card:#fdfcfa; --charcoal:#2a2a2a; --soft:#4a4a4a; --muted:#8a887f;
+    --blue:#4a7bc7; --blue-light:#e1eafa; --blue-lighter:#f0f4fb;
+    --clay:#d4bfae; --clay-light:#f2ebe6;
+    --lavender:#cbbfdd; --lavender-light:#eeebf5;
+    --green:#5f8f5a; --green-light:#e7efe4;
+    --amber:#b07d3f; --amber-light:#f5ead9;
+    --red:#c05555; --red-light:#f6e3e3;
+    --border:#e4e0d2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--cream);color:var(--charcoal);font-family:Georgia,'Times New Roman',serif;line-height:1.55;padding:0 16px 80px}
+  .sans{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif}
+  .wrap{max-width:880px;margin:0 auto}
+
+  header{padding:56px 0 28px;text-align:center}
+  header h1{font-size:clamp(28px,5vw,44px);font-weight:900;letter-spacing:-0.5px}
+  header p.sub{font-family:Helvetica,Arial,sans-serif;color:var(--soft);margin-top:10px;font-size:16px;max-width:560px;margin-left:auto;margin-right:auto}
+  .crown{font-size:34px;display:block;margin-bottom:6px}
+
+  .progress-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:22px 26px;margin:18px 0 40px;box-shadow:0 2px 10px rgba(42,42,42,.05)}
+  .progress-top{display:flex;justify-content:space-between;align-items:baseline;font-family:Helvetica,Arial,sans-serif}
+  .progress-top b{font-size:15px}
+  .progress-top span{color:var(--muted);font-size:13px}
+  .bar{height:12px;background:var(--blue-lighter);border-radius:999px;margin-top:12px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--blue),#7aa3e0);border-radius:999px;transition:width .4s ease}
+
+  .legend{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:36px;font-family:Helvetica,Arial,sans-serif;font-size:12px}
+  .pill{padding:4px 12px;border-radius:999px;font-weight:600}
+  .sev-critical{background:var(--red-light);color:var(--red)}
+  .sev-high{background:var(--amber-light);color:var(--amber)}
+  .sev-medium{background:var(--blue-light);color:var(--blue)}
+  .sev-simple{background:var(--green-light);color:var(--green)}
+
+  .phase-label{font-family:Helvetica,Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:34px 0 6px;display:flex;align-items:center;gap:10px}
+  .phase-label::after{content:"";flex:1;height:1px;background:var(--border)}
+
+  .step{display:flex;gap:18px;position:relative}
+  .rail{display:flex;flex-direction:column;align-items:center;width:44px;flex-shrink:0}
+  .dot{width:44px;height:44px;border-radius:50%;background:var(--card);border:2px solid var(--blue);color:var(--blue);display:flex;align-items:center;justify-content:center;font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:15px;flex-shrink:0;transition:all .3s}
+  .line{width:2px;flex:1;background:var(--border);min-height:24px}
+  .step:last-of-type .line{background:transparent}
+  .step.done .dot{background:var(--green);border-color:var(--green);color:#fff}
+  .step.active .dot{background:var(--amber);border-color:var(--amber);color:#fff}
+
+  .card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:22px 24px;margin-bottom:26px;flex:1;box-shadow:0 2px 10px rgba(42,42,42,.04);transition:opacity .3s}
+  .step.done .card{opacity:.72}
+  .card-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+  .card h2{font-size:20px;font-weight:800}
+  .card .file{font-family:Menlo,Consolas,monospace;font-size:11px;color:var(--muted);margin-top:3px;word-break:break-all}
+  .card p.why{font-family:Helvetica,Arial,sans-serif;color:var(--soft);font-size:14px;margin:12px 0 4px}
+
+  .tasks{list-style:none;margin-top:12px}
+  .tasks li{margin:0}
+  .tasks label{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-radius:12px;cursor:pointer;font-family:Helvetica,Arial,sans-serif;font-size:14px;color:var(--charcoal)}
+  .tasks label:hover{background:var(--blue-lighter)}
+  .tasks input{appearance:none;width:20px;height:20px;border:2px solid var(--blue);border-radius:7px;flex-shrink:0;cursor:pointer;position:relative;margin-top:1px;background:#fff;transition:all .15s}
+  .tasks input:checked{background:var(--green);border-color:var(--green)}
+  .tasks input:checked::after{content:"✓";color:#fff;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900}
+  .tasks input:checked + span{color:var(--muted);text-decoration:line-through}
+  .tasks input:disabled{cursor:default;opacity:.9}
+  .verified-badge{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:700;color:var(--green);background:var(--green-light);border-radius:999px;padding:2px 8px;margin-left:8px;flex-shrink:0;white-space:nowrap}
+  .progress-badge{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:700;color:var(--amber);background:var(--amber-light);border-radius:999px;padding:2px 8px;margin-left:8px;flex-shrink:0;white-space:nowrap}
+
+  .note{border-radius:14px;padding:12px 14px;margin-top:14px;font-family:Helvetica,Arial,sans-serif;font-size:13px;display:flex;gap:10px;align-items:flex-start}
+  .note b{font-weight:700}
+  .note.tip{background:var(--lavender-light);color:#5c4d78}
+  .note.warn{background:var(--amber-light);color:#7d5626}
+  .note.win{background:var(--green-light);color:#3f6b3a}
+  .note .ico{font-size:15px;line-height:1.3}
+
+  footer{text-align:center;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:12px;color:var(--muted)}
+  .reset{background:none;border:1px solid var(--border);border-radius:999px;padding:6px 16px;font-size:12px;color:var(--muted);cursor:pointer;margin-top:10px;font-family:inherit}
+  .reset:hover{color:var(--red);border-color:var(--red)}
+
+  @media (max-width:560px){
+    .rail{width:34px}
+    .dot{width:34px;height:34px;font-size:13px}
+    .card{padding:18px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="crown">🐕</span>
+  <h1>Billhound — Build Roadmap</h1>
+  <p class="sub sans">14 audit-derived plans in <code>docs/</code>, ranked by leverage. Security first, then SEO/product growth, then polish.</p>
+</header>
+
+<div class="progress-card">
+  <div class="progress-top"><b id="pct">0% complete</b><span id="count">0 of 0 tasks done</span></div>
+  <div class="bar"><i id="fill"></i></div>
+</div>
+
+<div class="legend">
+  <span class="pill sev-critical">CRITICAL — do not skip</span>
+  <span class="pill sev-high">HIGH — big impact</span>
+  <span class="pill sev-medium">MEDIUM — growth engine</span>
+  <span class="pill sev-simple">SIMPLE — quick win</span>
+</div>
+
+<div class="phase-label">Critical — fix before anything else</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">1</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Lock Down the Firestore AI-Summary Cache</h2><div class="file">PLAN-01-critical-firestore-cache-lockdown.md</div></div>
+      <span class="pill sans sev-critical">CRITICAL</span>
+    </div>
+    <p class="why">Stop anonymous users from poisoning the shared AI-summary cache served to every user.</p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="1a"><span>Summary generates normally with Admin SDK env vars set</span></label></li>
+      <li><label><input type="checkbox" data-t="1b"><span>Server writes new doc to bill_summaries in Firestore</span></label></li>
+      <li><label><input type="checkbox" data-t="1c"><span>Rules Playground: direct client write to bill_summaries denied</span></label></li>
+      <li><label><input type="checkbox" data-t="1d"><span>firestore:rules deployed, write:false confirmed live</span></label></li>
+      <li><label><input type="checkbox" data-t="1e"><span>npm run build clean</span></label></li>
+      <li><label><input type="checkbox" data-t="1f"><span>npm run lint clean</span></label></li>
+      <li><label><input type="checkbox" data-t="1g"><span>Previously-cached summaries still load instantly</span></label></li>
+      <li><label><input type="checkbox" data-t="1h"><span>Saved-bills read/write still works (unrelated Firestore path)</span></label></li>
+    </ul>
+    <div class="note warn"><span class="ico">⚠️</span><span><b>Do this first.</b> This is the only issue where a stranger on the internet can corrupt data served to your whole user base right now.</span></div>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">2</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Protect /api/summarize and /api/openstates From Abuse</h2><div class="file">PLAN-02-critical-api-abuse-protection.md</div></div>
+      <span class="pill sans sev-critical">CRITICAL</span>
+    </div>
+    <p class="why">Stop both API routes from being used as free third-party APIs against your Gemini/OpenStates keys.</p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="2a"><span>Normal search flow still loads bills through the proxy</span></label></li>
+      <li><label><input type="checkbox" data-t="2b"><span>curl with no Origin header → 403 on /api/openstates</span></label></li>
+      <li><label><input type="checkbox" data-t="2c"><span>curl to a disallowed path → 404</span></label></li>
+      <li><label><input type="checkbox" data-t="2d"><span>Rate-limit loop: first ~10 requests 200, rest 429</span></label></li>
+      <li><label><input type="checkbox" data-t="2e"><span>npm run build clean</span></label></li>
+      <li><label><input type="checkbox" data-t="2f"><span>npm run lint clean</span></label></li>
+      <li><label><input type="checkbox" data-t="2g"><span>Full browser search flow + AI summary still work</span></label></li>
+      <li><label><input type="checkbox" data-t="2h"><span>Trending page still loads bills</span></label></li>
+      <li><label><input type="checkbox" data-t="2i"><span>Dashboard "My Area" tab still loads bills</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="phase-label">High leverage — SEO, sharing, and reliability</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">3</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Server-Side Caching for the OpenStates Proxy</h2><div class="file">PLAN-03-high-server-side-caching.md</div></div>
+      <span class="pill sans sev-high">HIGH</span>
+    </div>
+    <p class="why">Cache OpenStates responses server-side/CDN-side so the app stops re-hitting upstream on every search.</p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="3a"><span>Repeated identical request served fast on second hit</span></label></li>
+      <li><label><input type="checkbox" data-t="3b"><span>Cache-Control header present with correct s-maxage</span></label></li>
+      <li><label><input type="checkbox" data-t="3c"><span>people.geo / jurisdictions show 24h s-maxage</span></label></li>
+      <li><label><input type="checkbox" data-t="3d"><span>Error responses are never cached (confirmed via bad API key test)</span></label></li>
+      <li><label><input type="checkbox" data-t="3e"><span>npm run build clean</span></label></li>
+      <li><label><input type="checkbox" data-t="3f"><span>npm run lint clean</span></label></li>
+      <li><label><input type="checkbox" data-t="3g"><span>Full smoke test: home, trending, dashboard, rep lookup all correct</span></label></li>
+      <li><label><input type="checkbox" data-t="3h"><span>PLAN-02's allowlist/rate-limit/origin checks still function</span></label></li>
+    </ul>
+    <div class="note tip"><span class="ico">💡</span><span>Also the documented answer to "should I add Convex?" — no, this plus existing Firestore caching covers it.</span></div>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">4</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Testing Foundation (Vitest + Playwright)</h2><div class="file">PLAN-04-high-testing-foundation.md</div></div>
+      <span class="pill sans sev-high">HIGH</span>
+    </div>
+    <p class="why">Stand up Vitest + Playwright so every later plan can be verified automatically instead of by hand.</p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="4a"><span>npm run test passes with zero failures</span></label></li>
+      <li><label><input type="checkbox" data-t="4b"><span>npm run test:e2e passes with zero failures</span></label></li>
+      <li><label><input type="checkbox" data-t="4c"><span>Mutation-fix regression test proven to actually catch the bug</span></label></li>
+      <li><label><input type="checkbox" data-t="4d"><span>npm run build clean</span></label></li>
+      <li><label><input type="checkbox" data-t="4e"><span>npm run lint clean</span></label></li>
+      <li><label><input type="checkbox" data-t="4f"><span>Momentum badges still correct on a manual spot check</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">5</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Server-Rendered Bill Detail Page (/bill/[id])</h2><div class="file">PLAN-05-high-bill-detail-page.md</div></div>
+      <span class="pill sans sev-high">HIGH</span>
+    </div>
+    <p class="why">Give every bill a real, shareable, server-rendered URL and retire the AI-summary modal.</p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="5a"><span>Clicking a card navigates to /bill/&lt;id&gt; with full content</span></label></li>
+      <li><label><input type="checkbox" data-t="5b"><span>Fresh incognito visit to that URL still renders full content</span></label></li>
+      <li><label><input type="checkbox" data-t="5c"><span>View source shows real bill title (server-rendered, not a shell)</span></label></li>
+      <li><label><input type="checkbox" data-t="5d"><span>Sources dropdown click does not trigger navigation</span></label></li>
+      <li><label><input type="checkbox" data-t="5e"><span>Bookmark icon click does not trigger navigation</span></label></li>
+      <li><label><input type="checkbox" data-t="5f"><span>Nonexistent bill id shows Next's not-found page, not a crash</span></label></li>
+      <li><label><input type="checkbox" data-t="5g"><span>npm run build clean</span></label></li>
+      <li><label><input type="checkbox" data-t="5h"><span>npm run lint clean</span></label></li>
+      <li><label><input type="checkbox" data-t="5i"><span>test / test:e2e still pass</span></label></li>
+      <li><label><input type="checkbox" data-t="5j"><span>Trending + Dashboard cards still render and link to /bill/[id]</span></label></li>
+      <li><label><input type="checkbox" data-t="5k"><span>Saved-bill functionality still works</span></label></li>
+    </ul>
+    <div class="note win"><span class="ico">🚀</span><span>Highest-leverage product change in the whole backlog — this is what makes a bill shareable.</span></div>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">6</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>SEO Foundation (Metadata, Sitemap, Robots, JSON-LD)</h2><div class="file">PLAN-06-high-seo-foundation.md</div></div>
+      <span class="pill sans sev-high">HIGH</span>
+    </div>
+    <p class="why">Add metadata, sitemap, robots.txt, an OG image, and JSON-LD to every route.</p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="6a"><span>/sitemap.xml resolves with the 5 static routes</span></label></li>
+      <li><label><input type="checkbox" data-t="6b"><span>/robots.txt shows correct disallows + sitemap link</span></label></li>
+      <li><label><input type="checkbox" data-t="6c"><span>Each static page has a distinct, correct &lt;title&gt;</span></label></li>
+      <li><label><input type="checkbox" data-t="6d"><span>OG image tag resolves to an absolute URL</span></label></li>
+      <li><label><input type="checkbox" data-t="6e"><span>WebSite JSON-LD script present on homepage</span></label></li>
+      <li><label><input type="checkbox" data-t="6f"><span>npm run build clean (catches use client + metadata conflicts)</span></label></li>
+      <li><label><input type="checkbox" data-t="6g"><span>npm run lint clean</span></label></li>
+      <li><label><input type="checkbox" data-t="6h"><span>test:e2e still passes</span></label></li>
+      <li><label><input type="checkbox" data-t="6i"><span>Homepage ?q= restore-on-refresh still works end-to-end</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">7</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Rep Scorecard Page Overhaul</h2><div class="file">PLAN-07-high-rep-page-overhaul.md</div></div>
+      <span class="pill sans sev-high">HIGH</span>
+    </div>
+    <p class="why">Fix the rep scorecard breaking on direct/shared links and remove hardcoded colors.</p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="7a"><span>Clicking "See Their Votes" from homepage still works (cache hit)</span></label></li>
+      <li><label><input type="checkbox" data-t="7b"><span>Fresh incognito rep URL loads via fetch-by-id fallback</span></label></li>
+      <li><label><input type="checkbox" data-t="7c"><span>Nonexistent rep id shows a distinct "couldn't find" message</span></label></li>
+      <li><label><input type="checkbox" data-t="7d"><span>grep confirms zero hardcoded colors remain</span></label></li>
+      <li><label><input type="checkbox" data-t="7e"><span>npm run build clean</span></label></li>
+      <li><label><input type="checkbox" data-t="7f"><span>npm run lint clean</span></label></li>
+      <li><label><input type="checkbox" data-t="7g"><span>test / test:e2e pass</span></label></li>
+      <li><label><input type="checkbox" data-t="7h"><span>Federal rep view still shows the notice correctly</span></label></li>
+      <li><label><input type="checkbox" data-t="7i"><span>YourRepsWidget party badges still color-correct</span></label></li>
+    </ul>
+    <div class="note win"><span class="ico">🚀</span><span>Second growth loop — rep accountability links only work if they survive a fresh click.</span></div>
+  </div>
+</div>
+
+<div class="phase-label">Medium — bug fixes and consistency</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">8</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Fix Found Functional Bugs</h2><div class="file">PLAN-08-medium-error-states-and-bugfixes.md</div></div>
+      <span class="pill sans sev-medium">MEDIUM</span>
+    </div>
+    <p class="why">Fix the Housing@/crime topic bug, silent API-error masking, trending skeleton mismatch, and dashboard tab naming.</p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="8a"><span>"Housing" topic now correctly queries housing bills, not crime</span></label></li>
+      <li><label><input type="checkbox" data-t="8b"><span>Blocked network shows a distinct error message, not "Quiet out here"</span></label></li>
+      <li><label><input type="checkbox" data-t="8c"><span>Genuine zero-result state still shows correctly once restored</span></label></li>
+      <li><label><input type="checkbox" data-t="8d"><span>Trending skeleton count (20) matches rendered card count</span></label></li>
+      <li><label><input type="checkbox" data-t="8e"><span>Dashboard ?tab=my-area / ?tab=discover activate correct tabs</span></label></li>
+      <li><label><input type="checkbox" data-t="8f"><span>npm run build clean</span></label></li>
+      <li><label><input type="checkbox" data-t="8g"><span>npm run lint clean (no unused-import leftovers)</span></label></li>
+      <li><label><input type="checkbox" data-t="8h"><span>test / test:e2e pass</span></label></li>
+      <li><label><input type="checkbox" data-t="8i"><span>Dashboard "Saved" tab still works</span></label></li>
+      <li><label><input type="checkbox" data-t="8j"><span>All topic pills still filter correctly, incl. shared "housing" value</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">9</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Working Password Reset Flow</h2><div class="file">PLAN-09-medium-password-reset.md</div></div>
+      <span class="pill sans sev-medium">MEDIUM</span>
+    </div>
+    <p class="why">Wire up the already-half-built password reset flow (the service function already existed, only the page was missing).</p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="9a"><span>"Forgot your password?" no longer 404s</span></label></li>
+      <li><label><input type="checkbox" data-t="9b"><span>Real account email → confirmation shown + actual email arrives</span></label></li>
+      <li><label><input type="checkbox" data-t="9c"><span>No-account email → identical confirmation (no enumeration)</span></label></li>
+      <li><label><input type="checkbox" data-t="9d"><span>Malformed email handled gracefully</span></label></li>
+      <li><label><input type="checkbox" data-t="9e"><span>"Back to sign in" link works</span></label></li>
+      <li><label><input type="checkbox" data-t="9f"><span>npm run build clean</span></label></li>
+      <li><label><input type="checkbox" data-t="9g"><span>npm run lint clean</span></label></li>
+      <li><label><input type="checkbox" data-t="9h"><span>test:e2e still passes</span></label></li>
+      <li><label><input type="checkbox" data-t="9i"><span>Sign-in/up flows unaffected</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">10</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Bill Card Refinement</h2><div class="file">PLAN-10-medium-bill-card-refinement.md</div></div>
+      <span class="pill sans sev-medium">MEDIUM</span>
+    </div>
+    <p class="why">Trim redundant card data, add missing fields (status/topics/date), and fix the skeleton/accessibility gaps.</p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="10a"><span>Redundant flag+abbreviation text removed from card header</span></label></li>
+      <li><label><input type="checkbox" data-t="10b"><span>Up to 2 topic chips render when subjects exist</span></label></li>
+      <li><label><input type="checkbox" data-t="10c"><span>Bill title renders as an &lt;h3&gt;, not a &lt;div&gt;</span></label></li>
+      <li><label><input type="checkbox" data-t="10d"><span>Skeleton-to-card swap shows no layout jump under throttling</span></label></li>
+      <li><label><input type="checkbox" data-t="10e"><span>grep confirms zero remaining showVotes references</span></label></li>
+      <li><label><input type="checkbox" data-t="10f"><span>npm run build clean</span></label></li>
+      <li><label><input type="checkbox" data-t="10g"><span>npm run lint clean</span></label></li>
+      <li><label><input type="checkbox" data-t="10h"><span>test / test:e2e pass</span></label></li>
+      <li><label><input type="checkbox" data-t="10i"><span>Cards still link to /bill/[id]; bookmark/sources still work without navigating</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">11</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Design System Compliance</h2><div class="file">PLAN-11-medium-design-system-compliance.md</div></div>
+      <span class="pill sans sev-medium">MEDIUM</span>
+    </div>
+    <p class="why">Re-skin sign-in/up to design tokens and remove all dead dark-mode code (next-themes was never wired up).</p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="11a"><span>Sign-in/up visually match token-based pages (background, text, cards)</span></label></li>
+      <li><label><input type="checkbox" data-t="11b"><span>grep confirms zero dark: classes remain anywhere</span></label></li>
+      <li><label><input type="checkbox" data-t="11c"><span>grep confirms zero next-themes references remain</span></label></li>
+      <li><label><input type="checkbox" data-t="11d"><span>package.json confirms next-themes dependency removed</span></label></li>
+      <li><label><input type="checkbox" data-t="11e"><span>npm run build clean</span></label></li>
+      <li><label><input type="checkbox" data-t="11f"><span>npm run lint clean</span></label></li>
+      <li><label><input type="checkbox" data-t="11g"><span>test / test:e2e pass</span></label></li>
+      <li><label><input type="checkbox" data-t="11h"><span>AI-analysis "Wallet Impact"/debate colors still look correct in light mode</span></label></li>
+      <li><label><input type="checkbox" data-t="11i"><span>Sign-in/up functional flows unaffected</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="phase-label">Simple — quick wins</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">12</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Stop the Dashboard Firing 6 Bill Fetches on Mount</h2><div class="file">PLAN-12-simple-dashboard-fetch-optimization.md</div></div>
+      <span class="pill sans sev-simple">SIMPLE</span>
+    </div>
+    <p class="why">Replace 6 eager per-topic fetches with 1–2 reactive ones, matching the pattern already used on the homepage.</p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="12a"><span>Network tab shows 1–2 requests on dashboard mount, not 6</span></label></li>
+      <li><label><input type="checkbox" data-t="12b"><span>Selecting a new topic pill fires exactly 1 new request</span></label></li>
+      <li><label><input type="checkbox" data-t="12c"><span>Revisiting a topic within the cache window fires no new request</span></label></li>
+      <li><label><input type="checkbox" data-t="12d"><span>Stats strip still correct regardless of active topic</span></label></li>
+      <li><label><input type="checkbox" data-t="12e"><span>npm run build clean</span></label></li>
+      <li><label><input type="checkbox" data-t="12f"><span>npm run lint clean</span></label></li>
+      <li><label><input type="checkbox" data-t="12g"><span>test / test:e2e pass</span></label></li>
+      <li><label><input type="checkbox" data-t="12h"><span>Saved-bills section still renders correctly</span></label></li>
+      <li><label><input type="checkbox" data-t="12i"><span>All 6 topic pills still filter to correct bills</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">13</div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Dead Code Cleanup &amp; Footer Polish</h2><div class="file">PLAN-13-simple-dead-code-cleanup.md</div></div>
+      <span class="pill sans sev-simple">SIMPLE</span>
+    </div>
+    <p class="why">Delete verified-orphaned marketing/demo components and CSS, and give the footer working navigation.</p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="13a"><span>git status shows only the intended files deleted</span></label></li>
+      <li><label><input type="checkbox" data-t="13b"><span>grep confirms zero references to the removed dead components</span></label></li>
+      <li><label><input type="checkbox" data-t="13c"><span>Footer shows working Trending + About links</span></label></li>
+      <li><label><input type="checkbox" data-t="13d"><span>Leftover public/vite.svg removed</span></label></li>
+      <li><label><input type="checkbox" data-t="13e"><span>firebase.json shows only the firestore key (dead hosting block gone)</span></label></li>
+      <li><label><input type="checkbox" data-t="13f"><span>npm run build clean (catches any accidentally-live import)</span></label></li>
+      <li><label><input type="checkbox" data-t="13g"><span>npm run lint clean</span></label></li>
+      <li><label><input type="checkbox" data-t="13h"><span>test / test:e2e pass</span></label></li>
+      <li><label><input type="checkbox" data-t="13i"><span>If DemoContext removed: app loads with no related console errors</span></label></li>
+      <li><label><input type="checkbox" data-t="13j"><span>If BookmarkContext removed: bookmarking still works unaffected</span></label></li>
+      <li><label><input type="checkbox" data-t="13k"><span>Firestore-dependent features still work after firebase.json edit</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <div>Full ranking + strategic rationale (Convex verdict, product-direction advice) in PLAN-00-INDEX.md.</div>
+  <button class="reset" id="reset">Reset all checkmarks</button>
+</footer>
+
+</div>
+
+<script>
+/*
+  AGENT_VERIFIED / AGENT_IN_PROGRESS: filled in by Claude directly in this file,
+  not by clicking in the browser. They are the file's own persistence layer, so
+  they survive closing/reopening the doc in any browser — unlike localStorage
+  below, which only remembers the human's own manual clicks in one browser.
+
+  - AGENT_VERIFIED[id]=true  -> task implemented AND verified with real evidence
+    (tests/build green, feature checked working). Renders checked + disabled +
+    green "✓ verified" badge.
+  - AGENT_IN_PROGRESS[id]=true -> task actively being worked, not yet verified.
+    Renders unchecked + amber "⏳ in progress" badge. Move it to AGENT_VERIFIED
+    (and remove from here) once verified. AGENT_VERIFIED wins if an id is in both.
+
+  As of this roadmap's creation, no plan has been implemented yet — every task
+  is at the starting line. Both maps are intentionally empty.
+*/
+const AGENT_VERIFIED = {
+  "1a": true,
+  "1b": true,
+  "1c": true,
+  "1d": true,
+  "1e": true,
+  "1f": true,
+  "1g": true,
+  "1h": true
+};
+const AGENT_IN_PROGRESS = {};
+</script>
+<script>
+(function(){
+  const KEY="roadmap-billhound-v1";
+  const boxes=[...document.querySelectorAll('.tasks input')];
+  const saved=JSON.parse(localStorage.getItem(KEY)||"{}");
+  boxes.forEach(b=>{
+    const id=b.dataset.t;
+    const verified=!!AGENT_VERIFIED[id];
+    const inProgress=!verified && !!AGENT_IN_PROGRESS[id];
+    b.checked = verified || !!saved[id];
+    if(verified){
+      b.disabled=true;
+      const badge=document.createElement('span');
+      badge.className='verified-badge';
+      badge.textContent='✓ verified';
+      b.closest('label').appendChild(badge);
+    } else if(inProgress){
+      const badge=document.createElement('span');
+      badge.className='progress-badge';
+      badge.textContent='⏳ in progress';
+      b.closest('label').appendChild(badge);
+    }
+    b.addEventListener('change',update);
+  });
+  function update(){
+    const state={};
+    boxes.forEach(b=>{ if(!AGENT_VERIFIED[b.dataset.t]) state[b.dataset.t]=b.checked; });
+    localStorage.setItem(KEY,JSON.stringify(state));
+    const done=boxes.filter(b=>b.checked).length;
+    const pct=boxes.length?Math.round(done/boxes.length*100):0;
+    document.getElementById('fill').style.width=pct+"%";
+    document.getElementById('pct').textContent=pct+"% complete";
+    document.getElementById('count').textContent=done+" of "+boxes.length+" tasks done";
+    document.querySelectorAll('[data-step]').forEach(step=>{
+      const bs=[...step.querySelectorAll('input')];
+      const allDone=bs.length>0&&bs.every(b=>b.checked);
+      step.classList.toggle('done',allDone);
+      const anyProg=bs.some(b=>AGENT_IN_PROGRESS[b.dataset.t]&&!AGENT_VERIFIED[b.dataset.t]);
+      step.classList.toggle('active',!allDone&&anyProg);
+    });
+  }
+  document.getElementById('reset').addEventListener('click',()=>{
+    if(confirm("Clear all checkmarks? (Claude-verified items stay checked)")){
+      boxes.forEach(b=>{ if(!AGENT_VERIFIED[b.dataset.t]) b.checked=false; });
+      update();
+    }
+  });
+  update();
+})();
+</script>
+</body>
+</html>
