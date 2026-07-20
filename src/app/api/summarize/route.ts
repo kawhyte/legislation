@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { Bill, BillSummaryData } from '@/types';
 import { getAdminDb } from '@/lib/firebase-admin';
+import { checkRateLimit, getClientIp, isSameOrigin } from '@/lib/rateLimit';
 
 // ── Singleton AI client (module-level = one instance per server process) ──────
 
@@ -25,6 +26,10 @@ interface CacheEntry {
 
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 const REQUEST_DELAY = 4000;                  // 4 seconds between Gemini requests
+const RATE_LIMIT_MAX_REQUESTS = 10; // per window, per IP
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const MAX_TITLE_LENGTH = 300;
+const MAX_ABSTRACT_LENGTH = 4000;
 
 const summaryCache = new Map<string, CacheEntry>();
 const pendingRequests = new Map<string, Promise<BillSummaryData>>();
@@ -104,6 +109,16 @@ ${context}`;
 // ── Route handler ─────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
+  if (!isSameOrigin(request)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  const ip = getClientIp(request);
+  const { allowed } = checkRateLimit(`summarize:${ip}`, RATE_LIMIT_MAX_REQUESTS, RATE_LIMIT_WINDOW_MS);
+  if (!allowed) {
+    return NextResponse.json({ error: 'Too many requests. Please slow down.' }, { status: 429 });
+  }
+
   let bill: Bill;
 
   try {
@@ -111,6 +126,14 @@ export async function POST(request: NextRequest) {
     bill = body.bill;
     if (!bill?.title || typeof bill.title !== 'string') throw new Error('Missing bill.title');
     if (!bill?.id || typeof bill.id !== 'string') throw new Error('Missing bill.id');
+    // Cap (rather than reject) overlong input so legitimate long official titles
+    // still summarize, while bounding the tokens sent to Gemini.
+    if (bill.title.length > MAX_TITLE_LENGTH) {
+      bill.title = bill.title.slice(0, MAX_TITLE_LENGTH);
+    }
+    if (bill.abstracts?.[0]?.abstract && bill.abstracts[0].abstract.length > MAX_ABSTRACT_LENGTH) {
+      bill.abstracts[0].abstract = bill.abstracts[0].abstract.slice(0, MAX_ABSTRACT_LENGTH);
+    }
   } catch {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
