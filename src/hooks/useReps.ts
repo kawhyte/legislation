@@ -67,4 +67,20 @@ const useReps = (coords?: { lat: number; lng: number }) => {
 	return { data, isLoading, error };
 };
 
+type SinglePersonResponse = Rep;
+
+/**
+ * Fetch a single representative by their OpenStates person id.
+ * Used as a fallback when a rep isn't already present in SearchCacheContext
+ * (e.g. a direct or shared link to /rep/[repId] with no prior session state).
+ */
+export async function fetchRepById(repId: string): Promise<Rep | null> {
+	try {
+		const res = await apiClient.get<SinglePersonResponse>(`/people/${encodeURIComponent(repId)}`);
+		return res.data;
+	} catch {
+		return null;
+	}
+}
+
 export default useReps;

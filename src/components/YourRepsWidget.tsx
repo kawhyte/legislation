@@ -8,6 +8,7 @@ import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { useSearchCache } from "../contexts/SearchCacheContext";
+import { partyBadgeClass } from "../utils/partyBadge";
 
 interface Props {
 	coords?: { lat: number; lng: number };
@@ -16,13 +17,6 @@ interface Props {
 	cachedReps?: Rep[];
 	/** 'horizontal' forces the compact horizontal strip on all screen sizes. Default 'auto' uses mobile strip + desktop sidebar. */
 	layout?: 'horizontal' | 'auto';
-}
-
-function partyBadgeClass(party: string) {
-	const p = party.toLowerCase();
-	if (p.includes("democrat")) return "bg-blue-100 text-blue-800 border-2 border-blue-900";
-	if (p.includes("republican")) return "bg-red-100 text-red-800 border-2 border-red-900";
-	return "bg-muted text-muted-foreground border-2 border-border";
 }
 
 function partyAbbr(party: string) {
@@ -39,7 +33,7 @@ function RepCard({ rep }: { rep: Rep }) {
 	const initials = rep.name.split(" ").map(n => n[0]).slice(0, 2).join("");
 
 	return (
-		<div className="border-2 border-foreground shadow-[4px_4px_0px_0px_hsl(var(--foreground))] rounded-xl p-4 mb-4 bg-white">
+		<div className="border-2 border-foreground shadow-[4px_4px_0px_0px_hsl(var(--foreground))] rounded-xl p-4 mb-4 bg-card">
 			<div className="flex items-start gap-3">
 				<Avatar className="size-12 border-2 border-foreground shrink-0">
 					<AvatarImage src={rep.image ?? undefined} alt={rep.name} />
@@ -97,7 +91,7 @@ function RepCardMobile({ rep }: { rep: Rep }) {
 	return (
 		<Link
 			href={`/rep/${encodeURIComponent(rep.id)}`}
-			className="flex-shrink-0 w-24 flex flex-col items-center gap-1.5 p-2.5 rounded-xl border-2 border-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] bg-white hover:shadow-[1px_1px_0px_0px_hsl(var(--foreground))] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+			className="flex-shrink-0 w-24 flex flex-col items-center gap-1.5 p-2.5 rounded-xl border-2 border-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] bg-card hover:shadow-[1px_1px_0px_0px_hsl(var(--foreground))] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
 		>
 			<Avatar className="size-10 border-2 border-foreground shrink-0">
 				<AvatarImage src={rep.image ?? undefined} alt={rep.name} />
