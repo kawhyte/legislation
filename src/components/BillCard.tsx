@@ -8,7 +8,6 @@ import {
 	Card,
 	CardContent,
 	CardHeader,
-	CardTitle,
 	CardFooter,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -52,7 +51,6 @@ const BillCard = ({
 		[bill?.jurisdiction?.name]
 	);
 	const flagUrl = stateInfo?.flagUrl || "https://placehold.co/32x24";
-	const flagAbbreviation = stateInfo?.abbreviation || "NA";
 
 	// Derived display data
 	const primarySponsor = useMemo(
@@ -65,26 +63,22 @@ const BillCard = ({
 				<CardHeader className='p-4 space-y-3'>
 					{/* TOP ROW: flag + bill ID + bookmark */}
 					<div className='flex items-center justify-between'>
-						<div className='flex items-center gap-3'>
+						<div className='flex items-center gap-2'>
 							<Avatar className='w-7 h-7 border-2 border-foreground rounded-md shrink-0'>
-								<AvatarImage src={flagUrl} alt={bill?.jurisdiction?.name} />
+								<AvatarImage src={flagUrl} alt={`${bill?.jurisdiction?.name ?? "State"} flag`} />
 								<AvatarFallback className='text-xs bg-muted text-foreground font-bold'>
-									{bill?.jurisdiction?.name.slice(0, 2).toUpperCase()}
+									{bill?.jurisdiction?.name?.slice(0, 2).toUpperCase()}
 								</AvatarFallback>
 							</Avatar>
-							<div className='flex items-center gap-2 text-sm'>
-								<span className='font-bold text-foreground'>{flagAbbreviation}</span>
-								<span className='text-muted-foreground/60'>•</span>
-								<span className='font-mono text-xs font-semibold text-muted-foreground'>{bill.identifier}</span>
-							</div>
+							<span className='font-mono text-xs font-semibold text-muted-foreground'>{bill.identifier}</span>
 						</div>
 						<BookmarkButton bill={bill} />
 					</div>
 
 					{/* BILL TITLE */}
-					<CardTitle className='text-base font-semibold line-clamp-3 text-foreground leading-relaxed'>
+					<h3 className='text-base font-semibold line-clamp-3 text-foreground leading-relaxed'>
 						{toSentenceCase(bill.title)}
-					</CardTitle>
+					</h3>
 
 					{/* STATUS ROW: momentum + trending */}
 					<div className='flex gap-2 items-center flex-wrap'>
@@ -108,6 +102,19 @@ const BillCard = ({
 								Sponsored by{" "}
 								<span className='font-semibold text-foreground'>{primarySponsor.person.name}</span>
 							</span>
+						</div>
+					)}
+
+					{/* TOPIC CHIPS (capped at 2 — OpenStates subjects can be a long list) */}
+					{bill.subject && bill.subject.length > 0 && (
+						<div className='flex gap-1.5 flex-wrap'>
+							{bill.subject.slice(0, 2).map((subject) => (
+								<span
+									key={subject}
+									className='text-xs font-medium bg-muted text-muted-foreground px-2 py-0.5 rounded-full border border-border'>
+									{subject}
+								</span>
+							))}
 						</div>
 					)}
 

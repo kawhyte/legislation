@@ -61,7 +61,10 @@ const BillGrid = ({ selectedJurisdiction, selectedTopic, viewMode = 'detailed' }
 
             <div className="">
                 {/* NOTE: Ensure your SectionHeader component uses themed text colors like text-foreground */}
-                {hasData && <SectionHeader jurisdiction={selectedJurisdiction} />}
+                {/* Rendered while loading too — the jurisdiction is known before the
+                    fetch resolves, and holding the header's space keeps the grid from
+                    shifting down when skeletons swap for cards. */}
+                {(hasData || isLoading) && <SectionHeader jurisdiction={selectedJurisdiction} />}
                 <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4'>
                     {/* NOTE: Ensure your BillCardSkeleton uses themed background colors like bg-muted */}
                     {isLoading &&
@@ -72,7 +75,6 @@ const BillGrid = ({ selectedJurisdiction, selectedTopic, viewMode = 'detailed' }
                                 key={bill.id}
                                 bill={bill}
                                 showSource={true}
-                                showVotes={false}
                                 showTrendingReason={true}
                                 viewMode={viewMode}
                             />

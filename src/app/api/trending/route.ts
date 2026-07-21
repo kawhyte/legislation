@@ -4,7 +4,7 @@ import { analyzeBillMomentum } from '@/utils/billMomentum';
 import { isBillTrending } from '@/utils/isBillTrending';
 import { computeTrendingScore } from '@/utils/trendingScore';
 import { TRENDING_QUERY_TOPICS, JUNK_TITLE } from '@/constants/trendingTopics';
-import { getPastDate } from '@/lib/utils';
+import { getPastDate, cleanSubjects } from '@/lib/utils';
 
 /**
  * Server-computed national trending feed.
@@ -87,7 +87,7 @@ export async function GET() {
       const safe = {
         ...bill,
         sources: bill.sources || [],
-        subject: bill.subject || [],
+        subject: cleanSubjects(bill.subject),
         actions: bill.actions || [],
         votes: bill.votes || [],
         sponsorships: bill.sponsorships || [],
