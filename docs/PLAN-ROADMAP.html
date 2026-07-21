@@ -444,8 +444,207 @@
   </div>
 </div>
 
+<div class="phase-label">Round 2 — Homepage &amp; location UX redesign</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">14</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>AI Summary Cache Integrity</h2><div class="file">PLAN-14-critical-ai-cache-integrity.md</div></div>
+      <span class="pill sans sev-critical">CRITICAL</span>
+    </div>
+    <p class="why">The summarize route keys its memory cache on a 50-char title slug but Firestore on the bill id — so bills with shared title prefixes serve each other's summary, and no server-side cache read guards the free-tier token budget.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">Every failure here is silent: a colliding key returns plausible-but-wrong text, and a read placed outside the dedupe still passes every test while leaking tokens under concurrency.</span></p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="14a"><span>Two bills sharing a 50-char title prefix return distinct summaries</span></label></li>
+      <li><label><input type="checkbox" data-t="14b"><span>After a server restart, a cached bill triggers zero Gemini calls</span></label></li>
+      <li><label><input type="checkbox" data-t="14c"><span>Gemini FALLBACK is never written to Firestore</span></label></li>
+      <li><label><input type="checkbox" data-t="14d"><span>New docs carry _meta.generatedAt / model / promptVersion</span></label></li>
+      <li><label><input type="checkbox" data-t="14e"><span>Concurrent requests for one bill generate exactly once</span></label></li>
+      <li><label><input type="checkbox" data-t="14f"><span>Bill detail "Translate to Plain English" behaves as before</span></label></li>
+      <li><label><input type="checkbox" data-t="14g"><span>CLAUDE.md's false "24h L2 TTL" claim corrected</span></label></li>
+      <li><label><input type="checkbox" data-t="14h"><span>lint / build / test / test:e2e all pass</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">15</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Measurement Baseline</h2><div class="file">PLAN-15-high-measurement-baseline.md</div></div>
+      <span class="pill sans sev-high">HIGH</span>
+    </div>
+    <p class="why">The redesign's success metric is clicks and the app measures nothing — add five typed events before the homepage changes, so there's a control group. Vendor swap: the sink is a self-hosted Firestore collection via /api/track, not Vercel Analytics + Sentry, which are not unconditionally free.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">"Silent in tests, live in prod" is a runtime-environment judgement — jsdom defines window, so a naive guard passes unit tests while polluting them.</span></p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="15a"><span>npm run build succeeds; zero new dependencies added</span></label></li>
+      <li><label><input type="checkbox" data-t="15b"><span>npm run test passes with zero analytics output</span></label></li>
+      <li><label><input type="checkbox" data-t="15c"><span>Flag unset: no outbound /api/track requests (e2e-locked)</span></label></li>
+      <li><label><input type="checkbox" data-t="15d"><span>Flag on: bill_card_click POSTs to /api/track, once</span></label></li>
+      <li><label><input type="checkbox" data-t="15e"><span>Events land in the Firestore analytics_events collection in prod</span></label></li>
+      <li><label><input type="checkbox" data-t="15f"><span>A thrown client render error is caught and logged by global-error</span></label></li>
+      <li><label><input type="checkbox" data-t="15g"><span>env.example no longer mentions Clerk or VITE_*</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">16</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Homepage Feed Un-gate</h2><div class="file">PLAN-16-high-homepage-feed-ungate.md</div></div>
+      <span class="pill sans sev-high">HIGH</span>
+    </div>
+    <p class="why">The already-built, cron-warmed /api/trending feed is never rendered on the homepage — show bills on first paint with zero clicks, and delete the now-unreachable nationwide branch of useBills.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">"No flash of national bills on a ?q= load" is a render-timing property no static check catches, and deleting a code path needs a real reachability argument, not a grep.</span></p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="16a"><span>Cold load of / shows bill cards with zero interaction</span></label></li>
+      <li><label><input type="checkbox" data-t="16b"><span>/?q=33028 shows no flash of national bills</span></label></li>
+      <li><label><input type="checkbox" data-t="16c"><span>Invalid ?q= falls back to the trending feed</span></label></li>
+      <li><label><input type="checkbox" data-t="16d"><span>Picking a state still swaps to state bills + reps sidebar</span></label></li>
+      <li><label><input type="checkbox" data-t="16e"><span>Empty /api/trending renders the tumbleweed, not an error</span></label></li>
+      <li><label><input type="checkbox" data-t="16f"><span>Cold load: 1 request to /api/trending, 0 to /api/openstates/bills</span></label></li>
+      <li><label><input type="checkbox" data-t="16g"><span>grep for "artificial intelligence" in src returns nothing</span></label></li>
+      <li><label><input type="checkbox" data-t="16h"><span>The 5 pre-existing homepage e2e specs pass unmodified</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">17</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>AI Summary Prewarm Cron</h2><div class="file">PLAN-17-high-ai-prewarm-cron.md</div></div>
+      <span class="pill sans sev-high">HIGH</span>
+    </div>
+    <p class="why">Pre-generate ~40 summaries/day on a CRON_SECRET-gated route so the feed's impact lines cost zero live tokens. Depends on PLAN-14.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">The traps are all invisible-until-production: reusing /api/summarize 403s on same-origin, 8×4s spacing sits right on the 60s function cap, and a cached FALLBACK poisons a bill forever.</span></p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="17a"><span>Authed POST returns a considered/skipped/generated/failed report</span></label></li>
+      <li><label><input type="checkbox" data-t="17b"><span>Unauthed POST returns 401; unset CRON_SECRET returns 404</span></label></li>
+      <li><label><input type="checkbox" data-t="17c"><span>Firestore gains 8 docs, each with a populated _meta</span></label></li>
+      <li><label><input type="checkbox" data-t="17d"><span>Second immediate run reports skipped, spends no tokens</span></label></li>
+      <li><label><input type="checkbox" data-t="17e"><span>A prewarmed bill's detail page summarizes instantly</span></label></li>
+      <li><label><input type="checkbox" data-t="17f"><span>GitHub Action run completes with status=200 inside 60s</span></label></li>
+      <li><label><input type="checkbox" data-t="17g"><span>/api/summarize behaviour unchanged after the extraction</span></label></li>
+      <li><label><input type="checkbox" data-t="17h"><span>lint / build / test / test:e2e all pass</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">18</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Impact-Hook Bill Card</h2><div class="file">PLAN-18-high-impact-hook-bill-card.md</div></div>
+      <span class="pill sans sev-high">HIGH</span>
+    </div>
+    <p class="why">Lead the card with the cached plain-English impact line instead of a legal title, swap the 4-stage stepper for one status pill, and degrade to the title without changing card height.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">The acceptance bar is a ±24px layout-shift budget across an async summary swap, on the app's most-reused component with five other call sites to not break.</span></p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="18a"><span>Cards with a cached summary lead with the impact hook</span></label></li>
+      <li><label><input type="checkbox" data-t="18b"><span>Cards without one show the title at the same height (±24px)</span></label></li>
+      <li><label><input type="checkbox" data-t="18c"><span>No feed card renders the 4-stage stepper</span></label></li>
+      <li><label><input type="checkbox" data-t="18d"><span>momentum.level "None" renders no pill at all</span></label></li>
+      <li><label><input type="checkbox" data-t="18e"><span>Dashboard tabs and /trending render exactly as before</span></label></li>
+      <li><label><input type="checkbox" data-t="18f"><span>Bookmark still opens the auth modal without navigating</span></label></li>
+      <li><label><input type="checkbox" data-t="18g"><span>Zero requests to /api/summarize on homepage load</span></label></li>
+      <li><label><input type="checkbox" data-t="18h"><span>Skeleton/card layout-shift e2e test still passes</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">19</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Location Chip &amp; Geo Defaulting</h2><div class="file">PLAN-19-medium-location-chip-and-geo.md</div></div>
+      <span class="pill sans sev-medium">MEDIUM</span>
+    </div>
+    <p class="why">Resolve the default feed from userPreferences → localStorage → Vercel IP geo → national, behind a dismissible chip. Signed-in users already have a state the homepage never reads.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">setJurisdiction wipes the bill cache, so a resolution effect without the one-shot ref turns into a silent infinite fetch loop that still renders correctly.</span></p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="19a"><span>Anonymous dev load: national feed + "Set your state", no errors</span></label></li>
+      <li><label><input type="checkbox" data-t="19b"><span>Signed-in FL user lands on Florida bills automatically</span></label></li>
+      <li><label><input type="checkbox" data-t="19c"><span>Exactly ONE bills request fires on resolution, not two</span></label></li>
+      <li><label><input type="checkbox" data-t="19d"><span>Returning anonymous visitor gets their last state back</span></label></li>
+      <li><label><input type="checkbox" data-t="19e"><span>Chip action scrolls to and focuses the state dropdown</span></label></li>
+      <li><label><input type="checkbox" data-t="19f"><span>Non-US IP does not get guessed into a US state</span></label></li>
+      <li><label><input type="checkbox" data-t="19g"><span>Invalid ZIP errors within ~5s instead of hanging</span></label></li>
+      <li><label><input type="checkbox" data-t="19h"><span>The 5 original homepage e2e specs remain green</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">20</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Rep-Relevance Sectioned Feed</h2><div class="file">PLAN-20-medium-rep-relevance-feed.md</div></div>
+      <span class="pill sans sev-medium">MEDIUM</span>
+    </div>
+    <p class="why">Split the state feed into "From your reps" / "More in {State}" / "Trending nationwide" by intersecting sponsorships already in memory with /people.geo rep IDs — zero extra requests.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">Half is a pure testable partition, but the other half is judgement: a nested anchor inside the card link, a federal-rep filter whose absence just yields silence, and copy that must not overclaim what the data supports.</span></p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="20a"><span>Sponsorship.type corrected to classification; person nullable</span></label></li>
+      <li><label><input type="checkbox" data-t="20b"><span>A rep-sponsored bill appears in tier 1 with attribution</span></label></li>
+      <li><label><input type="checkbox" data-t="20c"><span>Attribution links to /rep/{id}; card body still links to the bill</span></label></li>
+      <li><label><input type="checkbox" data-t="20d"><span>Empty tier 1 renders NO heading at all</span></label></li>
+      <li><label><input type="checkbox" data-t="20e"><span>Federal reps from /people.geo are filtered out</span></label></li>
+      <li><label><input type="checkbox" data-t="20f"><span>Dropdown-only (no ZIP) path: no tier 1, no /people.geo call</span></label></li>
+      <li><label><input type="checkbox" data-t="20g"><span>grep finds no "your city" or "voted on" copy</span></label></li>
+      <li><label><input type="checkbox" data-t="20h"><span>No React nested-anchor warning; request count unchanged</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">21</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Topic Chips &amp; Rules-Based "For You"</h2><div class="file">PLAN-21-medium-topic-chips-for-you.md</div></div>
+      <span class="pill sans sev-medium">MEDIUM</span>
+    </div>
+    <p class="why">Sticky topic chips re-sort the loaded feed client-side using the TOPIC_WEIGHTS map that already exists — no refetch, no ML, no tokens.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">Reading localStorage during render is a hydration mismatch, and a linear boost silently builds a filter bubble — both look fine in a screenshot and pass every mechanical check.</span></p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="21a"><span>Chip row scrolls horizontally with no horizontal page scroll</span></label></li>
+      <li><label><input type="checkbox" data-t="21b"><span>Tapping a chip reorders cards with ZERO new requests</span></label></li>
+      <li><label><input type="checkbox" data-t="21c"><span>Five taps do not collapse the feed into one topic</span></label></li>
+      <li><label><input type="checkbox" data-t="21d"><span>Boosted order survives a reload; Clear resets it</span></label></li>
+      <li><label><input type="checkbox" data-t="21e"><span>No hydration warning with existing affinity data</span></label></li>
+      <li><label><input type="checkbox" data-t="21f"><span>Chips keyboard-operable with visible focus + aria-pressed</span></label></li>
+      <li><label><input type="checkbox" data-t="21g"><span>Every FEED_CHIP_TOPICS id exists in TOPIC_WEIGHTS</span></label></li>
+      <li><label><input type="checkbox" data-t="21h"><span>All pre-existing trendingScore.test.ts assertions still pass</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-step>
+  <div class="rail"><div class="dot">22</div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>"Following" Tab</h2><div class="file">PLAN-22-simple-following-tab.md</div></div>
+      <span class="pill sans sev-simple">SIMPLE</span>
+    </div>
+    <p class="why">For You / Following tabs built entirely from data already stored: savedBills from UserContext plus a followedTopics field on the user doc. No new collections, no notifications.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">Labelled SIMPLE but promoted: "zero additional Firestore reads" is a runtime count, and savedBills stores a stale bill snapshot that will render a confidently wrong "Moving fast" pill.</span></p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="22a"><span>Signed-out Following tab shows a sign-in prompt, not empty state</span></label></li>
+      <li><label><input type="checkbox" data-t="22b"><span>Signed-in: saved bills listed newest-first with a count badge</span></label></li>
+      <li><label><input type="checkbox" data-t="22c"><span>Followed topic adds matching feed bills, no duplicates</span></label></li>
+      <li><label><input type="checkbox" data-t="22d"><span>Unfollow is optimistic and survives a reload</span></label></li>
+      <li><label><input type="checkbox" data-t="22e"><span>ZERO additional Firestore reads on tab switch</span></label></li>
+      <li><label><input type="checkbox" data-t="22f"><span>No stale momentum pill on saved-bill cards</span></label></li>
+      <li><label><input type="checkbox" data-t="22g"><span>Unknown followedTopics ids ignored without throwing</span></label></li>
+      <li><label><input type="checkbox" data-t="22h"><span>/dashboard completely unaffected; firestore.rules untouched</span></label></li>
+    </ul>
+  </div>
+</div>
+
 <footer>
-  <div>Full ranking + strategic rationale (Convex verdict, product-direction advice) in PLAN-00-INDEX.md.</div>
+  <div>Full ranking + strategic rationale (Convex verdict, product-direction advice, and the round-2 rejected-proposals table) in PLAN-00-INDEX.md.</div>
   <button class="reset" id="reset">Reset all checkmarks</button>
 </footer>
 
@@ -584,7 +783,20 @@ const AGENT_VERIFIED = {
   "13h": true,
   "13i": true,
   "13j": true,
-  "13k": true
+  "13k": true,
+  "14a": true,
+  "14b": true,
+  "14c": true,
+  "14d": true,
+  "14e": true,
+  "14f": true,
+  "14g": true,
+  "14h": true,
+  "15a": true,
+  "15b": true,
+  "15c": true,
+  "15d": true,
+  "15g": true
 };
 // 9b needs a real inbox to confirm the Firebase email actually arrives.
 // 10d: e2e "skeleton-to-card swap does not shift layout" holds the bills
@@ -683,6 +895,19 @@ const AGENT_VERIFIED = {
 //      hosting key removed) — the plan's own edge-case note applies: this
 //      has zero effect on Firestore rules/deploy since only the unused
 //      Vercel-irrelevant hosting config was dropped.
+// 14a-14e: src/app/api/summarize/route.test.ts (7 tests, all passing) — the key
+//      collision, the pre-Gemini Firestore read, the fallback write-skip, _meta
+//      provenance, and generate-exactly-once under a concurrent race.
+// 14b/14c/14d also confirmed live against the dev server and real Firestore:
+//      after a restart (empty L1) the cached bill returned its real summary in
+//      1.2s with GEMINI_API_KEY deliberately set to an invalid value — proof the
+//      Firestore read happens before Gemini. The same dead key on an unseen bill
+//      id returned the fallback and wrote NO document. The generated doc carries
+//      _meta {generatedAt, model: gemini-2.5-flash, promptVersion: 0}.
+// 14f: clicked "Translate to Plain English" on S 3028 in Chrome — gist, who it
+//      affects, wallet impact and debate all rendered, one POST /api/summarize.
+// 14h: lint + build + vitest (34) clean; test:e2e 9/9. The 6 failures seen on the
+//      first e2e attempt were a stale server squatting on :3000, not this change.
 const AGENT_IN_PROGRESS = {
   "9b": true
 };

@@ -33,6 +33,14 @@ service cloud.firestore {
         .hasOnly(['views', 'saves', 'lastActivityAt', 'title', 'jurisdictionName']);
     }
 
+    // Product analytics events — written only by the server (Admin SDK in
+    // /api/track, which bypasses these rules) and read only from the Firebase
+    // console. Clients get neither read nor write: an open create rule here
+    // would be a spam target, and the events are not user-facing data.
+    match /analytics_events/{eventId} {
+      allow read, write: if false;
+    }
+
     // Deny access to all other documents
     match /{document=**} {
       allow read, write: if false;

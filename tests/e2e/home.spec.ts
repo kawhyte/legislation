@@ -104,6 +104,27 @@ test.describe('Homepage', () => {
     expect(new URL(page.url()).pathname).toBe('/');
   });
 
+  test('no analytics requests fire while analytics is disabled', async ({ page }) => {
+    // CI runs without NEXT_PUBLIC_ANALYTICS_ENABLED, so instrumentation must be
+    // completely inert — it cannot slow or break the page in tests.
+    const trackRequests: string[] = [];
+    page.on('request', req => {
+      if (req.url().includes('/api/track')) trackRequests.push(req.url());
+    });
+
+    await page.route('**/api/openstates/bills**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_BILLS_RESPONSE) })
+    );
+    await page.goto('/');
+    await selectTexas(page);
+
+    const card = page.locator('a[href^="/bill/"]').first();
+    await expect(card).toBeVisible({ timeout: 10_000 });
+    await card.click();
+
+    expect(trackRequests).toEqual([]);
+  });
+
   test('skeleton-to-card swap does not shift layout', async ({ page }) => {
     // Hold the bills response open long enough to measure the skeleton.
     await page.route('**/api/openstates/bills**', async route => {

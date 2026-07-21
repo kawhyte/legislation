@@ -24,6 +24,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { BillCardProps } from "@/types";
+import { track } from "@/lib/analytics";
 
 const getDomainFromUrl = (url: string) => {
 	try {
@@ -40,6 +41,8 @@ const BillCard = ({
 	showSource = false,
 	showTrendingReason = false,
 	viewMode = "detailed",
+	feedName = "unknown",
+	position = -1,
 }: BillCardProps) => {
 	const shouldShowProgressBar = viewMode === "detailed" && showProgressBar;
 	const shouldShowSource = viewMode === "detailed" && showSource;
@@ -58,7 +61,14 @@ const BillCard = ({
 		[bill.sponsorships]
 	);
 	return (
-		<NextLink href={`/bill/${encodeURIComponent(bill.id)}`} className='block h-full'>
+		<NextLink
+			href={`/bill/${encodeURIComponent(bill.id)}`}
+			className='block h-full'
+			// Fires before navigation. `track` awaits nothing, and Vercel Analytics
+			// uses sendBeacon internally, so the event survives the page transition.
+			// `hasSummary` is hardcoded until summaries reach the card (PLAN-18).
+			onClick={() => track("bill_card_click", { feed: feedName, position, hasSummary: false })}
+		>
 			<Card className='bg-card border-2 border-foreground rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))] flex flex-col h-full transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))]'>
 				<CardHeader className='p-4 space-y-3'>
 					{/* TOP ROW: flag + bill ID + bookmark */}

@@ -11,6 +11,7 @@ export const useBillSummary = (
   const [structured, setStructured] = useState<BillSummaryData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fromCache, setFromCache] = useState(false);
 
   const { maxLength = 150, targetAge = "30-40" } = options;
   // maxLength/targetAge are accepted for API compat but currently handled server-side
@@ -35,7 +36,10 @@ export const useBillSummary = (
       // L2: Firestore global cache — persists 24 h across all users
       const cached = await getCachedSummary(bill.id);
       if (cached) {
-        if (!abortController.current.signal.aborted) setStructured(cached);
+        if (!abortController.current.signal.aborted) {
+          setFromCache(true);
+          setStructured(cached);
+        }
         return;
       }
 
@@ -52,6 +56,7 @@ export const useBillSummary = (
       const result = await res.json() as BillSummaryData;
 
       if (!abortController.current.signal.aborted) {
+        setFromCache(false);
         setStructured(result);
       }
     } catch (err) {
@@ -64,5 +69,5 @@ export const useBillSummary = (
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bill, cleanup]);
 
-  return { structured, isLoading, error, generateSummary, cleanup };
+  return { structured, isLoading, error, generateSummary, cleanup, fromCache };
 };

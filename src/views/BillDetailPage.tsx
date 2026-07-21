@@ -12,13 +12,14 @@ import BookmarkButton from '@/components/BookmarkButton';
 import AIAnalysisContent from '@/components/AIAnalysisContent';
 import { Button } from '@/components/ui/button';
 import { recordBillView } from '@/services/userService';
+import { track } from '@/lib/analytics';
 
 interface Props {
   bill: Bill;
 }
 
 export default function BillDetailPage({ bill }: Props) {
-  const { structured, isLoading, error, generateSummary, cleanup } = useBillSummary(bill, {
+  const { structured, isLoading, error, generateSummary, cleanup, fromCache } = useBillSummary(bill, {
     maxLength: 150,
     targetAge: '30-40',
   });
@@ -26,6 +27,13 @@ export default function BillDetailPage({ bill }: Props) {
   useEffect(() => {
     return () => { if (cleanup) cleanup(); };
   }, [cleanup, bill.id]);
+
+  // A summary is "viewed" the moment it lands on screen, whether it came from
+  // Firestore or a fresh Gemini call.
+  useEffect(() => {
+    if (!structured) return;
+    track('summary_view', { cached: fromCache });
+  }, [structured, fromCache]);
 
   // Record a view for the trending-engagement aggregate, once per browser session
   // per bill (best-effort — never blocks or breaks the page).
