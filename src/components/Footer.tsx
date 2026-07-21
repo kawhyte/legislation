@@ -12,6 +12,11 @@ const Footer = () => (
 				</div>
 				<nav className='flex items-center gap-6'>
 					<Link
+						href='/trending'
+						className='text-sm text-muted-foreground hover:text-foreground transition-colors'>
+						Trending
+					</Link>
+					<Link
 						href='/about'
 						className='text-sm text-muted-foreground hover:text-foreground transition-colors'>
 						About
