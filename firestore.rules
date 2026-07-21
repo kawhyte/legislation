@@ -22,6 +22,17 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Cross-user bill engagement counters (views/saves) feeding the trending score.
+    // Public read (the trending feed reads it) and public write, but writes are
+    // constrained to the counter fields only. NOTE: these counters are therefore
+    // client-inflatable — the trending score caps their weight low, and moving to
+    // server-side (Cloud Function) aggregation is a documented follow-up.
+    match /billEngagement/{billId} {
+      allow read: if true;
+      allow write: if request.resource.data.keys()
+        .hasOnly(['views', 'saves', 'lastActivityAt', 'title', 'jurisdictionName']);
+    }
+
     // Deny access to all other documents
     match /{document=**} {
       allow read, write: if false;

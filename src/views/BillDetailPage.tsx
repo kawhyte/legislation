@@ -11,6 +11,7 @@ import BillProgressStepper from '@/components/BillProgressStepper';
 import BookmarkButton from '@/components/BookmarkButton';
 import AIAnalysisContent from '@/components/AIAnalysisContent';
 import { Button } from '@/components/ui/button';
+import { recordBillView } from '@/services/userService';
 
 interface Props {
   bill: Bill;
@@ -25,6 +26,20 @@ export default function BillDetailPage({ bill }: Props) {
   useEffect(() => {
     return () => { if (cleanup) cleanup(); };
   }, [cleanup, bill.id]);
+
+  // Record a view for the trending-engagement aggregate, once per browser session
+  // per bill (best-effort — never blocks or breaks the page).
+  useEffect(() => {
+    if (!bill.id) return;
+    const key = `billViewed:${bill.id}`;
+    try {
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, '1');
+    } catch {
+      /* sessionStorage unavailable (private mode) — still record the view */
+    }
+    void recordBillView(bill.id, { title: bill.title, jurisdictionName: bill.jurisdiction?.name });
+  }, [bill.id, bill.title, bill.jurisdiction?.name]);
 
   const primarySponsor = bill.sponsorships?.find(s => s.primary);
   const sortedActions = bill.actions
