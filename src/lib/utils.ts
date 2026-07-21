@@ -43,6 +43,46 @@ export const toSentenceCase = (text: string) => {
 };
 
 
+/**
+ * OpenStates `subject` arrays are per-state and inconsistent. Some states return
+ * clean topics ("Housing"), others dump their statute index verbatim — single
+ * letters used as index headers (";", "A", "H"), "see also" cross-references,
+ * and SHOUTING CAPS. Normalize at the data boundary so every consumer gets a
+ * short list of display-ready topics.
+ */
+export const cleanSubjects = (subjects: string[] | undefined | null): string[] => {
+	if (!Array.isArray(subjects)) return [];
+
+	const seen = new Set<string>();
+	const cleaned: string[] = [];
+
+	for (const raw of subjects) {
+		if (typeof raw !== "string") continue;
+		const subject = raw.replace(/\s+/g, " ").replace(/[\s;,]+$/, "").replace(/^\s+/, "");
+
+		// Index-header noise: single letters, punctuation, anything too short to read.
+		if (subject.length < 3) continue;
+		if (!/[a-zA-Z]/.test(subject)) continue;
+		// Statute-index cross-references, not topics.
+		if (/\bsee also\b/i.test(subject)) continue;
+
+		// Shouty entries ("CIVIL PROCEDURE") get title-cased; mixed-case is left alone.
+		const display =
+			subject === subject.toUpperCase()
+				? subject
+						.toLowerCase()
+						.replace(/(^|[\s\-—/(])([a-z])/g, (_, prefix, letter) => prefix + letter.toUpperCase())
+				: subject;
+
+		const key = display.toLowerCase();
+		if (seen.has(key)) continue;
+		seen.add(key);
+		cleaned.push(display);
+	}
+
+	return cleaned;
+};
+
 export const getPastDate = (value:number, unit:string) => {
   // Ensure the input is a valid number
   if (typeof value !== 'number' || value < 0) {

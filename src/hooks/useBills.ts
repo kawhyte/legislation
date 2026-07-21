@@ -4,7 +4,7 @@ import type { States } from "@/components/JurisdictionSelector";
 import useData from "./useData";
 import { useMemo } from "react";
 import { analyzeBillMomentum } from "../utils/billMomentum";
-import { getPastDate } from "@/lib/utils";
+import { getPastDate, cleanSubjects } from "@/lib/utils";
 import type { Bill } from "@/types";
 
 import { isBillTrending } from "../utils/isBillTrending";
@@ -115,7 +115,7 @@ const useBills = (selectedJurisdiction: States | null, selectedTopic: string | n
 				const safeBill = {
 					...bill,
 					sources: bill.sources || [],
-					subject: bill.subject || [],
+					subject: cleanSubjects(bill.subject),
 					actions: bill.actions || [],
 					votes: bill.votes || [],
 					sponsorships: bill.sponsorships || [],

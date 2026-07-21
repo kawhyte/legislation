@@ -31,6 +31,11 @@ const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, is
   if (isLoading) {
     return (
       <section className="container-legislation py-12">
+        {/* Same heading as the loaded state — the jurisdiction is known before the
+            fetch resolves, so holding its space keeps the grid from jumping. */}
+        <h2 className="text-4xl font-black text-foreground mb-8 border-b-4 border-foreground pb-4">
+          Latest Bills in {jurisdiction.name}
+        </h2>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

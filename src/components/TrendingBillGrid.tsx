@@ -60,14 +60,13 @@ const TrendingBillGrid = ({ viewMode = 'quick' }: Props) => {
             <div className="">
                 <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4'>
                     {isLoading &&
-                        skeletons.map((skeleton) => <BillCardSkeleton key={skeleton} />)}
+                        skeletons.map((skeleton) => <BillCardSkeleton key={skeleton} showSource={false} />)}
                     {hasData &&
                         trendingBills.slice(0, 20).map((bill) => (
                             <BillCard
                                 key={bill.id}
                                 bill={bill}
                                 showSource={false}
-                                showVotes={false}
                                 showTrendingReason={true}
                                 viewMode={viewMode}
                             />

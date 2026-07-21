@@ -6,9 +6,7 @@ interface Props {
 
 const SectionHeader = ({ jurisdiction }: Props) => {
 	if (!jurisdiction) {
-		return 
-			
-		
+		return null;
 	}
 
 	return (

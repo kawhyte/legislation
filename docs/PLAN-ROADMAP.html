@@ -39,6 +39,15 @@
   .sev-medium{background:var(--blue-light);color:var(--blue)}
   .sev-simple{background:var(--green-light);color:var(--green)}
 
+  /* which model to implement this plan with */
+  .model-row{display:flex;gap:9px;align-items:baseline;flex-wrap:wrap;margin:11px 0 2px;font-family:Helvetica,Arial,sans-serif;font-size:13px;color:var(--soft)}
+  .pill-model{padding:3px 10px;border-radius:999px;font-weight:700;font-size:10px;letter-spacing:.05em;white-space:nowrap;flex-shrink:0}
+  .model-opus{background:var(--lavender-light);color:#5c4d78}
+  .model-sonnet{background:var(--clay-light);color:#7a5b43}
+  .model-haiku{background:var(--green-light);color:var(--green)}
+  .model-why{flex:1;min-width:180px}
+  .legend-note{font-family:Helvetica,Arial,sans-serif;font-size:12px;color:var(--muted);text-align:center;max-width:620px;margin:0 auto 36px;line-height:1.6}
+
   .phase-label{font-family:Helvetica,Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:34px 0 6px;display:flex;align-items:center;gap:10px}
   .phase-label::after{content:"";flex:1;height:1px;background:var(--border)}
 
@@ -108,6 +117,22 @@
   <span class="pill sev-simple">SIMPLE — quick win</span>
 </div>
 
+<div class="legend">
+  <span class="pill pill-model model-opus">OPUS 4.8</span>
+  <span class="pill pill-model model-sonnet">SONNET 5</span>
+  <span class="pill pill-model model-haiku">HAIKU 4.5</span>
+</div>
+<p class="legend-note">
+  Each plan below names the model to implement it with. The axis is <b>not</b> severity —
+  it's whether a wrong implementation can still pass the plan's own acceptance criteria.
+  Grep- or build-checkable criteria ("zero references remain", "build clean") are safe for
+  <b>Sonnet 5</b>, because the check catches the mistake. Criteria that need runtime judgment
+  ("no layout jump", "1–2 requests not 6", "still looks correct") want <b>Opus 4.8</b> — that's
+  where a plan's own premise can be wrong and get checked off anyway.
+  <b>Haiku 4.5</b> isn't listed on any plan: it's for bounded side work (log triage, wide
+  search fan-out, batch classification), not multi-file changes whose breakage shows up later.
+</p>
+
 <div class="phase-label">Critical — fix before anything else</div>
 
 <div class="step" data-step>
@@ -118,6 +143,7 @@
       <span class="pill sans sev-critical">CRITICAL</span>
     </div>
     <p class="why">Stop anonymous users from poisoning the shared AI-summary cache served to every user.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">Firestore rules fail <i>open</i>, not loud — a wrong rule looks identical to a right one until data leaks.</span></p>
     <ul class="tasks">
       <li><label><input type="checkbox" data-t="1a"><span>Summary generates normally with Admin SDK env vars set</span></label></li>
       <li><label><input type="checkbox" data-t="1b"><span>Server writes new doc to bill_summaries in Firestore</span></label></li>
@@ -140,6 +166,7 @@
       <span class="pill sans sev-critical">CRITICAL</span>
     </div>
     <p class="why">Stop both API routes from being used as free third-party APIs against your Gemini/OpenStates keys.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">Rate-limit and abuse logic only misbehaves under concurrency, which no acceptance checkbox exercises.</span></p>
     <ul class="tasks">
       <li><label><input type="checkbox" data-t="2a"><span>Normal search flow still loads bills through the proxy</span></label></li>
       <li><label><input type="checkbox" data-t="2b"><span>curl with no Origin header → 403 on /api/openstates</span></label></li>
@@ -164,6 +191,7 @@
       <span class="pill sans sev-high">HIGH</span>
     </div>
     <p class="why">Cache OpenStates responses server-side/CDN-side so the app stops re-hitting upstream on every search.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">Cache key/TTL mistakes surface as quietly stale data, never as an error.</span></p>
     <ul class="tasks">
       <li><label><input type="checkbox" data-t="3a"><span>Repeated identical request served fast on second hit</span></label></li>
       <li><label><input type="checkbox" data-t="3b"><span>Cache-Control header present with correct s-maxage</span></label></li>
@@ -186,6 +214,7 @@
       <span class="pill sans sev-high">HIGH</span>
     </div>
     <p class="why">Stand up Vitest + Playwright so every later plan can be verified automatically instead of by hand.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">Test-harness setup: a suite that asserts nothing still reports green.</span></p>
     <ul class="tasks">
       <li><label><input type="checkbox" data-t="4a"><span>npm run test passes with zero failures</span></label></li>
       <li><label><input type="checkbox" data-t="4b"><span>npm run test:e2e passes with zero failures</span></label></li>
@@ -205,6 +234,7 @@
       <span class="pill sans sev-high">HIGH</span>
     </div>
     <p class="why">Give every bill a real, shareable, server-rendered URL and retire the AI-summary modal.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">Server/client boundary calls plus real rendering behaviour to judge.</span></p>
     <ul class="tasks">
       <li><label><input type="checkbox" data-t="5a"><span>Clicking a card navigates to /bill/&lt;id&gt; with full content</span></label></li>
       <li><label><input type="checkbox" data-t="5b"><span>Fresh incognito visit to that URL still renders full content</span></label></li>
@@ -230,6 +260,7 @@
       <span class="pill sans sev-high">HIGH</span>
     </div>
     <p class="why">Add metadata, sitemap, robots.txt, an OG image, and JSON-LD to every route.</p>
+      <p class="model-row"><span class="pill pill-model model-sonnet">SONNET 5</span><span class="model-why">Metadata, sitemap, robots and JSON-LD are emitted to a spec and verified by fetching the routes.</span></p>
     <ul class="tasks">
       <li><label><input type="checkbox" data-t="6a"><span>/sitemap.xml resolves with the 5 static routes</span></label></li>
       <li><label><input type="checkbox" data-t="6b"><span>/robots.txt shows correct disallows + sitemap link</span></label></li>
@@ -252,6 +283,7 @@
       <span class="pill sans sev-high">HIGH</span>
     </div>
     <p class="why">Fix the rep scorecard breaking on direct/shared links and remove hardcoded colors.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">A visual overhaul plus data shaping — “looks right” is the acceptance bar.</span></p>
     <ul class="tasks">
       <li><label><input type="checkbox" data-t="7a"><span>Clicking "See Their Votes" from homepage still works (cache hit)</span></label></li>
       <li><label><input type="checkbox" data-t="7b"><span>Fresh incognito rep URL loads via fetch-by-id fallback</span></label></li>
@@ -277,6 +309,7 @@
       <span class="pill sans sev-medium">MEDIUM</span>
     </div>
     <p class="why">Fix the Housing@/crime topic bug, silent API-error masking, trending skeleton mismatch, and dashboard tab naming.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">Bug fixing is diagnosis, not transcription; the plan can be wrong about the cause.</span></p>
     <ul class="tasks">
       <li><label><input type="checkbox" data-t="8a"><span>"Housing" topic now correctly queries housing bills, not crime</span></label></li>
       <li><label><input type="checkbox" data-t="8b"><span>Blocked network shows a distinct error message, not "Quiet out here"</span></label></li>
@@ -300,6 +333,7 @@
       <span class="pill sans sev-medium">MEDIUM</span>
     </div>
     <p class="why">Wire up the already-half-built password reset flow (the service function already existed, only the page was missing).</p>
+      <p class="model-row"><span class="pill pill-model model-sonnet">SONNET 5</span><span class="model-why">Wiring a page to a service function that already existed. Caveat: check the no-enumeration path by hand — identical responses are easy to get subtly wrong.</span></p>
     <ul class="tasks">
       <li><label><input type="checkbox" data-t="9a"><span>"Forgot your password?" no longer 404s</span></label></li>
       <li><label><input type="checkbox" data-t="9b"><span>Real account email → confirmation shown + actual email arrives</span></label></li>
@@ -322,6 +356,7 @@
       <span class="pill sans sev-medium">MEDIUM</span>
     </div>
     <p class="why">Trim redundant card data, add missing fields (status/topics/date), and fix the skeleton/accessibility gaps.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">Proven in practice: the plan's skeleton spec was wrong (a 2px bar for a ~125px stepper) and it misdiagnosed the layout shift, which was a heading that only rendered after load.</span></p>
     <ul class="tasks">
       <li><label><input type="checkbox" data-t="10a"><span>Redundant flag+abbreviation text removed from card header</span></label></li>
       <li><label><input type="checkbox" data-t="10b"><span>Up to 2 topic chips render when subjects exist</span></label></li>
@@ -344,6 +379,7 @@
       <span class="pill sans sev-medium">MEDIUM</span>
     </div>
     <p class="why">Re-skin sign-in/up to design tokens and remove all dead dark-mode code (next-themes was never wired up).</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">Mixed: the grep half (zero <code>dark:</code>, zero next-themes) is mechanical, but “Wallet Impact colours still look correct” needs eyes on the page.</span></p>
     <ul class="tasks">
       <li><label><input type="checkbox" data-t="11a"><span>Sign-in/up visually match token-based pages (background, text, cards)</span></label></li>
       <li><label><input type="checkbox" data-t="11b"><span>grep confirms zero dark: classes remain anywhere</span></label></li>
@@ -368,6 +404,7 @@
       <span class="pill sans sev-simple">SIMPLE</span>
     </div>
     <p class="why">Replace 6 eager per-topic fetches with 1–2 reactive ones, matching the pattern already used on the homepage.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">Labelled SIMPLE but promoted: “1–2 requests, not 6” has to be counted at runtime and reasoned about against the cache window.</span></p>
     <ul class="tasks">
       <li><label><input type="checkbox" data-t="12a"><span>Network tab shows 1–2 requests on dashboard mount, not 6</span></label></li>
       <li><label><input type="checkbox" data-t="12b"><span>Selecting a new topic pill fires exactly 1 new request</span></label></li>
@@ -390,6 +427,7 @@
       <span class="pill sans sev-simple">SIMPLE</span>
     </div>
     <p class="why">Delete verified-orphaned marketing/demo components and CSS, and give the footer working navigation.</p>
+      <p class="model-row"><span class="pill pill-model model-sonnet">SONNET 5</span><span class="model-why">Genuinely mechanical — delete the listed files, grep for references, and the build catches any accidentally-live import.</span></p>
     <ul class="tasks">
       <li><label><input type="checkbox" data-t="13a"><span>git status shows only the intended files deleted</span></label></li>
       <li><label><input type="checkbox" data-t="13b"><span>grep confirms zero references to the removed dead components</span></label></li>
@@ -508,9 +546,29 @@ const AGENT_VERIFIED = {
   "9f": true,
   "9g": true,
   "9h": true,
-  "9i": true
+  "9i": true,
+  "10a": true,
+  "10b": true,
+  "10c": true,
+  "10d": true,
+  "10e": true,
+  "10f": true,
+  "10g": true,
+  "10h": true,
+  "10i": true
 };
 // 9b needs a real inbox to confirm the Firebase email actually arrives.
+// 10d: e2e "skeleton-to-card swap does not shift layout" holds the bills
+//      response open, measures the skeleton box, then the real card box:
+//      602.0 vs 601.6 tall at identical y. Two real CLS sources fixed on the
+//      way — the section heading was only rendered after load (92px jump) in
+//      both HomePageView and BillGrid, and the skeleton mocked the ~125px
+//      progress stepper as a 2px bar.
+// 10h: vitest 20/20 and playwright 9/9 pass. The old home.spec.ts jurisdiction
+//      failure was real (Radix Select's scrolling viewport clips "Texas"), now
+//      fixed by opening with the keyboard and scrolling the option into view.
+// 10i: covered by e2e — card href asserted as /bill/ocd-bill…, and the bookmark
+//      click opens the auth modal while the URL stays on "/".
 const AGENT_IN_PROGRESS = {
   "9b": true
 };

@@ -116,7 +116,6 @@ export interface BillCardProps {
 	bill: Bill;
 	showProgressBar?: boolean;
 	showTrendingReason?: boolean;
-	showVotes?: boolean;
 	showSource?: boolean;
 	viewMode?: BillViewMode;
 }
