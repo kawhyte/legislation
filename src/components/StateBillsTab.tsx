@@ -43,10 +43,16 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 			.catch(() => setZipCoords(null));
 	}, [userPreferences?.zipCode]);
 
+	// Firestore preferences arrive after the first render, so userStateObj is
+	// briefly null. Both calls stay disabled until it lands — otherwise the
+	// null jurisdiction would send useBills down its nationwide-trending path
+	// and fire a query this tab never displays.
+	const enabled = { enabled: userStateObj != null };
+
 	// "all" is always fetched — it feeds the always-visible stats strip
 	// (Moving Fast / Updated This Week / Trending counts), which is
 	// independent of which topic pill is currently selected.
-	const { data: allBills } = useBills(userStateObj, null);
+	const { data: allBills } = useBills(userStateObj, null, enabled);
 
 	// One reactive call for whichever topic is currently active — this is the
 	// only additional request beyond "all", instead of eagerly fetching all 5
@@ -56,7 +62,8 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 	// firing a duplicate.
 	const { data: activeBills, isLoading } = useBills(
 		userStateObj,
-		activeTopic === "all" ? null : activeTopic
+		activeTopic === "all" ? null : activeTopic,
+		enabled
 	);
 
 	const recentlyActiveCount = allBills?.filter((bill) => {

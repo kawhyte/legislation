@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import apiClient from "../services/api-client";
-import { CanceledError } from "axios";
+import useData from "./useData";
 
 export interface Rep {
 	id: string;
@@ -25,46 +25,29 @@ interface PeopleResponse {
 	results: Rep[];
 }
 
+// Reps for a given point change very rarely, and several widgets can ask for
+// the same coordinates at once (the dashboard renders one while a rep page
+// mounts another). Going through useData gives this the shared apiCache — which
+// already grants /people.geo a 24-hour TTL — plus in-flight deduplication, so
+// identical lookups no longer each hit the network.
 const useReps = (coords?: { lat: number; lng: number }) => {
-	const [data, setData] = useState<Rep[] | null>(null);
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState("");
+	// Keyed on the coordinate values, not the object identity — callers build a
+	// fresh coords object each render, which would otherwise refire every time.
+	const params = useMemo(
+		() => (coords ? { lat: coords.lat, lng: coords.lng } : {}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[coords?.lat, coords?.lng]
+	);
 
-	useEffect(() => {
-		if (!coords) {
-			setData(null);
-			setIsLoading(false);
-			setError("");
-			return;
-		}
+	const { data, error, isLoading } = useData<Rep>(
+		coords ? "/people.geo" : null,
+		{ params },
+		[params]
+	);
 
-		const controller = new AbortController();
-		setIsLoading(true);
-		setError("");
-
-		apiClient
-			.get<PeopleResponse>("/people.geo", {
-				signal: controller.signal,
-				params: { lat: coords.lat, lng: coords.lng },
-			})
-			.then((res) => {
-				if (!controller.signal.aborted) {
-					setData(res.data.results);
-					setIsLoading(false);
-				}
-			})
-			.catch((err) => {
-				if (err instanceof CanceledError) return;
-				if (!controller.signal.aborted) {
-					setError(err.message);
-					setIsLoading(false);
-				}
-			});
-
-		return () => controller.abort();
-	}, [coords?.lat, coords?.lng]);
-
-	return { data, isLoading, error };
+	// Callers distinguish "nothing requested" (null) from "requested and came
+	// back empty" ([]), so preserve that rather than always handing back an array.
+	return { data: coords ? data : null, isLoading, error };
 };
 
 /**

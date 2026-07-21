@@ -564,7 +564,15 @@ const AGENT_VERIFIED = {
   "11f": true,
   "11g": true,
   "11h": true,
-  "11i": true
+  "11i": true,
+  "12a": true,
+  "12b": true,
+  "12c": true,
+  "12d": true,
+  "12e": true,
+  "12f": true,
+  "12g": true,
+  "12i": true
 };
 // 9b needs a real inbox to confirm the Firebase email actually arrives.
 // 10d: e2e "skeleton-to-card swap does not shift layout" holds the bills
@@ -594,6 +602,44 @@ const AGENT_VERIFIED = {
 //      visible light-mode appearance is byte-identical.
 // 11i: no logic touched, only className strings; e2e "sign-in page renders the
 //      sign-in form" still passes and the live page renders both forms.
+// 12a: measured in Chrome's network log, signed in with a New York profile.
+//      StateBillsTab fires exactly ONE /api/openstates/bills request on mount
+//      (jurisdiction=New York, no q) — beating the plan's own 1–2 target. The
+//      plan assumed the duplicate "all" call would hit apiCache; it would not
+//      have, since the cache is only written when a response lands. Added
+//      in-flight request sharing to useData so the two concurrent identical
+//      calls collapse into one. A second, nationwide bills request was also
+//      firing on mount — NOT from the Discover tab (DashboardPage.tsx:84
+//      already guards that behind activeTab === 'discover') but from
+//      StateBillsTab itself: userPreferences arrives from Firestore after the
+//      first render, so userStateObj was briefly null and useBills took its
+//      nationwide-trending branch (q=artificial intelligence). Fixed with an
+//      enabled flag on useBills. Confirmed against the dev-server log — the
+//      authority here, since Chrome's network panel double-counts some
+//      entries — which now shows exactly 1 bills request per dashboard load.
+// 12b: Housing → 1 new request (q=housing), Technology → 1 (q=ai),
+//      Healthcare → 1 (q=healthcare). One per newly-visited topic.
+// 12c: clicking back to Housing after visiting Technology fired ZERO new
+//      requests — served from the 30-minute apiCache window.
+// 12d: stats strip held at Moving Fast 1 / Updated This Week 14 / You've
+//      Saved 9 / Trending 0 with Healthcare active, confirming it still
+//      reads allBills rather than the active topic.
+// 12e/12f/12g: build compiled clean, lint zero findings in the touched files,
+//      vitest 27/27 (7 new useData tests), playwright 9/9.
+// 12g note: the new src/hooks/useData.test.ts covers the dedupe, the cache
+//      handoff, the failure path, and out-of-order responses. Verified as
+//      load-bearing by stripping the in-flight lookup and the stale guard out
+//      of useData — exactly those 3 tests failed, and passed again restored.
+// 12i: all six pills exercised live — All (20 bills), Housing (19),
+//      Technology, Healthcare, Education (12: chronic absenteeism, charter
+//      schools), Environment (20: artificial turf, data centers). Each
+//      returned topic-appropriate New York bills.
+// 12h NOT verified: the "Recent updates on your saved bills" block only
+//      renders when a saved bill has a latest_action_date inside the last 7
+//      days, and none of the test account's 9 saved bills qualified, so the
+//      section never rendered. Its code is untouched by PLAN-12 and reads
+//      savedBills, which never flowed through useBills — but that is an
+//      argument for low risk, not evidence it works.
 const AGENT_IN_PROGRESS = {
   "9b": true
 };

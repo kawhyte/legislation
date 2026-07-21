@@ -17,7 +17,16 @@ const RecentForTrending = getPastDate(30, 'days'); // New: Only for trending
 
 
 
-const useBills = (selectedJurisdiction: States | null, selectedTopic: string | null) => {
+const useBills = (
+	selectedJurisdiction: States | null,
+	selectedTopic: string | null,
+	// Callers whose jurisdiction arrives asynchronously (e.g. the dashboard,
+	// waiting on Firestore preferences) pass enabled: false until it lands.
+	// Without it, the null jurisdiction takes the nationwide-trending branch
+	// below and fires a query the caller never wanted.
+	options: { enabled?: boolean } = {}
+) => {
+	const { enabled = true } = options;
 	const params = useMemo(() => {
 		const baseParams: Record<string, string | number | string[]> = {
 			sort: 'updated_desc',
@@ -54,7 +63,7 @@ const useBills = (selectedJurisdiction: States | null, selectedTopic: string | n
 	}, [selectedJurisdiction, selectedTopic]);
 
 	const { data: rawData, error, isLoading } = useData<Bill>(
-		"/bills",
+		enabled ? "/bills" : null,
 		{ params },
 		[params]
 	);
