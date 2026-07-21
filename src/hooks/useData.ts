@@ -2,12 +2,44 @@
 
 import { useEffect, useState, useRef, useMemo } from "react";
 import apiClient from "../services/api-client";
-import { CanceledError, type AxiosRequestConfig } from "axios";
+import { type AxiosRequestConfig } from "axios";
 import { getCached, setCached, makeCacheKey } from "../lib/apiCache";
 
 interface FetchResponse<T> {
 	results: T[];
 }
+
+/**
+ * Requests that have been sent but not yet resolved, keyed by cache key.
+ * apiCache is only written once a response lands, so without this two
+ * consumers asking for the identical endpoint+params in the same tick would
+ * both miss the cache and fire duplicate network requests. Sharing the promise
+ * collapses them into one. Entries are removed as soon as the request settles,
+ * after which apiCache takes over.
+ */
+const inFlight = new Map<string, Promise<unknown[]>>();
+
+const fetchShared = <T>(
+	cacheKey: string,
+	endpoint: string,
+	requestConfig?: AxiosRequestConfig
+): Promise<T[]> => {
+	const existing = inFlight.get(cacheKey);
+	if (existing) return existing as Promise<T[]>;
+
+	const request = apiClient
+		.get<FetchResponse<T>>(endpoint, { ...requestConfig })
+		.then((res) => {
+			setCached(cacheKey, res.data.results); // TTL is set on read, not write
+			return res.data.results;
+		})
+		.finally(() => {
+			inFlight.delete(cacheKey);
+		});
+
+	inFlight.set(cacheKey, request as Promise<unknown[]>);
+	return request;
+};
 
 const useData = <T>(
 	endpoint: string | null,
@@ -50,41 +82,30 @@ const useData = <T>(
 			return;
 		}
 
-		const controller = new AbortController();
-		const signal = controller.signal;
+		// The request itself is shared, so it is never aborted on unmount — a
+		// second consumer may still be waiting on it, and the response fills
+		// the cache either way. This flag just drops the result for a consumer
+		// that unmounted or moved on to different deps.
+		let stale = false;
 
 		setLoading(true);
 		setError("");
 
-		apiClient
-			.get<FetchResponse<T>>(endpoint, {
-				signal,
-				...requestConfigRef.current
-			})
-			.then((res) => {
-				// Only update state if request wasn't aborted
-				if (!signal.aborted) {
-					setData(res.data.results);
-					setCached(cacheKey, res.data.results); // TTL is set on read, not write
-					setLoading(false);
-				}
+		fetchShared<T>(cacheKey, endpoint, requestConfigRef.current)
+			.then((results) => {
+				if (stale) return;
+				setData(results);
+				setLoading(false);
 			})
 			.catch((err) => {
-				// Don't handle canceled requests
-				if (err instanceof CanceledError) return;
-
 				console.error("[useData] Fetch error:", err.message);
-
-				// Only update state if request wasn't aborted
-				if (!signal.aborted) {
-					setError(err.message);
-					setLoading(false);
-				}
+				if (stale) return;
+				setError(err.message);
+				setLoading(false);
 			});
 
-		// Cleanup function to abort request on unmount or dependency change
 		return () => {
-			controller.abort();
+			stale = true;
 		};
 	}, [endpoint, stableDeps, stableParams]);
 
