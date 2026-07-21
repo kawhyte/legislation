@@ -10,6 +10,11 @@ test('sign-in page renders the sign-in form', async ({ page }) => {
   await expect(page.getByRole('heading', { name: /sign in/i })).toBeVisible();
 });
 
+test('reset-password page renders the reset form', async ({ page }) => {
+  await page.goto('/reset-password');
+  await expect(page.getByRole('heading', { name: /reset your password/i })).toBeVisible();
+});
+
 test('trending page renders without crashing', async ({ page }) => {
   await page.route('**/api/openstates/bills**', route =>
     route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ results: [] }) })
