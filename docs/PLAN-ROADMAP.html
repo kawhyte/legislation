@@ -572,6 +572,7 @@ const AGENT_VERIFIED = {
   "12e": true,
   "12f": true,
   "12g": true,
+  "12h": true,
   "12i": true
 };
 // 9b needs a real inbox to confirm the Firebase email actually arrives.
@@ -634,12 +635,15 @@ const AGENT_VERIFIED = {
 //      Technology, Healthcare, Education (12: chronic absenteeism, charter
 //      schools), Environment (20: artificial turf, data centers). Each
 //      returned topic-appropriate New York bills.
-// 12h NOT verified: the "Recent updates on your saved bills" block only
-//      renders when a saved bill has a latest_action_date inside the last 7
-//      days, and none of the test account's 9 saved bills qualified, so the
-//      section never rendered. Its code is untouched by PLAN-12 and reads
-//      savedBills, which never flowed through useBills — but that is an
-//      argument for low risk, not evidence it works.
+// 12h: the "Recent updates on your saved bills" block only renders when a
+//      saved bill has a latest_action_date inside the last 7 days, and none
+//      of the test account's 9 saved bills qualified — so it was initially
+//      left unverified rather than assumed good. Closed properly with Kenny's
+//      go-ahead by bookmarking S 10188 (dated Jul 16, inside the window):
+//      the section appeared with the correct heading, title, momentum badge,
+//      progress stepper and a filled bookmark icon. Un-bookmarking made it
+//      disappear again, so the conditional was exercised in both directions
+//      and the account was left at its original 9 saved bills.
 const AGENT_IN_PROGRESS = {
   "9b": true
 };
