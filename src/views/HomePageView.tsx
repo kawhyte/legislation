@@ -23,10 +23,11 @@ interface DisplayProps {
   jurisdiction: States;
   bills: Bill[] | null;
   isLoading: boolean;
+  error?: string;
   cachedReps?: Rep[];
 }
 
-const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, isLoading, cachedReps }) => {
+const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, isLoading, error, cachedReps }) => {
   if (isLoading) {
     return (
       <section className="container-legislation py-12">
@@ -34,6 +35,26 @@ const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, is
           <div className="lg:col-span-3">
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {Array.from({ length: 6 }).map((_, i) => <BillCardSkeleton key={i} />)}
+            </div>
+          </div>
+          <div className="lg:col-span-1 order-first lg:order-last">
+            <YourRepsWidget coords={jurisdiction.zipCoords} stateName={jurisdiction.name} cachedReps={cachedReps} />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error && (!bills || bills.length === 0)) {
+    return (
+      <section className="container-legislation py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="lg:col-span-3 py-4 text-center">
+            <div className="max-w-xs mx-auto">
+              <h3 className="text-xl font-bold text-foreground mt-2">Something went wrong.</h3>
+              <p className="text-muted-foreground mt-2 text-sm">
+                We couldn&apos;t load bills for {jurisdiction.name} right now. Please try again in a moment.
+              </p>
             </div>
           </div>
           <div className="lg:col-span-1 order-first lg:order-last">
@@ -92,7 +113,7 @@ const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, is
 
 const ZipBillResultsFetch: React.FC<{ jurisdiction: States }> = ({ jurisdiction }) => {
   const { setJurisdiction, setBills } = useSearchCache();
-  const { data: bills, isLoading } = useBills(jurisdiction, null);
+  const { data: bills, isLoading, error } = useBills(jurisdiction, null);
 
   useEffect(() => {
     setJurisdiction(jurisdiction);
@@ -103,7 +124,7 @@ const ZipBillResultsFetch: React.FC<{ jurisdiction: States }> = ({ jurisdiction 
     if (bills && bills.length > 0) setBills(bills);
   }, [bills, setBills]);
 
-  return <ZipBillResultsDisplay jurisdiction={jurisdiction} bills={bills} isLoading={isLoading} />;
+  return <ZipBillResultsDisplay jurisdiction={jurisdiction} bills={bills} isLoading={isLoading} error={error} />;
 };
 
 // ── Smart cache wrapper ───────────────────────────────────────────────────────

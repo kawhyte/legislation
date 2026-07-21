@@ -25,7 +25,7 @@ const STATE_NAMES: Record<string, string> = {
 const DashboardPage: React.FC = () => {
 	const { userPreferences, savedBills } = useUserData();
 	const searchParams = useSearchParams();
-	const [activeTab, setActiveTab] = useState(searchParams.get('tab') ?? 'state');
+	const [activeTab, setActiveTab] = useState(searchParams.get('tab') ?? 'my-area');
 
 	const stateAbbr = userPreferences?.selectedState ?? "";
 	const userStateName = STATE_NAMES[stateAbbr] || stateAbbr || "Your State";
@@ -48,7 +48,7 @@ const DashboardPage: React.FC = () => {
 				<Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
 					<TabsList className="flex w-full bg-transparent rounded-none p-0 h-auto mb-8 border-b-2 border-border gap-0">
 						<TabsTrigger
-							value="state"
+							value="my-area"
 							className="flex-1 rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-medium data-[state=active]:font-bold px-3 sm:px-5 py-3 border-b-[3px] border-transparent data-[state=active]:border-accent-yellow -mb-[2px] transition-colors text-sm sm:text-base"
 						>
 							My Area
@@ -65,23 +65,23 @@ const DashboardPage: React.FC = () => {
 							)}
 						</TabsTrigger>
 						<TabsTrigger
-							value="explore"
+							value="discover"
 							className="flex-1 rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground font-medium data-[state=active]:font-bold px-3 sm:px-5 py-3 border-b-[3px] border-transparent data-[state=active]:border-accent-yellow -mb-[2px] transition-colors text-sm sm:text-base"
 						>
 							Discover
 						</TabsTrigger>
 					</TabsList>
 
-					<TabsContent value="state" className="mt-0">
+					<TabsContent value="my-area" className="mt-0">
 						<StateBillsTab userStateName={userStateName} />
 					</TabsContent>
 
 					<TabsContent value="saved" className="mt-0">
-						<SavedBillsTab onSwitchToExplore={() => setActiveTab("explore")} />
+						<SavedBillsTab onSwitchToExplore={() => setActiveTab("discover")} />
 					</TabsContent>
 
-					<TabsContent value="explore" className="mt-0">
-						{activeTab === 'explore' && <ExploreBillsTab />}
+					<TabsContent value="discover" className="mt-0">
+						{activeTab === 'discover' && <ExploreBillsTab />}
 					</TabsContent>
 				</Tabs>
 			</div>
