@@ -12,6 +12,7 @@ import { parseLocationInput } from '@/utils/zipToJurisdiction';
 import type { States } from '@/components/JurisdictionSelector';
 import type { Bill } from '@/types';
 import type { Rep } from '@/hooks/useReps';
+import { track } from '@/lib/analytics';
 
 const Lottie = React.lazy(() => import('lottie-react'));
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -101,8 +102,8 @@ const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, is
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div className="lg:col-span-3">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {bills.map(bill => (
-              <BillCard key={bill.id} bill={bill} showSource showProgressBar viewMode="detailed" />
+            {bills.map((bill, i) => (
+              <BillCard key={bill.id} bill={bill} showSource showProgressBar viewMode="detailed" feedName="state" position={i} />
             ))}
           </div>
         </div>
@@ -137,6 +138,18 @@ const ZipBillResultsFetch: React.FC<{ jurisdiction: States }> = ({ jurisdiction 
 const ZipBillResults: React.FC<{ jurisdiction: States }> = ({ jurisdiction }) => {
   const { isMatch, cache } = useSearchCache();
   const cacheHit = isMatch(jurisdiction) && cache.bills.length > 0;
+
+  // Tracked here rather than in the display: this wrapper is the only component
+  // that survives the fetch→cache swap. The display below it unmounts and
+  // remounts on that swap, which would reset a ref guard and double-fire.
+  // The fetch path populates the same cache once bills load, so both paths land
+  // here exactly once per jurisdiction.
+  const trackedFeed = useRef<string | null>(null);
+  useEffect(() => {
+    if (!cacheHit || trackedFeed.current === jurisdiction.name) return;
+    trackedFeed.current = jurisdiction.name;
+    track('feed_view', { feed: 'state', count: cache.bills.length });
+  }, [cacheHit, jurisdiction.name, cache.bills.length]);
 
   if (cacheHit) {
     return (

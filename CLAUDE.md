@@ -76,6 +76,7 @@ This is a Next.js 15 legislation tracking application built with:
 - `/rep/[repId]` - Representative scorecard
 - `/api/openstates/[...path]` - OpenStates proxy (injects API key server-side)
 - `/api/summarize` - Gemini AI summary route (server-side only)
+- `/api/track` - product-analytics sink; writes events to Firestore via the Admin SDK
 
 ### Key Features
 
@@ -97,6 +98,36 @@ This is a Next.js 15 legislation tracking application built with:
 
 **Responsive Design**: Mobile-first TailwindCSS v4 implementation
 
+**Analytics**: self-hosted on Firestore — **no third-party vendor, no plan tier, nothing that can
+bill**. All product events go through the typed `track()` helper in `src/lib/analytics.ts`, which
+beacons to `/api/track`; that route validates the event name and writes to the `analytics_events`
+collection with the Admin SDK.
+
+- `track()` is a no-op unless `NEXT_PUBLIC_ANALYTICS_ENABLED === 'true'`, which keeps the unit
+  suite and local dev silent (jsdom defines `window`, so the browser check alone is not enough).
+- It never throws and never awaits. It uses `navigator.sendBeacon` so a `bill_card_click` survives
+  the navigation it triggers, falling back to `fetch(..., { keepalive: true })`.
+- Clients never write to Firestore directly — `firestore.rules` denies all client access to
+  `analytics_events`. An open create rule would be a spam target.
+- The event union is **closed** — the five names below are the whole vocabulary. Adding one means
+  editing both the union and `ALLOWED_EVENTS` in `src/app/api/track/route.ts`.
+
+| Event | Props |
+|---|---|
+| `feed_view` | `{ feed: 'trending' \| 'state' \| 'following', count: number }` |
+| `bill_card_click` | `{ feed: string, position: number, hasSummary: boolean }` |
+| `location_set` | `{ method: 'dropdown' \| 'zip' \| 'chip' \| 'profile' }` |
+| `summary_view` | `{ cached: boolean }` |
+| `topic_chip_tap` | `{ topic: string }` — reserved, no call site yet (PLAN-21) |
+
+Props must stay non-identifying: bill IDs are public and safe, but never attach the Firebase `uid`,
+display name, or email. The route sanitizes props defensively (primitives only, truncated, capped)
+and stores no IP — the client IP is used for rate limiting and then discarded.
+
+**Error Monitoring**: none, deliberately — every hosted option is a paid or freemium vendor.
+`src/app/global-error.tsx` catches App Router render errors and `console.error`s them, which the
+host platform's runtime logs capture at no cost.
+
 ## Environment Variables
 
 Server-side only (never exposed to client):
@@ -104,6 +135,7 @@ Server-side only (never exposed to client):
 - `GEMINI_API_KEY` - Google Gemini API key
 
 Client-safe (`NEXT_PUBLIC_` prefix):
+- `NEXT_PUBLIC_ANALYTICS_ENABLED` - `'true'` only in production; anything else disables tracking
 - `NEXT_PUBLIC_FIREBASE_API_KEY`
 - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
 - `NEXT_PUBLIC_FIREBASE_PROJECT_ID`

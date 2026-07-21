@@ -469,6 +469,27 @@
 </div>
 
 <div class="step" data-step>
+  <div class="rail"><div class="dot">15</div><div class="line"></div></div>
+  <div class="card">
+    <div class="card-head">
+      <div><h2>Measurement Baseline</h2><div class="file">PLAN-15-high-measurement-baseline.md</div></div>
+      <span class="pill sans sev-high">HIGH</span>
+    </div>
+    <p class="why">The redesign's success metric is clicks and the app measures nothing — add five typed events before the homepage changes, so there's a control group. Vendor swap: the sink is a self-hosted Firestore collection via /api/track, not Vercel Analytics + Sentry, which are not unconditionally free.</p>
+      <p class="model-row"><span class="pill pill-model model-opus">OPUS 4.8</span><span class="model-why">"Silent in tests, live in prod" is a runtime-environment judgement — jsdom defines window, so a naive guard passes unit tests while polluting them.</span></p>
+    <ul class="tasks">
+      <li><label><input type="checkbox" data-t="15a"><span>npm run build succeeds; zero new dependencies added</span></label></li>
+      <li><label><input type="checkbox" data-t="15b"><span>npm run test passes with zero analytics output</span></label></li>
+      <li><label><input type="checkbox" data-t="15c"><span>Flag unset: no outbound /api/track requests (e2e-locked)</span></label></li>
+      <li><label><input type="checkbox" data-t="15d"><span>Flag on: bill_card_click POSTs to /api/track, once</span></label></li>
+      <li><label><input type="checkbox" data-t="15e"><span>Events land in the Firestore analytics_events collection in prod</span></label></li>
+      <li><label><input type="checkbox" data-t="15f"><span>A thrown client render error is caught and logged by global-error</span></label></li>
+      <li><label><input type="checkbox" data-t="15g"><span>env.example no longer mentions Clerk or VITE_*</span></label></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-step>
   <div class="rail"><div class="dot">16</div><div class="line"></div></div>
   <div class="card">
     <div class="card-head">
@@ -770,7 +791,12 @@ const AGENT_VERIFIED = {
   "14e": true,
   "14f": true,
   "14g": true,
-  "14h": true
+  "14h": true,
+  "15a": true,
+  "15b": true,
+  "15c": true,
+  "15d": true,
+  "15g": true
 };
 // 9b needs a real inbox to confirm the Firebase email actually arrives.
 // 10d: e2e "skeleton-to-card swap does not shift layout" holds the bills

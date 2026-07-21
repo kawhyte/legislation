@@ -9,6 +9,7 @@ import { Users } from "lucide-react";
 
 import JurisdictionSelector, { type States } from "./JurisdictionSelector";
 import { parseLocationInput } from "../utils/zipToJurisdiction";
+import { track } from "@/lib/analytics";
 
 interface HeroSectionProps {
 	onSelectState: (state: States) => void;
@@ -41,6 +42,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 		setError('');
 		try {
 			const state = await parseLocationInput(query);
+			// Only after the lookup resolves — a rejected zip is not a location set.
+			track('location_set', { method: 'zip' });
 			onSelectState(state);
 			setSearchParams({ q: query.trim() }, { replace: true });
 		} catch (err) {
@@ -85,6 +88,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 					selectedJurisdiction={selectedState}
 					onSelectJurisdiction={(state) => {
 						if (state) {
+							track('location_set', { method: 'dropdown' });
 							setSelectedState(state);
 							setError('');
 							onSelectState(state);

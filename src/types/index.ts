@@ -116,6 +116,8 @@ export interface UseBillSummaryReturn {
   error: string | null;
   generateSummary: () => void;
   cleanup: () => void;
+  /** True when `structured` came from the Firestore cache rather than Gemini. */
+  fromCache: boolean;
 }
 
 // From BillCard.tsx
@@ -127,6 +129,9 @@ export interface BillCardProps {
 	showTrendingReason?: boolean;
 	showSource?: boolean;
 	viewMode?: BillViewMode;
+	/** Analytics only — which feed rendered this card, and its 0-based slot in it. */
+	feedName?: string;
+	position?: number;
 }
 
 // From BillProgressStepper.tsx
