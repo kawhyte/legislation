@@ -14,16 +14,22 @@ import { getPastDate } from '@/lib/utils';
  * once on the server and caching the result means users get an instant,
  * pre-ranked feed instead of each browser hammering OpenStates on every visit.
  *
- * Caching: `revalidate = 600` caches this route's JSON for 10 minutes (ISR),
- * and each upstream fetch is independently cached in Next's Data Cache for the
- * same window. A cron pinging this route (see vercel.json) keeps it warm so the
- * cold-fill cost is never paid by a real user.
+ * Caching: the route runs at request time (force-dynamic below), and each
+ * upstream OpenStates fetch is cached in Next's Data Cache for 10 minutes
+ * (`next: { revalidate: 600 }`). So after the first fill the route re-serves from
+ * that cache in milliseconds. A GitHub Actions cron pings this route to keep the
+ * Data Cache warm so the slow cold-fill is never paid by a real user.
  *
  * This response is intentionally user-agnostic (no engagement, no auth) so it is
  * fully shareable/cacheable. The client applies the per-user engagement nudge
  * and does the final sort (see useTrendingBills.ts).
  */
-export const revalidate = 600;
+// Run at request time, never prerendered at build. Prerendering baked whatever
+// OpenStates returned during `next build` (often empty/slow) into a frozen
+// static snapshot that was then served forever. The caching that actually
+// matters is per-fetch below (`next: { revalidate: 600 }`), which persists the
+// slow upstream responses in Next's Data Cache across requests.
+export const dynamic = 'force-dynamic';
 // Allow the cold-fill pass room to finish on platforms that cap function
 // duration (e.g. Vercel). Ignored where not applicable.
 export const maxDuration = 60;
