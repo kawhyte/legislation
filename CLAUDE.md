@@ -88,7 +88,9 @@ This is a Next.js 15 legislation tracking application built with:
 **Smart Filtering**: Jurisdiction selector (US states) and topic-based filtering
 
 **AI Summaries**: Gemini AI (`gemini-2.5-flash`) generates plain-English summaries with 2-layer caching:
-- L2: Firestore (client-side, 24h, shared across all users)
+- L2: Firestore `bill_summaries/{billId}` — written server-side via the Admin SDK, permanent,
+  shared across all users. Read by both the client and `/api/summarize` (before Gemini is called).
+  Invalidated only by bumping `SUMMARY_PROMPT_VERSION` in `src/lib/summaryCacheKey.ts`.
 - L1: In-memory Map on the server (per-process, deduplicates concurrent requests)
 
 **Persistent Bill Saving**: Authenticated users can save bills to Firestore

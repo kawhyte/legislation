@@ -101,6 +101,15 @@ export interface BillSummaryData {
   controversy: { for: string[]; against: string[] };
 }
 
+/** What actually lives in Firestore: the summary plus provenance metadata. */
+export interface CachedBillSummary extends BillSummaryData {
+  _meta?: {
+    generatedAt: string;   // ISO string
+    model: string;         // e.g. 'gemini-2.5-flash'
+    promptVersion: number; // bump to invalidate every cached summary
+  };
+}
+
 export interface UseBillSummaryReturn {
   structured: BillSummaryData | null;
   isLoading: boolean;
