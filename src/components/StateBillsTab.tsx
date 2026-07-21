@@ -43,24 +43,28 @@ const StateBillsTab: React.FC<StateBillsTabProps> = ({ userStateName }) => {
 			.catch(() => setZipCoords(null));
 	}, [userPreferences?.zipCode]);
 
-	// All topic data pre-fetched in background
-	const { data: allBills,         isLoading: loadingAll         } = useBills(userStateObj, null);
-	const { data: healthcareBills,  isLoading: loadingHealthcare  } = useBills(userStateObj, "healthcare");
-	const { data: housingBills,     isLoading: loadingHousing     } = useBills(userStateObj, "housing");
-	const { data: techBills,        isLoading: loadingTech        } = useBills(userStateObj, "ai");
-	const { data: educationBills,   isLoading: loadingEducation   } = useBills(userStateObj, "education");
-	const { data: environmentBills, isLoading: loadingEnvironment } = useBills(userStateObj, "environment");
+	// Firestore preferences arrive after the first render, so userStateObj is
+	// briefly null. Both calls stay disabled until it lands — otherwise the
+	// null jurisdiction would send useBills down its nationwide-trending path
+	// and fire a query this tab never displays.
+	const enabled = { enabled: userStateObj != null };
 
-	const billsMap: Record<TopicValue, { bills: typeof allBills; loading: boolean }> = {
-		all:         { bills: allBills,         loading: loadingAll         },
-		healthcare:  { bills: healthcareBills,  loading: loadingHealthcare  },
-		housing:     { bills: housingBills,     loading: loadingHousing     },
-		ai:          { bills: techBills,        loading: loadingTech        },
-		education:   { bills: educationBills,   loading: loadingEducation   },
-		environment: { bills: environmentBills, loading: loadingEnvironment },
-	};
+	// "all" is always fetched — it feeds the always-visible stats strip
+	// (Moving Fast / Updated This Week / Trending counts), which is
+	// independent of which topic pill is currently selected.
+	const { data: allBills } = useBills(userStateObj, null, enabled);
 
-	const { bills: activeBills, loading: isLoading } = billsMap[activeTopic];
+	// One reactive call for whichever topic is currently active — this is the
+	// only additional request beyond "all", instead of eagerly fetching all 5
+	// other topics whether or not the user ever looks at them. When the active
+	// topic is "all" this resolves to the same cache key as the call above, so
+	// useData shares the in-flight request (or the cached result) instead of
+	// firing a duplicate.
+	const { data: activeBills, isLoading } = useBills(
+		userStateObj,
+		activeTopic === "all" ? null : activeTopic,
+		enabled
+	);
 
 	const recentlyActiveCount = allBills?.filter((bill) => {
 		if (!bill.latest_action_date) return false;

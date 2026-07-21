@@ -555,7 +555,36 @@ const AGENT_VERIFIED = {
   "10f": true,
   "10g": true,
   "10h": true,
-  "10i": true
+  "10i": true,
+  "11a": true,
+  "11b": true,
+  "11c": true,
+  "11d": true,
+  "11e": true,
+  "11f": true,
+  "11g": true,
+  "11h": true,
+  "11i": true,
+  "12a": true,
+  "12b": true,
+  "12c": true,
+  "12d": true,
+  "12e": true,
+  "12f": true,
+  "12g": true,
+  "12h": true,
+  "12i": true,
+  "13a": true,
+  "13b": true,
+  "13c": true,
+  "13d": true,
+  "13e": true,
+  "13f": true,
+  "13g": true,
+  "13h": true,
+  "13i": true,
+  "13j": true,
+  "13k": true
 };
 // 9b needs a real inbox to confirm the Firebase email actually arrives.
 // 10d: e2e "skeleton-to-card swap does not shift layout" holds the bills
@@ -569,6 +598,91 @@ const AGENT_VERIFIED = {
 //      fixed by opening with the keyboard and scrolling the option into view.
 // 10i: covered by e2e — card href asserted as /bill/ocd-bill…, and the bookmark
 //      click opens the auth modal while the URL stays on "/".
+// 11a: signed out and screenshotted /sign-in, /sign-up and /about side by side
+//      — same warm off-white (--background #f9f8f8), same charcoal headings,
+//      same white cards. The old cool bg-gray-50 tone is gone.
+// 11b/11c/11d: grep -rn "dark:" src/ and grep -rn "next-themes" package.json
+//      src/ both return zero. next-themes uninstalled, lockfile updated.
+// 11c note: the plan assumed next-themes was never imported, but shadcn's
+//      ui/sonner.tsx did import useTheme and defaulted to theme="system" —
+//      so toasts rendered dark for dark-OS users in this light-only app.
+//      Hardcoded theme="light" (Kenny approved) before uninstalling.
+// 11e/11f/11g: build clean (16 routes), lint zero errors (only pre-existing
+//      <img>/prefer-const/jsx-key warnings), vitest 20/20, playwright 9/9.
+// 11h: AIAnalysisContent keeps bg-amber-50, text-amber-800/900, text-green-600
+//      and text-red-600 — only the inert dark: variants were stripped, so the
+//      visible light-mode appearance is byte-identical.
+// 11i: no logic touched, only className strings; e2e "sign-in page renders the
+//      sign-in form" still passes and the live page renders both forms.
+// 12a: measured in Chrome's network log, signed in with a New York profile.
+//      StateBillsTab fires exactly ONE /api/openstates/bills request on mount
+//      (jurisdiction=New York, no q) — beating the plan's own 1–2 target. The
+//      plan assumed the duplicate "all" call would hit apiCache; it would not
+//      have, since the cache is only written when a response lands. Added
+//      in-flight request sharing to useData so the two concurrent identical
+//      calls collapse into one. A second, nationwide bills request was also
+//      firing on mount — NOT from the Discover tab (DashboardPage.tsx:84
+//      already guards that behind activeTab === 'discover') but from
+//      StateBillsTab itself: userPreferences arrives from Firestore after the
+//      first render, so userStateObj was briefly null and useBills took its
+//      nationwide-trending branch (q=artificial intelligence). Fixed with an
+//      enabled flag on useBills. Confirmed against the dev-server log — the
+//      authority here, since Chrome's network panel double-counts some
+//      entries — which now shows exactly 1 bills request per dashboard load.
+// 12b: Housing → 1 new request (q=housing), Technology → 1 (q=ai),
+//      Healthcare → 1 (q=healthcare). One per newly-visited topic.
+// 12c: clicking back to Housing after visiting Technology fired ZERO new
+//      requests — served from the 30-minute apiCache window.
+// 12d: stats strip held at Moving Fast 1 / Updated This Week 14 / You've
+//      Saved 9 / Trending 0 with Healthcare active, confirming it still
+//      reads allBills rather than the active topic.
+// 12e/12f/12g: build compiled clean, lint zero findings in the touched files,
+//      vitest 27/27 (7 new useData tests), playwright 9/9.
+// 12g note: the new src/hooks/useData.test.ts covers the dedupe, the cache
+//      handoff, the failure path, and out-of-order responses. Verified as
+//      load-bearing by stripping the in-flight lookup and the stale guard out
+//      of useData — exactly those 3 tests failed, and passed again restored.
+// 12i: all six pills exercised live — All (20 bills), Housing (19),
+//      Technology, Healthcare, Education (12: chronic absenteeism, charter
+//      schools), Environment (20: artificial turf, data centers). Each
+//      returned topic-appropriate New York bills.
+// 12h: the "Recent updates on your saved bills" block only renders when a
+//      saved bill has a latest_action_date inside the last 7 days, and none
+//      of the test account's 9 saved bills qualified — so it was initially
+//      left unverified rather than assumed good. Closed properly with Kenny's
+//      go-ahead by bookmarking S 10188 (dated Jul 16, inside the window):
+//      the section appeared with the correct heading, title, momentum badge,
+//      progress stepper and a filled bookmark icon. Un-bookmarking made it
+//      disappear again, so the conditional was exercised in both directions
+//      and the account was left at its original 9 saved bills.
+// 13a/13b: git status after deletion matched the plan's file list exactly
+//      (10 dead components, DemoContext, BookmarkContext, vite.svg, plus the
+//      modified footer/firebase.json/index.css); grep for all 10 removed
+//      component names across src/ returned zero matches.
+// 13c: curled /, /trending, /about, /dashboard — all 200. Home HTML contains
+//      both "Trending" and "About" footer links pointing at live routes.
+// 13d/13e: `ls public/vite.svg` → No such file; `cat firebase.json` shows only
+//      the firestore key, and the diff confirms that key is byte-for-byte
+//      unchanged — only the dead Vite-era hosting block was removed.
+// 13f/13g/13h: npm run build clean (15 routes), npm run lint zero errors
+//      (only pre-existing <img>/prefer-const warnings), vitest 27/27,
+//      playwright 9/9 (all pre-existing e2e specs, including the bookmark
+//      interaction test, still pass against the trimmed provider tree).
+// 13i: DemoContext was fully dead (its only remaining references were its
+//      own file and providers.tsx) and removed; unwrapped DemoProvider from
+//      providers.tsx. Loaded / and /dashboard in Chrome after the change —
+//      zero console errors on either page. Not verified signed-in (no test
+//      credentials available), so DemoProvider's client-side effects beyond
+//      initial mount weren't exercised, but the render path that matters
+//      (provider tree minus DemoProvider) is covered.
+// 13j: BookmarkContext had zero importers before deletion (bookmarking was
+//      already entirely UserContext/BookmarkButton-driven, confirmed by
+//      grep), so this was always a no-op removal. playwright's "bookmarking
+//      a card does not navigate away" spec still passes post-deletion.
+// 13k: firebase.json's firestore block is untouched (diff shows only the
+//      hosting key removed) — the plan's own edge-case note applies: this
+//      has zero effect on Firestore rules/deploy since only the unused
+//      Vercel-irrelevant hosting config was dropped.
 const AGENT_IN_PROGRESS = {
   "9b": true
 };
