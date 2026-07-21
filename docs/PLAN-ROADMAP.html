@@ -160,7 +160,7 @@
   <div class="rail"><div class="dot">3</div><div class="line"></div></div>
   <div class="card">
     <div class="card-head">
-      <div><h2>Server-Side Caching for the OpenStates Proxy</h2><div class="file">PLAN-03-high-server-side-caching.md</div></div>
+      <div><h2>Server-Side Caching for the OpenStates Proxy</h2><div class="file">completed/PLAN-03-high-server-side-caching.md</div></div>
       <span class="pill sans sev-high">HIGH</span>
     </div>
     <p class="why">Cache OpenStates responses server-side/CDN-side so the app stops re-hitting upstream on every search.</p>
@@ -182,7 +182,7 @@
   <div class="rail"><div class="dot">4</div><div class="line"></div></div>
   <div class="card">
     <div class="card-head">
-      <div><h2>Testing Foundation (Vitest + Playwright)</h2><div class="file">PLAN-04-high-testing-foundation.md</div></div>
+      <div><h2>Testing Foundation (Vitest + Playwright)</h2><div class="file">completed/PLAN-04-high-testing-foundation.md</div></div>
       <span class="pill sans sev-high">HIGH</span>
     </div>
     <p class="why">Stand up Vitest + Playwright so every later plan can be verified automatically instead of by hand.</p>
@@ -201,7 +201,7 @@
   <div class="rail"><div class="dot">5</div><div class="line"></div></div>
   <div class="card">
     <div class="card-head">
-      <div><h2>Server-Rendered Bill Detail Page (/bill/[id])</h2><div class="file">PLAN-05-high-bill-detail-page.md</div></div>
+      <div><h2>Server-Rendered Bill Detail Page (/bill/[id])</h2><div class="file">completed/PLAN-05-high-bill-detail-page.md</div></div>
       <span class="pill sans sev-high">HIGH</span>
     </div>
     <p class="why">Give every bill a real, shareable, server-rendered URL and retire the AI-summary modal.</p>
@@ -226,7 +226,7 @@
   <div class="rail"><div class="dot">6</div><div class="line"></div></div>
   <div class="card">
     <div class="card-head">
-      <div><h2>SEO Foundation (Metadata, Sitemap, Robots, JSON-LD)</h2><div class="file">PLAN-06-high-seo-foundation.md</div></div>
+      <div><h2>SEO Foundation (Metadata, Sitemap, Robots, JSON-LD)</h2><div class="file">completed/PLAN-06-high-seo-foundation.md</div></div>
       <span class="pill sans sev-high">HIGH</span>
     </div>
     <p class="why">Add metadata, sitemap, robots.txt, an OG image, and JSON-LD to every route.</p>
@@ -248,7 +248,7 @@
   <div class="rail"><div class="dot">7</div><div class="line"></div></div>
   <div class="card">
     <div class="card-head">
-      <div><h2>Rep Scorecard Page Overhaul</h2><div class="file">PLAN-07-high-rep-page-overhaul.md</div></div>
+      <div><h2>Rep Scorecard Page Overhaul</h2><div class="file">completed/PLAN-07-high-rep-page-overhaul.md</div></div>
       <span class="pill sans sev-high">HIGH</span>
     </div>
     <p class="why">Fix the rep scorecard breaking on direct/shared links and remove hardcoded colors.</p>
@@ -273,7 +273,7 @@
   <div class="rail"><div class="dot">8</div><div class="line"></div></div>
   <div class="card">
     <div class="card-head">
-      <div><h2>Fix Found Functional Bugs</h2><div class="file">PLAN-08-medium-error-states-and-bugfixes.md</div></div>
+      <div><h2>Fix Found Functional Bugs</h2><div class="file">completed/PLAN-08-medium-error-states-and-bugfixes.md</div></div>
       <span class="pill sans sev-medium">MEDIUM</span>
     </div>
     <p class="why">Fix the Housing@/crime topic bug, silent API-error masking, trending skeleton mismatch, and dashboard tab naming.</p>
@@ -500,9 +500,20 @@ const AGENT_VERIFIED = {
   "8g": true,
   "8h": true,
   "8i": true,
-  "8j": true
+  "8j": true,
+  "9a": true,
+  "9c": true,
+  "9d": true,
+  "9e": true,
+  "9f": true,
+  "9g": true,
+  "9h": true,
+  "9i": true
 };
-const AGENT_IN_PROGRESS = {};
+// 9b needs a real inbox to confirm the Firebase email actually arrives.
+const AGENT_IN_PROGRESS = {
+  "9b": true
+};
 </script>
 <script>
 (function(){
