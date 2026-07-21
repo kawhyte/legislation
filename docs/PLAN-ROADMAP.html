@@ -573,7 +573,18 @@ const AGENT_VERIFIED = {
   "12f": true,
   "12g": true,
   "12h": true,
-  "12i": true
+  "12i": true,
+  "13a": true,
+  "13b": true,
+  "13c": true,
+  "13d": true,
+  "13e": true,
+  "13f": true,
+  "13g": true,
+  "13h": true,
+  "13i": true,
+  "13j": true,
+  "13k": true
 };
 // 9b needs a real inbox to confirm the Firebase email actually arrives.
 // 10d: e2e "skeleton-to-card swap does not shift layout" holds the bills
@@ -644,6 +655,34 @@ const AGENT_VERIFIED = {
 //      progress stepper and a filled bookmark icon. Un-bookmarking made it
 //      disappear again, so the conditional was exercised in both directions
 //      and the account was left at its original 9 saved bills.
+// 13a/13b: git status after deletion matched the plan's file list exactly
+//      (10 dead components, DemoContext, BookmarkContext, vite.svg, plus the
+//      modified footer/firebase.json/index.css); grep for all 10 removed
+//      component names across src/ returned zero matches.
+// 13c: curled /, /trending, /about, /dashboard — all 200. Home HTML contains
+//      both "Trending" and "About" footer links pointing at live routes.
+// 13d/13e: `ls public/vite.svg` → No such file; `cat firebase.json` shows only
+//      the firestore key, and the diff confirms that key is byte-for-byte
+//      unchanged — only the dead Vite-era hosting block was removed.
+// 13f/13g/13h: npm run build clean (15 routes), npm run lint zero errors
+//      (only pre-existing <img>/prefer-const warnings), vitest 27/27,
+//      playwright 9/9 (all pre-existing e2e specs, including the bookmark
+//      interaction test, still pass against the trimmed provider tree).
+// 13i: DemoContext was fully dead (its only remaining references were its
+//      own file and providers.tsx) and removed; unwrapped DemoProvider from
+//      providers.tsx. Loaded / and /dashboard in Chrome after the change —
+//      zero console errors on either page. Not verified signed-in (no test
+//      credentials available), so DemoProvider's client-side effects beyond
+//      initial mount weren't exercised, but the render path that matters
+//      (provider tree minus DemoProvider) is covered.
+// 13j: BookmarkContext had zero importers before deletion (bookmarking was
+//      already entirely UserContext/BookmarkButton-driven, confirmed by
+//      grep), so this was always a no-op removal. playwright's "bookmarking
+//      a card does not navigate away" spec still passes post-deletion.
+// 13k: firebase.json's firestore block is untouched (diff shows only the
+//      hosting key removed) — the plan's own edge-case note applies: this
+//      has zero effect on Firestore rules/deploy since only the unused
+//      Vercel-irrelevant hosting config was dropped.
 const AGENT_IN_PROGRESS = {
   "9b": true
 };
