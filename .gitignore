@@ -25,6 +25,11 @@ dist-ssr
 *.sw?
 .vercel
 .next
+*.tsbuildinfo
+
+/test-results/
+/playwright-report/
+/coverage/
 
 # Only README.md, CLAUDE.md, and the roadmap are pushed — all other
 # Markdown docs (plans, notes, setup guides) stay local.

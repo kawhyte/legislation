@@ -1,0 +1,42 @@
+name: Warm trending cache
+
+# Keeps the /api/trending ISR cache warm so real visitors never pay the slow
+# OpenStates cold-fill. 100% free: GitHub Actions is free for public repos and
+# well within the free minutes for private ones (this job runs ~10s).
+#
+# SETUP (one time):
+#   1. Push this file to GitHub.
+#   2. Repo → Settings → Secrets and variables → Actions → Variables tab →
+#      New repository variable:  name = SITE_URL   value = https://<your-app>.vercel.app
+#      (your production URL, no trailing slash)
+#   3. Actions tab → "Warm trending cache" → "Run workflow" to test it now.
+#
+# Note: GitHub's scheduled runs can be delayed several minutes under load. That's
+# fine for cache warming — worst case a single visitor gets a still-served stale
+# response. If you want to-the-minute precision, use cron-job.org or UptimeRobot
+# instead (both free) pointed at the same URL.
+
+on:
+  schedule:
+    - cron: '*/10 * * * *' # every 10 minutes (matches the route's 600s revalidate)
+  workflow_dispatch: {}     # manual "Run workflow" button
+
+# Never let overlapping runs pile up
+concurrency:
+  group: warm-trending
+  cancel-in-progress: true
+
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /api/trending
+        run: |
+          if [ -z "${{ vars.SITE_URL }}" ]; then
+            echo "::error::Repo variable SITE_URL is not set. See setup notes in this file."
+            exit 1
+          fi
+          echo "Warming ${{ vars.SITE_URL }}/api/trending"
+          curl -sS -m 90 -o /dev/null \
+            -w "status=%{http_code} time=%{time_total}s\n" \
+            "${{ vars.SITE_URL }}/api/trending"

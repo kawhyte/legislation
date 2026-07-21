@@ -10,30 +10,19 @@ import YourRepsWidget from "./YourRepsWidget";
 import { parseLocationInput } from "../utils/zipToJurisdiction";
 import {
 	Activity,
-	HeartPulse,
 	Home,
-	Brain,
-	GraduationCap,
-	Leaf,
-	LayoutGrid,
 	TrendingUp,
 	Users,
 } from "lucide-react";
 import usStates from "../data/usStates";
 import type { States } from "./JurisdictionSelector";
+import { TOPICS as TOPIC_LIST, ALL_TOPICS_OPTION } from "@/constants/topics";
 
 interface StateBillsTabProps {
 	userStateName: string;
 }
 
-const TOPICS = [
-	{ label: "All",          value: "all",         icon: LayoutGrid    },
-	{ label: "Healthcare",   value: "healthcare",   icon: HeartPulse    },
-	{ label: "Housing",      value: "housing",      icon: Home          },
-	{ label: "Technology",   value: "ai",           icon: Brain         },
-	{ label: "Education",    value: "education",    icon: GraduationCap },
-	{ label: "Environment",  value: "environment",  icon: Leaf          },
-] as const;
+const TOPICS = [ALL_TOPICS_OPTION, ...TOPIC_LIST] as const;
 
 type TopicValue = typeof TOPICS[number]["value"];
 

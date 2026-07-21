@@ -2,22 +2,8 @@
 
 import React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { BrainCircuit, Gavel, HeartPulse, GraduationCap, Leaf, type LucideIcon } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
-
-interface Topic {
-  name: string;
-  value: string;
-  icon: LucideIcon;
-}
-
-const topics: Topic[] = [
-  { name: "Technology", value: "ai", icon: BrainCircuit },
-  { name: "Housing@", value: "crime", icon: Gavel },
-  { name: "Healthcare", value: "healthcare", icon: HeartPulse },
-  { name: "Education", value: "education", icon: GraduationCap },
-  { name: "Environment", value: "environment", icon: Leaf },
-];
+import { TOPICS } from '@/constants/topics';
 
 interface TopicSelectorProps {
   selectedTopic: string | null;
@@ -26,7 +12,7 @@ interface TopicSelectorProps {
 }
 
 const TopicSelector: React.FC<TopicSelectorProps> = ({ selectedTopic, onTopicSelect, disabled }) => {
-  const selectedTopicData = topics.find(t => t.value === selectedTopic);
+  const selectedTopicData = TOPICS.find(t => t.value === selectedTopic);
 
   const selectElement = (
     <Select onValueChange={(value) => onTopicSelect(value === "all" ? null : value)} value={selectedTopic || "all"} disabled={disabled}>
@@ -35,7 +21,7 @@ const TopicSelector: React.FC<TopicSelectorProps> = ({ selectedTopic, onTopicSel
           {selectedTopicData ? (
             <div className="flex items-center">
               <selectedTopicData.icon className="w-6 h-6 mr-2" />
-              <span>{selectedTopicData.name}</span>
+              <span>{selectedTopicData.label}</span>
             </div>
           ) : (
             "All Topics"
@@ -44,13 +30,13 @@ const TopicSelector: React.FC<TopicSelectorProps> = ({ selectedTopic, onTopicSel
       </SelectTrigger>
       <SelectContent className="bg-popover text-popover-foreground border-border">
         <SelectItem value="all" className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">All Topics</SelectItem>
-        {topics.map(topic => {
+        {TOPICS.map(topic => {
           const Icon = topic.icon;
           return (
             <SelectItem key={topic.value} value={topic.value} className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
               <div className="flex items-center">
                 <Icon className="w-6 h-6 mr-2" />
-                <span>{topic.name}</span>
+                <span>{topic.label}</span>
               </div>
             </SelectItem>
           );

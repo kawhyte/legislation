@@ -18,7 +18,7 @@ import type { Bill, MomentumAnalysis } from "@/types";
  */
 export function analyzeBillMomentum(bill: Bill): MomentumAnalysis {
   const actions = bill.actions || [];
-  const sortedActions = actions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const sortedActions = [...actions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   // --- Check 1: Definitive ENACTED outcome (HIGHEST priority) ---
   // Use description text because OpenStates doesn't reliably set enacted_date
@@ -27,9 +27,13 @@ export function analyzeBillMomentum(bill: Bill): MomentumAnalysis {
     "approved by governor", "signed by governor", "signed into law",
     "chapter no.", "chaptered", "became law", "veto override",
   ];
+  // "executive-signature" is OpenStates' classification for a governor's signing
+  // action (e.g. NY's "SIGNED CHAP.169") — enacted_date/passage dates are often
+  // left null even after signing, so this classification is the reliable signal.
   const isEnacted =
     !!bill.enacted_date
     || actions.some(a => a.classification?.includes("became-law"))
+    || actions.some(a => a.classification?.includes("executive-signature"))
     || actions.some(a =>
         ENACTED_DESC.some(kw => a.description?.toLowerCase().includes(kw))
       );

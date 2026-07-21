@@ -1,26 +1,29 @@
-import { 
-  doc, 
-  getDoc, 
-  setDoc, 
-  updateDoc, 
-  collection, 
-  query, 
-  where, 
-  getDocs, 
-  addDoc, 
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  addDoc,
   deleteDoc,
   orderBy,
+  limit,
+  increment,
   serverTimestamp,
   Timestamp
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { 
-  UserPreferences, 
-  CreateUserPreferencesDTO, 
-  UpdateUserPreferencesDTO, 
-  SavedBill, 
-  SaveBillDTO 
+import type {
+  UserPreferences,
+  CreateUserPreferencesDTO,
+  UpdateUserPreferencesDTO,
+  SavedBill,
+  SaveBillDTO
 } from '@/types';
+import type { BillEngagement } from '@/utils/trendingScore';
 
 // User Preferences Operations
 export const createUserPreferences = async (
@@ -142,7 +145,14 @@ export const saveBill = async (userId: string, billData: SaveBillDTO): Promise<S
   };
 
   const docRef = await addDoc(savedBillsRef, savedBillData);
-  
+
+  // Bump the cross-user save counter only on a genuinely new save (the
+  // already-saved path above returns before reaching here, so no double-count).
+  void bumpSaveCount(billData.billId, 1, {
+    title: billData.billData?.title,
+    jurisdictionName: billData.billData?.jurisdiction?.name,
+  });
+
   return {
     id: docRef.id,
     userId,
@@ -182,16 +192,85 @@ export const removeSavedBill = async (userId: string, billId: string): Promise<v
   const q = query(savedBillsRef, where('billId', '==', billId));
   
   const querySnapshot = await getDocs(q);
-  
+  if (querySnapshot.empty) return; // nothing saved → nothing to decrement
+
   // Delete all documents matching the billId (there should only be one)
   const deletePromises = querySnapshot.docs.map(doc => deleteDoc(doc.ref));
   await Promise.all(deletePromises);
+
+  void bumpSaveCount(billId, -1);
 };
 
 export const isBillSaved = async (userId: string, billId: string): Promise<boolean> => {
   const savedBillsRef = collection(db, 'users', userId, 'savedBills');
   const q = query(savedBillsRef, where('billId', '==', billId));
-  
+
   const querySnapshot = await getDocs(q);
   return !querySnapshot.empty;
+};
+
+// ── Bill engagement aggregation (billEngagement/{billId}) ────────────────────
+// Cross-user counters that feed the trending score (src/utils/trendingScore.ts).
+// All writes are best-effort: engagement is a ranking nudge, so a failure here
+// must never break viewing or saving a bill.
+// NOTE: these counters are client-writable (see firestore.rules) and therefore
+// inflatable — the trending score caps their influence low. Server-side
+// aggregation is a documented follow-up.
+
+interface EngagementMeta {
+  title?: string;
+  jurisdictionName?: string;
+}
+
+const engagementMeta = (meta?: EngagementMeta) => ({
+  ...(meta?.title ? { title: meta.title } : {}),
+  ...(meta?.jurisdictionName ? { jurisdictionName: meta.jurisdictionName } : {}),
+});
+
+/** Increment a bill's view counter. Session-dedupe at the call site. */
+export const recordBillView = async (billId: string, meta?: EngagementMeta): Promise<void> => {
+  if (!billId) return;
+  try {
+    await setDoc(
+      doc(db, 'billEngagement', billId),
+      { views: increment(1), lastActivityAt: serverTimestamp(), ...engagementMeta(meta) },
+      { merge: true }
+    );
+  } catch {
+    /* best-effort */
+  }
+};
+
+/** Adjust a bill's save counter (+1 on save, -1 on unsave). */
+const bumpSaveCount = async (billId: string, delta: 1 | -1, meta?: EngagementMeta): Promise<void> => {
+  if (!billId) return;
+  try {
+    await setDoc(
+      doc(db, 'billEngagement', billId),
+      { saves: increment(delta), lastActivityAt: serverTimestamp(), ...engagementMeta(meta) },
+      { merge: true }
+    );
+  } catch {
+    /* best-effort */
+  }
+};
+
+/** Read the most-engaged bills, keyed by billId, for trending re-ranking. */
+export const getTopEngagement = async (limitN = 200): Promise<Map<string, BillEngagement>> => {
+  const ref = collection(db, 'billEngagement');
+  const q = query(ref, orderBy('views', 'desc'), limit(limitN));
+  const snapshot = await getDocs(q);
+
+  const map = new Map<string, BillEngagement>();
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const lastActivityAt =
+      data.lastActivityAt instanceof Timestamp ? data.lastActivityAt.toMillis() : null;
+    map.set(docSnap.id, {
+      views: data.views || 0,
+      saves: data.saves || 0,
+      lastActivityAt,
+    });
+  });
+  return map;
 };

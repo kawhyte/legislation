@@ -1,11 +1,10 @@
 'use client';
 
 import React from "react";
-import useBills from "../hooks/useBills";
+import useTrendingBills from "../hooks/useTrendingBills";
 import BillCard from "./BillCard";
 import BillCardSkeleton from "./BillCardSkeleton";
 import animationData from "../assets/Tumbleweed Rolling.json";
-import { isBillTrending } from '@/utils/isBillTrending';
 import type { BillViewMode } from "@/types";
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -17,19 +16,21 @@ interface Props {
 }
 
 const TrendingBillGrid = ({ viewMode = 'quick' }: Props) => {
-    const { data, error, isLoading } = useBills(null, null);
+    const { data, error, isLoading } = useTrendingBills();
 
-    const skeletons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    const skeletons = Array.from({ length: 20 }, (_, i) => i);
 
-    // Filter for trending bills
-    const trendingBills = data?.filter(isBillTrending) ?? [];
-    const hasData = !isLoading && trendingBills && trendingBills.length > 0;
-    const noData = !isLoading && trendingBills && trendingBills.length === 0;
+    // useTrendingBills already ranks by topic-weighted activity score and drops
+    // junk/stalled bills — render its output directly. The per-card "🔥 Trending"
+    // badge still comes from each bill's `trendingReason` (set inside the hook).
+    const trendingBills = data ?? [];
+    const hasData = !isLoading && trendingBills.length > 0;
+    const noData = !isLoading && trendingBills.length === 0;
 
     return (
         <>
             {error && (
-                <Alert variant="destructive" className="bg-red-500/10 border-red-500/30 text-red-400">
+                <Alert variant="destructive" className="bg-destructive/10 border-destructive/30 text-destructive">
                     <AlertCircle className="h-4 w-4" />
                     <AlertTitle>Error Fetching Bills</AlertTitle>
                     <AlertDescription>

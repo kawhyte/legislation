@@ -67,4 +67,22 @@ const useReps = (coords?: { lat: number; lng: number }) => {
 	return { data, isLoading, error };
 };
 
+/**
+ * Fetch a single representative by their OpenStates person id.
+ * Used as a fallback when a rep isn't already present in SearchCacheContext
+ * (e.g. a direct or shared link to /rep/[repId] with no prior session state).
+ *
+ * OpenStates v3 has no `/people/{id}` path lookup (it 404s) — the id must be
+ * passed as a query param to the list endpoint, which returns it inside the
+ * usual `{results: [...]}` wrapper.
+ */
+export async function fetchRepById(repId: string): Promise<Rep | null> {
+	try {
+		const res = await apiClient.get<PeopleResponse>("/people", { params: { id: repId } });
+		return res.data.results[0] ?? null;
+	} catch {
+		return null;
+	}
+}
+
 export default useReps;

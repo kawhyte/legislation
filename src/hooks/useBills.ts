@@ -21,7 +21,13 @@ const useBills = (selectedJurisdiction: States | null, selectedTopic: string | n
 	const params = useMemo(() => {
 		const baseParams: Record<string, string | number | string[]> = {
 			sort: 'updated_desc',
-			include: ['actions','sources','abstracts', 'votes', 'sponsorships'],
+			// NOTE: `votes` and `abstracts` are intentionally omitted. Requesting
+			// `votes` for 20 bills makes the OpenStates backend time out (504) on
+			// high-volume states like California — dropping it takes the query from
+			// ~60s/timeout to ~1s. `votes` was only used by isBillTrending's
+			// close-vote signal (the other trending criteria still work), and
+			// `abstracts` is not consumed anywhere in the app.
+			include: ['actions', 'sources', 'sponsorships'],
 			classification: 'bill',
 		};
 

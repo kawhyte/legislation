@@ -1,25 +1,22 @@
 'use client';
 
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { User, CheckCircle2, XCircle, CalendarDays, UserRound } from "lucide-react";
 import type { Rep } from "../hooks/useReps";
+import { fetchRepById } from "../hooks/useReps";
 import useRepVotes, { type RepVote } from "../hooks/useRepVotes";
 import { Avatar, AvatarImage, AvatarFallback } from "../components/ui/avatar";
+import { Skeleton } from "../components/ui/skeleton";
 import { useSearchCache } from "../contexts/SearchCacheContext";
+import { partyBadgeClass } from "../utils/partyBadge";
 
 const JUNK = /adjourn|journal|commend|resolution|congratulat|sine die/i;
 
-function partyBadgeClass(party: string) {
-	const p = party.toLowerCase();
-	if (p.includes("democrat")) return "bg-blue-100 text-blue-800 border-2 border-blue-900";
-	if (p.includes("republican")) return "bg-red-100 text-red-800 border-2 border-red-900";
-	return "bg-muted text-muted-foreground border-2 border-border";
-}
-
 function stanceBadgeClass(option: string) {
-	if (option === "yes") return "bg-green-300 text-green-900";
-	if (option === "no") return "bg-red-300 text-red-900";
-	return "bg-gray-200 text-gray-700";
+	if (option === "yes") return "bg-success/10 text-success border-success";
+	if (option === "no") return "bg-destructive/10 text-destructive border-destructive";
+	return "bg-muted text-muted-foreground border-border";
 }
 
 function VoteCard({ vote, repParty }: { vote: RepVote; repParty: string }) {
@@ -33,7 +30,7 @@ function VoteCard({ vote, repParty }: { vote: RepVote; repParty: string }) {
 		: null;
 
 	return (
-		<div className="border-2 border-black shadow-[4px_4px_0px_0px_#000] rounded-xl bg-white p-5 mb-5">
+		<div className="border-2 border-foreground shadow-[4px_4px_0px_0px_hsl(var(--foreground))] rounded-xl bg-card p-5 mb-5">
 
 			{/* ── Top row: bill ID + bill passed/failed ── */}
 			<div className="flex items-start justify-between gap-3 mb-2">
@@ -48,7 +45,7 @@ function VoteCard({ vote, repParty }: { vote: RepVote; repParty: string }) {
 					</span>
 				</div>
 				{vote.vote_result && (
-					<span className={`shrink-0 inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded border-2 ${billPassed ? "bg-green-50 text-green-800 border-green-700" : "bg-red-50 text-red-800 border-red-700"}`}>
+					<span className={`shrink-0 inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded border-2 ${billPassed ? "bg-success/10 text-success border-success" : "bg-destructive/10 text-destructive border-destructive"}`}>
 						{billPassed
 							? <><CheckCircle2 className="size-3" /> Bill Passed</>
 							: <><XCircle className="size-3" /> Bill Failed</>}
@@ -75,7 +72,7 @@ function VoteCard({ vote, repParty }: { vote: RepVote; repParty: string }) {
 							</span>
 						)}
 						{sponsorParty && repParty && (
-							<span className={`text-xs font-bold px-1.5 py-0.5 rounded ${isPartyLine ? "bg-yellow-100 text-yellow-800 border border-yellow-700" : "bg-purple-100 text-purple-800 border border-purple-700"}`}>
+							<span className={`text-xs font-bold px-1.5 py-0.5 rounded border ${isPartyLine ? "bg-warning/10 text-warning border-warning" : "bg-accent-magenta-subtle text-accent-magenta border-accent-magenta"}`}>
 								{isPartyLine ? "Voted with their party" : "Voted against their party"}
 							</span>
 						)}
@@ -105,6 +102,19 @@ function VoteCard({ vote, repParty }: { vote: RepVote; repParty: string }) {
 	);
 }
 
+function RepHeaderSkeleton() {
+	return (
+		<div className="flex items-center gap-6">
+			<Skeleton className="size-20 rounded-full shrink-0" />
+			<div className="space-y-2">
+				<Skeleton className="h-8 w-64" />
+				<Skeleton className="h-4 w-48" />
+				<Skeleton className="h-5 w-20 rounded-full" />
+			</div>
+		</div>
+	);
+}
+
 const RepScorecardPage = () => {
 	const params = useParams();
 	const repId = params?.repId as string | undefined;
@@ -112,18 +122,45 @@ const RepScorecardPage = () => {
 	const router = useRouter();
 	const { cache } = useSearchCache();
 
-	// Rep data comes from in-memory search cache (populated when user came from the widget)
-	const rep: Rep | null = cache.repsMap[decodedId] ?? null;
+	const cachedRep: Rep | null = cache.repsMap[decodedId] ?? null;
+	const [fetchedRep, setFetchedRep] = useState<Rep | null>(null);
+	const [repLoadFailed, setRepLoadFailed] = useState(false);
+	const [isFetchingRep, setIsFetchingRep] = useState(false);
+
+	// Fallback: fetch the rep directly when it's not already in the session cache
+	// (e.g. a direct link, a shared link, or a session that expired).
+	useEffect(() => {
+		if (cachedRep || !decodedId) return;
+		setIsFetchingRep(true);
+		fetchRepById(decodedId)
+			.then(result => {
+				if (result) setFetchedRep(result);
+				else setRepLoadFailed(true);
+			})
+			.finally(() => setIsFetchingRep(false));
+	}, [cachedRep, decodedId]);
+
+	const rep: Rep | null = cachedRep ?? fetchedRep;
 
 	const isFederal = rep?.jurisdiction?.classification === "country";
 	const jurisdictionName = isFederal ? undefined : rep?.jurisdiction?.name;
 
 	const { votes: data, stats, isLoading, error } = useRepVotes(decodedId, jurisdictionName);
 
+	if (!rep && isFetchingRep) {
+		return (
+			<div className="container-legislation py-12">
+				<RepHeaderSkeleton />
+			</div>
+		);
+	}
+
 	if (!rep) {
 		return (
 			<div className="container-legislation py-12">
-				<p className="text-muted-foreground">Representative data not found.</p>
+				<p className="text-muted-foreground">
+					{repLoadFailed ? "Couldn't find this representative." : "Representative data not found."}
+				</p>
 				<button onClick={() => router.back()} className="text-primary underline text-sm mt-2 inline-block">← Back to home</button>
 			</div>
 		);
@@ -174,13 +211,27 @@ const RepScorecardPage = () => {
 						{rep.name} serves in the US {rep.current_role?.org_classification === "upper" ? "Senate" : "House of Representatives"}.
 						This app tracks state-level legislation only — federal voting records are not available here.
 					</p>
+					<a
+						href={`https://www.congress.gov/member/${encodeURIComponent(rep.name.toLowerCase().replace(/\s+/g, '-'))}`}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="text-primary underline text-sm mt-3 inline-block"
+					>
+						Look up their federal record on Congress.gov →
+					</a>
 				</div>
 			)}
 
 			{/* ── State legislator content ── */}
 			{!isFederal && (
 				<>
-					{isLoading && <p className="mt-8 text-muted-foreground">Loading voting records…</p>}
+					{isLoading && (
+						<div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
+							{Array.from({ length: 4 }).map((_, i) => (
+								<Skeleton key={i} className="h-24 rounded-xl" />
+							))}
+						</div>
+					)}
 					{error && <p className="mt-8 text-destructive text-sm">Error: {error}</p>}
 
 					{!isLoading && !error && (
@@ -193,12 +244,15 @@ const RepScorecardPage = () => {
 									{ label: "Voted NO",       value: stats?.totalVotes ? `${Math.round((stats.noVotes  / stats.totalVotes) * 100)}%` : "—" },
 									{ label: "With Party",     value: data.length ? `${partyLinePct}%` : "—" },
 								].map(({ label, value }) => (
-									<div key={label} className="border-2 border-black shadow-[4px_4px_0px_0px_#000] p-5 rounded-xl bg-white text-center">
+									<div key={label} className="border-2 border-foreground shadow-[4px_4px_0px_0px_hsl(var(--foreground))] p-5 rounded-xl bg-card text-center">
 										<p className="text-4xl font-black text-foreground">{value}</p>
 										<p className="text-xs font-semibold text-muted-foreground mt-1 uppercase tracking-wide">{label}</p>
 									</div>
 								))}
 							</div>
+							<p className="text-xs text-muted-foreground mt-3">
+								Based on the {stats?.totalVotes ?? 0} votes found in the 20 most recently active {jurisdictionName} bills — not a complete voting record.
+							</p>
 
 							{/* Vote Feed */}
 							<h2 className="text-2xl font-black text-foreground mt-10 mb-1">Recent Major Votes</h2>
