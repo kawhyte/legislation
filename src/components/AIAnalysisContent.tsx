@@ -59,10 +59,10 @@ const AIAnalysisContent = ({ isLoading, error, structured, onRetry }: AIAnalysis
 					<p className='text-sm text-foreground leading-relaxed'>{structured.gist}</p>
 				</div>
 
-				<div className='bg-amber-50 dark:bg-amber-950/30 border-2 border-foreground rounded-xl p-4 shadow-[3px_3px_0px_0px_hsl(var(--foreground))]'>
+				<div className='bg-amber-50 border-2 border-foreground rounded-xl p-4 shadow-[3px_3px_0px_0px_hsl(var(--foreground))]'>
 					<div className='flex items-center gap-2 mb-1'>
-						<Wallet className='h-4 w-4 text-amber-800 dark:text-amber-600 flex-shrink-0' />
-						<p className='text-xs font-bold text-amber-900 dark:text-amber-600 uppercase tracking-wide'>
+						<Wallet className='h-4 w-4 text-amber-800 flex-shrink-0' />
+						<p className='text-xs font-bold text-amber-900 uppercase tracking-wide'>
 							Wallet Impact
 						</p>
 					</div>
@@ -80,7 +80,7 @@ const AIAnalysisContent = ({ isLoading, error, structured, onRetry }: AIAnalysis
 						<div className='grid grid-cols-2 gap-3'>
 							{structured.controversy.for.length > 0 && (
 								<div>
-									<p className='text-sm font-bold text-green-600 dark:text-green-400 mb-2'>For</p>
+									<p className='text-sm font-bold text-green-600 mb-2'>For</p>
 									<ul className='space-y-2'>
 										{structured.controversy.for.map((point, i) => (
 											<li key={i} className='flex items-start gap-1.5'>
@@ -93,7 +93,7 @@ const AIAnalysisContent = ({ isLoading, error, structured, onRetry }: AIAnalysis
 							)}
 							{structured.controversy.against.length > 0 && (
 								<div>
-									<p className='text-sm font-bold text-red-600 dark:text-red-400 mb-2'>Against</p>
+									<p className='text-sm font-bold text-red-600 mb-2'>Against</p>
 									<ul className='space-y-2'>
 										{structured.controversy.against.map((point, i) => (
 											<li key={i} className='flex items-start gap-1.5'>

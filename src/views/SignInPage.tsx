@@ -63,13 +63,13 @@ export default function SignInPage() {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-background py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-10">
         <div className="text-center space-y-4">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
             Sign in to your account
           </h2>
-          <p className="text-base text-gray-600">
+          <p className="text-base text-muted-foreground">
             Track legislation that matters to you
           </p>
         </div>
@@ -124,7 +124,7 @@ export default function SignInPage() {
                 <Separator />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-muted-foreground">
+                <span className="bg-card px-2 text-muted-foreground">
                   Or continue with email
                 </span>
               </div>
@@ -170,7 +170,7 @@ export default function SignInPage() {
             </form>
 
             <div className="text-center space-y-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 Don't have an account?{' '}
                 <Link
                   href="/sign-up"

@@ -555,7 +555,16 @@ const AGENT_VERIFIED = {
   "10f": true,
   "10g": true,
   "10h": true,
-  "10i": true
+  "10i": true,
+  "11a": true,
+  "11b": true,
+  "11c": true,
+  "11d": true,
+  "11e": true,
+  "11f": true,
+  "11g": true,
+  "11h": true,
+  "11i": true
 };
 // 9b needs a real inbox to confirm the Firebase email actually arrives.
 // 10d: e2e "skeleton-to-card swap does not shift layout" holds the bills
@@ -569,6 +578,22 @@ const AGENT_VERIFIED = {
 //      fixed by opening with the keyboard and scrolling the option into view.
 // 10i: covered by e2e — card href asserted as /bill/ocd-bill…, and the bookmark
 //      click opens the auth modal while the URL stays on "/".
+// 11a: signed out and screenshotted /sign-in, /sign-up and /about side by side
+//      — same warm off-white (--background #f9f8f8), same charcoal headings,
+//      same white cards. The old cool bg-gray-50 tone is gone.
+// 11b/11c/11d: grep -rn "dark:" src/ and grep -rn "next-themes" package.json
+//      src/ both return zero. next-themes uninstalled, lockfile updated.
+// 11c note: the plan assumed next-themes was never imported, but shadcn's
+//      ui/sonner.tsx did import useTheme and defaulted to theme="system" —
+//      so toasts rendered dark for dark-OS users in this light-only app.
+//      Hardcoded theme="light" (Kenny approved) before uninstalling.
+// 11e/11f/11g: build clean (16 routes), lint zero errors (only pre-existing
+//      <img>/prefer-const/jsx-key warnings), vitest 20/20, playwright 9/9.
+// 11h: AIAnalysisContent keeps bg-amber-50, text-amber-800/900, text-green-600
+//      and text-red-600 — only the inert dark: variants were stripped, so the
+//      visible light-mode appearance is byte-identical.
+// 11i: no logic touched, only className strings; e2e "sign-in page renders the
+//      sign-in form" still passes and the live page renders both forms.
 const AGENT_IN_PROGRESS = {
   "9b": true
 };
