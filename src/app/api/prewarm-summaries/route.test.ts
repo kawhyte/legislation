@@ -111,7 +111,13 @@ describe('/api/prewarm-summaries', () => {
 
     const report = await (await POST(post(`Bearer ${SECRET}`))).json();
 
-    expect(report).toEqual({ considered: 3, skipped: 0, generated: 3, failed: 0 });
+    expect(report).toMatchObject({
+      considered: 3,
+      skipped: 0,
+      generated: 3,
+      failed: 0,
+      stoppedEarly: false,
+    });
     expect(mockDocSet).toHaveBeenCalledTimes(3);
     expect(mockDocSet.mock.calls[0][0]._meta).toMatchObject({
       model: 'gemini-2.5-flash',
@@ -159,6 +165,24 @@ describe('/api/prewarm-summaries', () => {
 
     expect(report).toMatchObject({ considered: 40, generated: 3 });
     expect(mockGenerateForBill).toHaveBeenCalledTimes(3);
+  });
+
+  it('stops early rather than starting work it cannot finish in time', async () => {
+    // A slow generator burns the wall-clock budget; the route must return a
+    // report with stoppedEarly rather than be killed at the 60s function cap.
+    vi.useFakeTimers();
+    mockGenerateForBill.mockImplementation(async () => {
+      await vi.advanceTimersByTimeAsync(40_000);
+      return SUMMARY;
+    });
+    trendingReturns(bills(40));
+    const POST = await loadRoute();
+
+    const report = await (await POST(post(`Bearer ${SECRET}`))).json();
+
+    expect(report.stoppedEarly).toBe(true);
+    expect(report.generated).toBeLessThan(3);
+    vi.useRealTimers();
   });
 
   it('counts a fallback as failed and never writes it', async () => {

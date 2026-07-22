@@ -42,7 +42,20 @@ export const maxDuration = 60;
 const BATCH_SIZE = 3;
 const DELAY_MS = 13000;
 
+/**
+ * Stop starting new work past this point so the handler always returns a report
+ * instead of being killed mid-generation at 60s. A 504 tells you nothing about
+ * where the time went; a partial report does, and the next hourly run picks up
+ * exactly where this one stopped.
+ */
+const TIME_BUDGET_MS = 45_000;
+/** A generation costs its own spacing delay plus a Gemini round trip. */
+const PER_BILL_COST_MS = DELAY_MS + 8_000;
+
 export async function POST(request: NextRequest) {
+  const startedAt = Date.now();
+  const since = () => Date.now() - startedAt;
+
   const secret = process.env.CRON_SECRET;
   // No secret configured = the endpoint does not exist. Never run open, and 404
   // rather than 401 so a prober cannot confirm the route is here.
@@ -59,12 +72,27 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'trending unavailable' }, { status: 502 });
   }
   const { bills } = (await res.json()) as { bills: Bill[] };
+  const trendingMs = since();
 
   const db = getAdminDb();
-  const report = { considered: bills.length, skipped: 0, generated: 0, failed: 0 };
+  const report = {
+    considered: bills.length,
+    skipped: 0,
+    generated: 0,
+    failed: 0,
+    stoppedEarly: false,
+    trendingMs,
+    scanMs: 0,
+    elapsedMs: 0,
+  };
 
   for (const raw of bills) {
     if (report.generated >= BATCH_SIZE) break;
+    // Never begin a generation that cannot finish inside the function's life.
+    if (since() + PER_BILL_COST_MS > TIME_BUDGET_MS) {
+      report.stoppedEarly = true;
+      break;
+    }
 
     const docRef = db.collection('bill_summaries').doc(summaryDocId(raw.id));
     const snap = await docRef.get();
@@ -73,6 +101,9 @@ export async function POST(request: NextRequest) {
       : undefined;
     if (snap.exists && (meta?.promptVersion ?? 0) >= SUMMARY_PROMPT_VERSION) {
       report.skipped++;
+      // Time spent scanning past already-cached bills, isolated from generation
+      // time so a slow skip-scan is visible in the report rather than inferred.
+      report.scanMs = since() - trendingMs;
       continue;
     }
 
@@ -97,5 +128,7 @@ export async function POST(request: NextRequest) {
     report.generated++;
   }
 
+  report.elapsedMs = since();
+  console.log('[/api/prewarm-summaries]', JSON.stringify(report));
   return NextResponse.json(report);
 }
