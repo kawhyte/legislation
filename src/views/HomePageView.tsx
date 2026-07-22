@@ -5,7 +5,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import BillCard from '@/components/BillCard';
 import BillCardSkeleton from '@/components/BillCardSkeleton';
 import YourRepsWidget from '@/components/YourRepsWidget';
-import Hero from '@/components/Hero';
+import Hero, { JURISDICTION_TRIGGER_ID } from '@/components/Hero';
+import LocationChip, { type LocationSource } from '@/components/LocationChip';
 import TrendingBillGrid from '@/components/TrendingBillGrid';
 import useBills from '@/hooks/useBills';
 import { useCachedSummaries } from '@/hooks/useCachedSummaries';
@@ -15,6 +16,10 @@ import type { States } from '@/components/JurisdictionSelector';
 import type { Bill } from '@/types';
 import type { Rep } from '@/hooks/useReps';
 import { track } from '@/lib/analytics';
+import { readLastJurisdiction } from '@/lib/lastJurisdiction';
+import { useUserData } from '@/contexts/UserContext';
+import { useUser } from '@/hooks/useAuth';
+import usStates from '@/data/usStates';
 
 const Lottie = React.lazy(() => import('lottie-react'));
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -175,11 +180,15 @@ const ZipBillResults: React.FC<{ jurisdiction: States }> = ({ jurisdiction }) =>
 
 // ── Inner page — uses useSearchParams ─────────────────────────────────────────
 
-function HomePageInner() {
+function HomePageInner({ geoStateAbbr }: { geoStateAbbr?: string | null }) {
   const [jurisdiction, setJurisdiction] = useState<States | null>(null);
+  const [source, setSource] = useState<LocationSource>('none');
   const searchParams = useSearchParams();
   const router = useRouter();
   const didRestore = useRef(false);
+  const didResolve = useRef(false);
+  const { userPreferences } = useUserData();
+  const { isLoaded: isAuthLoaded, isSignedIn } = useUser();
 
   // A shared /?q=33028 link resolves its jurisdiction asynchronously, so
   // `jurisdiction` is null for the first few hundred ms of that load. Without
@@ -195,15 +204,74 @@ function HomePageInner() {
     didRestore.current = true;
     setIsRestoring(true);
     parseLocationInput(q)
-      .then(state => { setJurisdiction(state); setIsRestoring(false); })
+      .then(state => {
+        // A shared link is as explicit a choice as using the picker.
+        didResolve.current = true;
+        setSource('explicit');
+        setJurisdiction(state);
+        setIsRestoring(false);
+      })
       .catch(() => { setIsRestoring(false); router.replace('/'); });
   // Only run on mount
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // ── Default-location resolution ────────────────────────────────────────────
+  // Strict priority: profile state > last visited > IP geo > national feed.
+  //
+  // `didResolve` is set only once a jurisdiction is actually applied, not on
+  // every pass. That matters: `setJurisdiction` clears the bill/rep cache when
+  // the jurisdiction differs, so a resolution that re-fires would thrash the
+  // cache into a fetch loop — while a pass that finds nothing must stay open,
+  // because Firestore preferences arrive several renders after mount (child
+  // effects run before the provider's, so `isLoadingPreferences` is still false
+  // on the first pass and cannot be relied on alone).
+  useEffect(() => {
+    if (didResolve.current) return;
+    if (jurisdiction) return;                 // an explicit pick or ?q= already won
+    if (searchParams.get('q')) return;        // ?q= restore is in flight — let it win
+    if (!isAuthLoaded) return;                // don't guess before we know who this is
+
+    const profileAbbr = isSignedIn ? userPreferences?.selectedState ?? null : null;
+    const recentAbbr = readLastJurisdiction();
+    const abbr = profileAbbr ?? recentAbbr ?? geoStateAbbr ?? null;
+    if (!abbr) return;                        // stay on the national feed, keep listening
+
+    const match = usStates.find(s => s.abbreviation === abbr);
+    if (!match) return;
+
+    didResolve.current = true;
+    setSource(profileAbbr ? 'profile' : recentAbbr ? 'recent' : 'guess');
+    setJurisdiction(match as States);
+  }, [isAuthLoaded, isSignedIn, userPreferences?.selectedState, geoStateAbbr, jurisdiction, searchParams]);
+
+  const handleExplicitSelect = (state: States) => {
+    // Any explicit pick closes resolution for good — including a sign-out that
+    // nulls preferences afterwards, which must not yank the feed away.
+    didResolve.current = true;
+    setSource('explicit');
+    setJurisdiction(state);
+  };
+
+  const focusJurisdictionPicker = () => {
+    const trigger = document.getElementById(JURISDICTION_TRIGGER_ID);
+    if (!trigger) return;
+    trigger.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    trigger.focus({ preventScroll: true });
+  };
+
   return (
     <div className="bg-background text-foreground">
-      <Hero onSelectState={setJurisdiction} />
+      <Hero onSelectState={handleExplicitSelect} selectedState={jurisdiction} />
+      {/* Withheld mid-restore: announcing "Set your state" for the moment before
+          a shared link resolves would be both wrong and read aloud. */}
+      {!isRestoring && (
+        <LocationChip
+          source={jurisdiction ? source : 'none'}
+          stateName={jurisdiction?.name ?? null}
+          onChangeLocation={focusJurisdictionPicker}
+        />
+      )}
       {jurisdiction ? (
         <ZipBillResults jurisdiction={jurisdiction} />
       ) : isRestoring ? (
@@ -228,7 +296,7 @@ function HomePageInner() {
 
 // ── Page export wrapped in Suspense (required for useSearchParams) ─────────────
 
-export default function HomePageView() {
+export default function HomePageView({ geoStateAbbr }: { geoStateAbbr?: string | null }) {
   return (
     <Suspense fallback={
       <div className="bg-background text-foreground">
@@ -237,7 +305,7 @@ export default function HomePageView() {
         </div>
       </div>
     }>
-      <HomePageInner />
+      <HomePageInner geoStateAbbr={geoStateAbbr} />
     </Suspense>
   );
 }
