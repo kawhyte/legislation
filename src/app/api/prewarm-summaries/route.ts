@@ -87,7 +87,11 @@ export async function POST(request: NextRequest) {
   };
 
   for (const raw of bills) {
-    if (report.generated >= BATCH_SIZE) break;
+    // Bound by ATTEMPTS, not successes. Counting only successes meant that when
+    // Gemini was failing for every bill (as it was in production, with a stale
+    // GEMINI_API_KEY), nothing ever incremented `generated`, so the loop walked
+    // all 40 bills paying DELAY_MS each and the function was killed at 60s.
+    if (report.generated + report.failed >= BATCH_SIZE) break;
     // Never begin a generation that cannot finish inside the function's life.
     if (since() + PER_BILL_COST_MS > TIME_BUDGET_MS) {
       report.stoppedEarly = true;
