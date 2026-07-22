@@ -98,11 +98,12 @@ The Gemini client, prompt, and `generateForBill` live in `src/lib/summaryGenerat
 `/api/summarize` and the prewarm cron so the prompt can never drift between the two.
 
 **Prewarming**: `.github/workflows/prewarm-summaries.yml` POSTs to `/api/prewarm-summaries`
-every 2 hours. Each run generates at most 4 missing summaries for bills in the national trending
-feed (~48/day), so the homepage's AI impact lines cost zero live tokens. The batch is deliberately
-small: the Gemini free tier allows only **5 requests per minute**, so the route spaces its calls
-13s apart — 4 per run is the most that fits under both that quota and the 60s function cap. Raise
-the cron frequency, never `BATCH_SIZE`. The route is authenticated with
+hourly. Each run generates at most 3 missing summaries for bills in the national trending feed, so
+the homepage's AI impact lines cost zero live tokens. The batch is deliberately small: it is caught
+between the Gemini free tier's **5 requests per minute** (hence 13s spacing) and Vercel Hobby's
+**60s** function cap — `BATCH_SIZE=4` returned 504 in production. Raise the cron frequency, never
+`BATCH_SIZE` or `DELAY_MS`. Runs that find nothing missing cost Firestore reads only, no tokens.
+The route is authenticated with
 `CRON_SECRET` and deliberately bypasses the same-origin and per-IP rate limits that protect
 `/api/summarize` — those would block the cron itself. With `CRON_SECRET` unset the route 404s, so
 the endpoint is simply off rather than open.

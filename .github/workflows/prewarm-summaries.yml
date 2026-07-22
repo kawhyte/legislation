@@ -2,13 +2,14 @@ name: Prewarm AI summaries
 
 # Pre-generates plain-English Gemini summaries for bills in the national
 # trending feed, so the homepage can show AI content at zero live token cost.
-# Each run generates at most 4 missing summaries (BATCH_SIZE in the route);
-# 12 runs/day ≈ 48 bills/day, comfortably covering CANDIDATE_CAP=40 in
-# src/app/api/trending/route.ts.
+# Each run generates at most 3 missing summaries (BATCH_SIZE in the route);
+# hourly gives up to 72 bills/day of capacity against a ~40-bill feed
+# (CANDIDATE_CAP in src/app/api/trending/route.ts).
 #
-# The batch is small because the Gemini free tier allows only 5 requests per
-# MINUTE — a measured run at 8-per-batch/4s-spacing 429ed a bill every time.
-# Prefer raising the frequency here over raising BATCH_SIZE in the route.
+# The batch is small because it is trapped between two measured limits: the
+# Gemini free tier allows only 5 requests per MINUTE (so calls are spaced 13s
+# apart) and Vercel Hobby kills the function at 60s. BATCH_SIZE=4 returned 504
+# in production. Prefer raising the frequency here over raising BATCH_SIZE.
 #
 # SETUP (one time):
 #   1. Generate a secret:  openssl rand -hex 32
@@ -25,7 +26,11 @@ name: Prewarm AI summaries
 
 on:
   schedule:
-    - cron: '15 */2 * * *' # 12×/day → 12 × 4 = 48 bills/day. The :15 offset keeps
+    - cron: '15 * * * *'   # hourly → 24 × 3 = up to 72 bills/day of capacity,
+                           # far more than the ~40-bill feed needs, so a run that
+                           # 429s or times out is fully absorbed by the next one.
+                           # Runs that find nothing to do cost Firestore reads
+                           # only, no tokens. The :15 offset keeps
                            # this off warm-trending.yml's :00 run, so /api/trending
                            # is already warm when we fetch it.
   workflow_dispatch: {}    # manual "Run workflow" button

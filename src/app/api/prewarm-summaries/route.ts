@@ -23,15 +23,23 @@ export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
 /**
- * Sized by the Gemini free tier, which caps gemini-2.5-flash at **5 requests
- * per minute** (quotaId GenerateRequestsPerMinutePerProjectPerModel-FreeTier).
- * A measured run at 8 × 4s spacing (15/min) 429ed one bill every time.
+ * These constants are squeezed between two hard limits, both measured in
+ * production rather than assumed:
  *
- * 13s spacing → the first request fires immediately, then 3 more at 13s apart:
- * 4 requests in ~39s + Gemini latency ≈ 45-50s. Under 5/min, and inside the
- * 60s Vercel function cap. Raising either constant breaks one of those two.
+ *  - The Gemini free tier caps gemini-2.5-flash at **5 requests per minute**
+ *    (quotaId GenerateRequestsPerMinutePerProjectPerModel-FreeTier), so the
+ *    spacing cannot drop below 12s. A run at 4s spacing 429ed a bill every time.
+ *  - Vercel Hobby kills the function at **60s** and does not honour a higher
+ *    maxDuration. A production run at BATCH_SIZE=4 (3 gaps × 13s = 39s, plus
+ *    the Gemini round trips and the Firestore skip-scan) returned 504, even
+ *    though the same batch finished locally in 47s — Gemini is slower from
+ *    Vercel's region than from a laptop.
+ *
+ * BATCH_SIZE=3 is 2 gaps = 26s + ~3 Gemini calls ≈ 35s, leaving real headroom
+ * for the cold start, the /api/trending fetch and the per-bill Firestore reads.
+ * If you need more throughput, raise the cron frequency — never these numbers.
  */
-const BATCH_SIZE = 4;
+const BATCH_SIZE = 3;
 const DELAY_MS = 13000;
 
 export async function POST(request: NextRequest) {
