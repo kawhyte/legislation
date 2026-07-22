@@ -185,6 +185,20 @@ describe('/api/prewarm-summaries', () => {
     vi.useRealTimers();
   });
 
+  it('bounds the loop by attempts, so a total Gemini outage cannot run away', async () => {
+    // Regression: counting only successes meant every-bill failure never hit the
+    // break, so the loop walked all 40 bills at DELAY_MS each and hit the 60s cap.
+    mockGenerateForBill.mockResolvedValue(FALLBACK);
+    trendingReturns(bills(40));
+    const POST = await loadRoute();
+
+    const report = await (await POST(post(`Bearer ${SECRET}`))).json();
+
+    expect(report).toMatchObject({ generated: 0, failed: 3 });
+    expect(mockGenerateForBill).toHaveBeenCalledTimes(3);
+    expect(mockDocSet).not.toHaveBeenCalled();
+  });
+
   it('counts a fallback as failed and never writes it', async () => {
     // Persisting a fallback would poison the bill: every later read is a hit.
     mockGenerateForBill.mockResolvedValue(FALLBACK);
