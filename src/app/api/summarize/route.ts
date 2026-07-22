@@ -1,22 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { Bill, BillSummaryData, CachedBillSummary } from '@/types';
 import { getAdminDb } from '@/lib/firebase-admin';
 import { checkRateLimit, getClientIp, isSameOrigin } from '@/lib/rateLimit';
 import { summaryDocId, SUMMARY_PROMPT_VERSION } from '@/lib/summaryCacheKey';
-
-// ── Singleton AI client (module-level = one instance per server process) ──────
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? '');
-
-const model = genAI.getGenerativeModel({
-  model: 'gemini-2.5-flash',
-  generationConfig: {
-    temperature: 0.3,
-    maxOutputTokens: 8192,
-    responseMimeType: 'application/json',
-  },
-});
+import {
+  clampBillInput,
+  generateForBill,
+  isFallback,
+  SUMMARY_MODEL,
+} from '@/lib/summaryGenerator';
 
 // ── In-memory cache (same logic as original GeminiService) ────────────────────
 
@@ -26,11 +18,8 @@ interface CacheEntry {
 }
 
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
-const REQUEST_DELAY = 4000;                  // 4 seconds between Gemini requests
 const RATE_LIMIT_MAX_REQUESTS = 10; // per window, per IP
 const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
-const MAX_TITLE_LENGTH = 300;
-const MAX_ABSTRACT_LENGTH = 4000;
 
 /** A resolved summary plus where it came from — a Firestore hit must not be written back. */
 interface ResolvedSummary {
@@ -40,82 +29,9 @@ interface ResolvedSummary {
 
 const summaryCache = new Map<string, CacheEntry>();
 const pendingRequests = new Map<string, Promise<ResolvedSummary>>();
-let lastRequestTime = 0;
-
-const FALLBACK: BillSummaryData = {
-  gist: 'Summary unavailable at this time.',
-  whoItAffects: 'General public',
-  walletImpact: 'No direct cost impact.',
-  controversy: { for: [], against: [] },
-};
-
-/** A Gemini failure returns FALLBACK; it must never be cached in L1 or L2. */
-const isFallback = (d: BillSummaryData) => d.gist === FALLBACK.gist;
 
 function isCacheValid(entry: CacheEntry): boolean {
   return Date.now() - entry.timestamp < CACHE_DURATION;
-}
-
-/**
- * LIMITATION: `lastRequestTime` is a module global, so this only spaces Gemini
- * calls within a single server process. On Vercel, concurrent lambda instances
- * each have their own copy and do not space calls against each other. The
- * per-IP limiter in the handler is the real protection here.
- */
-async function enforceRateLimit(): Promise<void> {
-  const timeSince = Date.now() - lastRequestTime;
-  if (timeSince < REQUEST_DELAY) {
-    await new Promise(resolve => setTimeout(resolve, REQUEST_DELAY - timeSince));
-  }
-  lastRequestTime = Date.now();
-}
-
-function parseResponse(text: string): BillSummaryData {
-  try {
-    return JSON.parse(text) as BillSummaryData;
-  } catch {
-    console.error('[/api/summarize] JSON parse failed:', text.slice(0, 500));
-    return FALLBACK;
-  }
-}
-
-async function generateForBill(bill: Bill): Promise<BillSummaryData> {
-  await enforceRateLimit();
-
-  let context = `Bill Title: "${bill.title}"`;
-  if (bill.abstracts && bill.abstracts.length > 0 && bill.abstracts[0].abstract) {
-    context += `\nOfficial Abstract: "${bill.abstracts[0].abstract}"`;
-  }
-  if (bill.subject && bill.subject.length > 0) {
-    context += `\nSubjects: ${bill.subject.join(', ')}`;
-  }
-  if (bill.latest_action_description) {
-    context += `\nLatest Action: ${bill.latest_action_description}`;
-  }
-
-  const prompt = `You are a legislative analyst. Respond ONLY with a valid JSON object — no markdown, no explanation, no extra text.
-
-Use this exact schema:
-{
-  "gist": "1-3 sentence plain-English summary of what this bill does",
-  "whoItAffects": "The primary group affected (e.g. homeowners, teachers, small businesses)",
-  "walletImpact": "Direct financial effect — costs, taxes, fines, or savings. If none, say 'No direct cost impact.'",
-  "controversy": {
-    "for": ["1-2 short bullet points supporting the bill"],
-    "against": ["1-2 short bullet points opposing the bill"]
-  }
-}
-
-Bill information:
-${context}`;
-
-  try {
-    const result = await model.generateContent(prompt);
-    return parseResponse(result.response.text().trim());
-  } catch (error) {
-    console.error('[/api/summarize] Gemini error:', error);
-    return FALLBACK;
-  }
 }
 
 /** L2 read. Returns null on any miss, stale prompt version, or read failure. */
@@ -165,14 +81,7 @@ export async function POST(request: NextRequest) {
     bill = body.bill;
     if (!bill?.title || typeof bill.title !== 'string') throw new Error('Missing bill.title');
     if (!bill?.id || typeof bill.id !== 'string') throw new Error('Missing bill.id');
-    // Cap (rather than reject) overlong input so legitimate long official titles
-    // still summarize, while bounding the tokens sent to Gemini.
-    if (bill.title.length > MAX_TITLE_LENGTH) {
-      bill.title = bill.title.slice(0, MAX_TITLE_LENGTH);
-    }
-    if (bill.abstracts?.[0]?.abstract && bill.abstracts[0].abstract.length > MAX_ABSTRACT_LENGTH) {
-      bill.abstracts[0].abstract = bill.abstracts[0].abstract.slice(0, MAX_ABSTRACT_LENGTH);
-    }
+    bill = clampBillInput(bill);
   } catch {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
@@ -211,7 +120,7 @@ export async function POST(request: NextRequest) {
             ...data,
             _meta: {
               generatedAt: new Date().toISOString(),
-              model: 'gemini-2.5-flash',
+              model: SUMMARY_MODEL,
               promptVersion: SUMMARY_PROMPT_VERSION,
             },
           });

@@ -1,0 +1,52 @@
+name: Prewarm AI summaries
+
+# Pre-generates plain-English Gemini summaries for bills in the national
+# trending feed, so the homepage can show AI content at zero live token cost.
+# Each run generates at most 4 missing summaries (BATCH_SIZE in the route);
+# 12 runs/day ≈ 48 bills/day, comfortably covering CANDIDATE_CAP=40 in
+# src/app/api/trending/route.ts.
+#
+# The batch is small because the Gemini free tier allows only 5 requests per
+# MINUTE — a measured run at 8-per-batch/4s-spacing 429ed a bill every time.
+# Prefer raising the frequency here over raising BATCH_SIZE in the route.
+#
+# SETUP (one time):
+#   1. Generate a secret:  openssl rand -hex 32
+#   2. Vercel → Project → Settings → Environment Variables → CRON_SECRET
+#      (all environments), value = the secret from step 1.
+#   3. GitHub → Settings → Secrets and variables → Actions → Secrets tab →
+#      New repository secret:  name = CRON_SECRET   value = the same secret.
+#      (A secret, not a variable — it must not appear in logs.)
+#   4. Redeploy so Vercel picks up the new env var.
+#   5. Actions tab → "Prewarm AI summaries" → "Run workflow" to test it now.
+#
+# SITE_URL is the same repo *variable* used by warm-trending.yml.
+# Without CRON_SECRET set on the server the route returns 404, by design.
+
+on:
+  schedule:
+    - cron: '15 */2 * * *' # 12×/day → 12 × 4 = 48 bills/day. The :15 offset keeps
+                           # this off warm-trending.yml's :00 run, so /api/trending
+                           # is already warm when we fetch it.
+  workflow_dispatch: {}    # manual "Run workflow" button
+
+# Never let overlapping runs pile up
+concurrency:
+  group: prewarm-summaries
+  cancel-in-progress: true
+
+jobs:
+  prewarm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prewarm summaries
+        run: |
+          if [ -z "${{ vars.SITE_URL }}" ]; then
+            echo "::error::Repo variable SITE_URL is not set. See setup notes in this file."
+            exit 1
+          fi
+          echo "Prewarming ${{ vars.SITE_URL }}/api/prewarm-summaries"
+          curl -sS -m 90 -X POST \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -w "\nstatus=%{http_code} time=%{time_total}s\n" \
+            "${{ vars.SITE_URL }}/api/prewarm-summaries"
