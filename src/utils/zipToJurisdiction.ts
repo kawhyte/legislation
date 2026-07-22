@@ -8,10 +8,21 @@ const zipCache = new Map<string, States>();
 export async function getJurisdictionFromZip(zip: string): Promise<States | null> {
   if (zipCache.has(zip)) return zipCache.get(zip)!;
 
-  const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
+  // Without a timeout a slow or down zippopotam leaves "Find Bills" spinning
+  // forever. An abort is reported as "not found" so the caller's existing
+  // user-facing error covers both cases.
+  let res: Response;
+  try {
+    res = await fetch(`https://api.zippopotam.us/us/${zip}`, {
+      signal: AbortSignal.timeout(5000),
+    });
+  } catch {
+    return null;
+  }
   if (!res.ok) return null;
-  const data = await res.json();
-  const place = data.places[0];
+  const data = await res.json().catch(() => null);
+  const place = data?.places?.[0];
+  if (!place) return null;
   const abbr: string = place['state abbreviation'];
   const match = usStates.find(s => s.abbreviation === abbr) as States | undefined;
   if (!match) return null;

@@ -287,6 +287,81 @@ test.describe('Homepage', () => {
     expect(trackRequests).toEqual([]);
   });
 
+  test('cold load with no stored location offers to set a state', async ({ page }) => {
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.goto('/');
+    const chip = page.getByRole('status');
+    await expect(chip).toContainText('Showing trending US bills');
+    await expect(chip.getByRole('button', { name: /set your state/i })).toBeVisible();
+  });
+
+  test('a remembered jurisdiction loads that state feed, once', async ({ page }) => {
+    // Exactly one bills request: `setJurisdiction` clears the cache whenever the
+    // jurisdiction differs, so a resolution effect that re-fires would thrash it
+    // into a fetch loop. This is the regression test for that.
+    const billsRequests: string[] = [];
+    page.on('request', req => {
+      if (req.url().includes('/api/openstates/bills')) billsRequests.push(req.url());
+    });
+
+    await page.route('**/api/openstates/bills**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_BILLS_RESPONSE) })
+    );
+    await page.addInitScript(() => {
+      localStorage.setItem('billhound:lastJurisdiction', 'TX');
+    });
+
+    await page.goto('/');
+
+    await expect(page.getByRole('heading', { name: 'Latest Bills in Texas' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('status')).toContainText('Showing Texas');
+    // Never the national feed — the local state won before first paint of a feed.
+    await expect(page.getByRole('heading', { name: 'Trending across the US' })).toHaveCount(0);
+
+    await page.waitForTimeout(3_000);
+    expect(billsRequests).toHaveLength(1);
+    expect(billsRequests[0]).toContain('Texas');
+  });
+
+  test('garbage in localStorage is ignored, not looked up', async ({ page }) => {
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.addInitScript(() => {
+      localStorage.setItem('billhound:lastJurisdiction', 'florida');
+    });
+    await page.goto('/');
+    await expect(page.getByRole('status')).toContainText('Showing trending US bills');
+  });
+
+  test("the chip's action focuses the one existing state picker", async ({ page }) => {
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.goto('/');
+    await page.getByRole('status').getByRole('button', { name: /set your state/i }).click();
+
+    // The chip must not build a second picker — it hands off to the hero's.
+    await expect(page.getByRole('combobox').first()).toBeFocused();
+    await expect(page.getByRole('combobox')).toHaveCount(1);
+  });
+
+  test('picking a state updates the chip and is remembered for next visit', async ({ page }) => {
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.route('**/api/openstates/bills**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_BILLS_RESPONSE) })
+    );
+    await page.goto('/');
+    await selectTexas(page);
+
+    await expect(page.getByRole('status')).toContainText('Showing Texas');
+    expect(await page.evaluate(() => localStorage.getItem('billhound:lastJurisdiction'))).toBe('TX');
+  });
+
   test('skeleton-to-card swap does not shift layout', async ({ page }) => {
     // Hold the bills response open long enough to measure the skeleton.
     await page.route('**/api/openstates/bills**', async route => {
@@ -310,5 +385,56 @@ test.describe('Homepage', () => {
     // Same shell, same rows: any residual difference is content-driven, not a jump.
     expect(Math.abs(skeletonBox!.height - cardBox!.height)).toBeLessThanOrEqual(24);
     expect(Math.abs(skeletonBox!.y - cardBox!.y)).toBeLessThanOrEqual(4);
+  });
+});
+
+/**
+ * Vercel injects `x-vercel-ip-*` on every production request. `next dev` and any
+ * non-Vercel host never send them, so the specs above cover the header-less path
+ * and these cover the production one. Resolution runs in a client effect, so the
+ * SSR HTML always carries the national chip — these must assert post-hydration.
+ */
+test.describe('Homepage — IP geo defaulting', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.route('**/api/openstates/bills**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_BILLS_RESPONSE) })
+    );
+  });
+
+  test.describe('a US visitor', () => {
+    test.use({ extraHTTPHeaders: { 'x-vercel-ip-country': 'US', 'x-vercel-ip-country-region': 'FL' } });
+
+    test('is offered their state as a guess, never as a fact', async ({ page }) => {
+      await page.goto('/');
+      const chip = page.getByRole('status');
+      await expect(chip).toContainText("Looks like you're in Florida");
+      await expect(chip.getByRole('button', { name: /change your state/i })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Latest Bills in Florida' })).toBeVisible({ timeout: 15_000 });
+    });
+
+    test('loses to a remembered jurisdiction — geo is the weakest signal', async ({ page }) => {
+      await page.addInitScript(() => {
+        localStorage.setItem('billhound:lastJurisdiction', 'TX');
+      });
+      await page.goto('/');
+      await expect(page.getByRole('status')).toContainText('Showing Texas');
+      await expect(page.getByRole('heading', { name: 'Latest Bills in Texas' })).toBeVisible({ timeout: 15_000 });
+    });
+  });
+
+  test.describe('a non-US visitor', () => {
+    // Ontario's "ON" and Berlin's "BE" both arrive in the same header a US
+    // state would. Neither may be silently read as a US state.
+    test.use({ extraHTTPHeaders: { 'x-vercel-ip-country': 'CA', 'x-vercel-ip-country-region': 'ON' } });
+
+    test('is never guessed into a US state', async ({ page }) => {
+      await page.goto('/');
+      await expect(page.getByRole('status')).toContainText('Showing trending US bills');
+      await expect(page.getByText(/Looks like you're in/)).toHaveCount(0);
+      await expect(page.getByRole('heading', { name: 'Trending across the US' })).toBeVisible();
+    });
   });
 });

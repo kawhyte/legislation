@@ -901,7 +901,36 @@ const AGENT_VERIFIED = {
   "18e": true,
   "18f": true,
   "18g": true,
-  "18h": true
+  "18h": true,
+  // PLAN-19 — location chip and geo defaulting.
+  // 19a: e2e "cold load with no stored location offers to set a state" — no
+  //      x-vercel-ip-* headers exist off Vercel, so this is the same code path
+  //      `next dev` takes. Zero console errors; the trending feed still paints.
+  // 19c: e2e "a remembered jurisdiction loads that state feed, once" counts
+  //      /api/openstates/bills requests over a 3s window and asserts exactly 1.
+  //      This is the regression test for the cache-thrash fetch loop.
+  // 19d: same spec — addInitScript seeds billhound:lastJurisdiction=TX and the
+  //      page comes up on Texas with the chip reading "Showing Texas". A
+  //      companion spec proves "florida" (garbage) is rejected, not looked up.
+  // 19e: e2e "the chip's action focuses the one existing state picker" — the
+  //      hero combobox ends up focused AND the page still has exactly 1
+  //      combobox, so the chip provably did not build a second picker.
+  // 19f: e2e "a non-US visitor is never guessed into a US state" drives a real
+  //      request carrying x-vercel-ip-country: CA / -region: ON and asserts the
+  //      national feed. Paired with a US/FL spec that DOES resolve to Florida,
+  //      so the guard is proven to discriminate rather than just always fail.
+  //      Verified post-hydration: SSR always emits the national chip.
+  // 19g: unit spec "throws the same message when the request aborts on timeout"
+  //      plus one asserting an AbortSignal is passed to fetch at all — the
+  //      5s cap is what stops "Find Bills" spinning forever.
+  // 19h: 24/24 e2e green; the pre-existing homepage specs are unmodified.
+  "19a": true,
+  "19c": true,
+  "19d": true,
+  "19e": true,
+  "19f": true,
+  "19g": true,
+  "19h": true
 };
 // 9b needs a real inbox to confirm the Firebase email actually arrives.
 // 10d: e2e "skeleton-to-card swap does not shift layout" holds the bills
@@ -1040,7 +1069,13 @@ const AGENT_VERIFIED = {
 // 18h: full suite green — lint 0 errors, build compiled, vitest 95/95 (15
 //      files), playwright 16/16.
 const AGENT_IN_PROGRESS = {
-  "9b": true
+  "9b": true,
+  // 19b: implemented (userPreferences.selectedState is priority 1 and outranks
+  // both localStorage and geo) but NOT verified — it needs a real signed-in
+  // Firebase account whose profile state is Florida, which the e2e suite has no
+  // way to stand up. Sign in as an FL user and confirm the homepage lands on
+  // Florida bills with the chip reading "Showing Florida · Change".
+  "19b": true
 };
 </script>
 <script>
