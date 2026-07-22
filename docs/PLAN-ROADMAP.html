@@ -847,8 +847,8 @@ const AGENT_VERIFIED = {
   // 17a: live authed POST against real Gemini + real Firestore returned
   //      {"considered":40,"skipped":1,"generated":8,"failed":1} in 40.4s.
   // 17c: swept the bill_summaries collection afterwards — 16 new docs, every
-  //      one carrying _meta {generatedAt, model (gemini-2.5-flash at the time,
-  //      promptVersion: 0}. The 4 docs holding the FALLBACK gist are old
+  //      one carrying _meta {generatedAt, model, promptVersion: 0} — model was
+  //      gemini-2.5-flash at the time, since migrated to gemini-3.6-flash. The 4 docs holding the FALLBACK gist are old
   //      t8/t10/test9/test10 debris with no _meta, i.e. pre-existing, not
   //      written by this route.
   // 17d: an immediate second run returned skipped:9 (the 1 pre-existing doc
