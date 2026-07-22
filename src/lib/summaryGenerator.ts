@@ -11,18 +11,29 @@ import type { Bill, BillSummaryData } from '@/types';
 
 // ── Singleton AI client (module-level = one instance per server process) ──────
 
+/**
+ * `gemini-2.5-flash` is no longer usable: the API answers a generateContent call
+ * for it with 404 "no longer available to new users", so any key issued now
+ * fails on it while older grandfathered keys still work. That is a silent trap —
+ * it presents as every summary coming back as FALLBACK, not as a startup error.
+ *
+ * Model availability is also split across API versions, verified by calling both:
+ * gemini-3.6-flash answers on v1beta (the SDK default, so no override needed)
+ * and 404s on v1, while gemini-3.5-flash is the reverse. Check both before
+ * concluding a model is unavailable.
+ */
+export const SUMMARY_MODEL = 'gemini-3.6-flash';
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? '');
 
 const model = genAI.getGenerativeModel({
-  model: 'gemini-2.5-flash',
+  model: SUMMARY_MODEL,
   generationConfig: {
     temperature: 0.3,
     maxOutputTokens: 8192,
     responseMimeType: 'application/json',
   },
 });
-
-export const SUMMARY_MODEL = 'gemini-2.5-flash';
 
 const DEFAULT_REQUEST_DELAY = 4000; // 4 seconds between Gemini requests
 const MAX_TITLE_LENGTH = 300;

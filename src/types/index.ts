@@ -105,7 +105,7 @@ export interface BillSummaryData {
 export interface CachedBillSummary extends BillSummaryData {
   _meta?: {
     generatedAt: string;   // ISO string
-    model: string;         // e.g. 'gemini-2.5-flash'
+    model: string;         // e.g. 'gemini-3.6-flash'
     promptVersion: number; // bump to invalidate every cached summary
   };
 }
