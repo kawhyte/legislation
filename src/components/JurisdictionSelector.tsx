@@ -21,6 +21,8 @@ export interface States {
     zoom?: number;
     // mapUrl: string;
     zipCoords?: { lat: number; lng: number };
+    /** The zip the coords came from. Present only on a zip search. */
+    zip?: string;
 }
 interface Props {
     onSelectJurisdiction: (jurisdiction: States | null) => void;

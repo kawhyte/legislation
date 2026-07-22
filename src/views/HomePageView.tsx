@@ -1,10 +1,11 @@
 'use client';
 
-import React, { Suspense, useState, useEffect, useRef } from 'react';
+import React, { Suspense, useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import BillCard from '@/components/BillCard';
 import BillCardSkeleton from '@/components/BillCardSkeleton';
 import YourRepsWidget from '@/components/YourRepsWidget';
+import FeedSection from '@/components/FeedSection';
 import Hero, { JURISDICTION_TRIGGER_ID } from '@/components/Hero';
 import LocationChip, { type LocationSource } from '@/components/LocationChip';
 import TrendingBillGrid from '@/components/TrendingBillGrid';
@@ -12,6 +13,7 @@ import useBills from '@/hooks/useBills';
 import { useCachedSummaries } from '@/hooks/useCachedSummaries';
 import { useSearchCache } from '@/contexts/SearchCacheContext';
 import { parseLocationInput } from '@/utils/zipToJurisdiction';
+import { partitionByRep, stateRepIds } from '@/utils/repRelevance';
 import type { States } from '@/components/JurisdictionSelector';
 import type { Bill } from '@/types';
 import type { Rep } from '@/hooks/useReps';
@@ -35,22 +37,42 @@ interface DisplayProps {
   cachedReps?: Rep[];
 }
 
+const FEED_GRID = 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6';
+
 const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, isLoading, error, cachedReps }) => {
   // Called before the early returns below — hooks cannot live behind a branch.
   // Cache-only reads, so a state feed costs zero Gemini tokens.
   const summaries = useCachedSummaries(bills ?? []);
 
+  // Reuse the reps YourRepsWidget already fetched — never a second /people.geo.
+  const { cache } = useSearchCache();
+  const reps = cachedReps ?? cache.reps;
+  const repIds = useMemo(() => stateRepIds(reps), [reps]);
+  const { fromReps, rest } = useMemo(() => partitionByRep(bills ?? [], repIds), [bills, repIds]);
+
+  // Reps land a beat after bills, and a card that jumps from "More in Texas" up
+  // to "From your reps" mid-read is worse than a brief unsectioned feed. So the
+  // headings wait. A location with no coords can never have reps, so it never
+  // waits; a coords lookup that comes back empty simply keeps the flat feed,
+  // which is exactly the pre-PLAN-20 layout.
+  const repsPending = Boolean(jurisdiction.zipCoords) && reps.length === 0;
+
+  const whyReps = jurisdiction.zip
+    ? `Bills sponsored by the state legislators who represent ZIP ${jurisdiction.zip}.`
+    : 'Bills sponsored by the state legislators who represent your district.';
+
   if (isLoading) {
     return (
       <section className="container-legislation py-12">
-        {/* Same heading as the loaded state — the jurisdiction is known before the
-            fetch resolves, so holding its space keeps the grid from jumping. */}
-        <h2 className="text-4xl font-black text-foreground mb-8 border-b-4 border-foreground pb-4">
-          Latest Bills in {jurisdiction.name}
-        </h2>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {/* Same heading, same column, same offset as the loaded state — the
+                jurisdiction is known before the fetch resolves, so holding its
+                space keeps the grid from jumping. */}
+            <h2 className="text-4xl font-black text-foreground mb-8 border-b-4 border-foreground pb-4">
+              Latest Bills in {jurisdiction.name}
+            </h2>
+            <div className={FEED_GRID}>
               {Array.from({ length: 6 }).map((_, i) => <BillCardSkeleton key={i} viewMode="feed" showSource={false} />)}
             </div>
           </div>
@@ -107,18 +129,69 @@ const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, is
 
   return (
     <section className="container-legislation py-12">
-      <h2 className="text-4xl font-black text-foreground mb-8 border-b-4 border-foreground pb-4">
-        Latest Bills in {jurisdiction.name}
-      </h2>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {bills.map((bill, i) => (
-              // `showSource`/`showProgressBar` are deliberately absent: the feed
-              // variant ignores both, and passing them would imply otherwise.
-              <BillCard key={bill.id} bill={bill} viewMode="feed" summary={summaries.get(bill.id)} feedName="state" position={i} />
-            ))}
-          </div>
+        <div className="lg:col-span-3 space-y-12">
+          {repsPending ? (
+            <div>
+              <h2 className="text-4xl font-black text-foreground mb-8 border-b-4 border-foreground pb-4">
+                Latest Bills in {jurisdiction.name}
+              </h2>
+              <div className={FEED_GRID}>
+                {bills.map((bill, i) => (
+                  // `showSource`/`showProgressBar` are deliberately absent: the feed
+                  // variant ignores both, and passing them would imply otherwise.
+                  <BillCard key={bill.id} bill={bill} viewMode="feed" summary={summaries.get(bill.id)} feedName="state" position={i} />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* No match means no heading at all. A permanently empty "From your
+                  reps" band is worse than never promising one. */}
+              {fromReps.length > 0 && (
+                <FeedSection title="From your reps" why={whyReps}>
+                  <div className={FEED_GRID}>
+                    {fromReps.map(({ bill, match }, i) => (
+                      <BillCard
+                        key={bill.id}
+                        bill={bill}
+                        viewMode="feed"
+                        summary={summaries.get(bill.id)}
+                        feedName="state"
+                        position={i}
+                        attribution={match}
+                      />
+                    ))}
+                  </div>
+                </FeedSection>
+              )}
+
+              <FeedSection
+                title={`More in ${jurisdiction.name}`}
+                why={`Recent activity in the ${jurisdiction.name} legislature.`}
+              >
+                <div className={FEED_GRID}>
+                  {rest.map((bill, i) => (
+                    <BillCard
+                      key={bill.id}
+                      bill={bill}
+                      viewMode="feed"
+                      summary={summaries.get(bill.id)}
+                      feedName="state"
+                      position={fromReps.length + i}
+                    />
+                  ))}
+                </div>
+              </FeedSection>
+
+              {/* Backfill only — a thin state session still gets a full screen. */}
+              {fromReps.length + rest.length < 6 && (
+                <FeedSection title="Trending nationwide" why="Moving fastest across all 50 states right now.">
+                  <TrendingBillGrid viewMode="feed" skeletonCount={3} />
+                </FeedSection>
+              )}
+            </>
+          )}
         </div>
         <div className="lg:col-span-1 order-first lg:order-last lg:sticky lg:top-6 lg:self-start">
           <YourRepsWidget coords={jurisdiction.zipCoords} stateName={jurisdiction.name} cachedReps={cachedReps} />

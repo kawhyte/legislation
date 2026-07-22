@@ -930,7 +930,34 @@ const AGENT_VERIFIED = {
   "19e": true,
   "19f": true,
   "19g": true,
-  "19h": true
+  "19h": true,
+  // ── PLAN-20 ──────────────────────────────────────────────────────────────
+  // 20a: Sponsorship.type was a field OpenStates does not return; it is now
+  //      `classification`, and `person` is explicitly nullable. tsc clean, so
+  //      no call site was silently relying on either.
+  // 20b/20c/20e/20f: 4 new e2e specs in tests/e2e/home.spec.ts drive the real
+  //      page — a rep-sponsored bill lands under "From your reps" with
+  //      "Dana Rivers sponsored this", the attribution click navigates to
+  //      /rep/ocd-person/…, a non-matching sponsor and a federal-classified rep
+  //      each produce zero tier-1 headings, and a dropdown pick fires no
+  //      people.geo request at all. 28/28 playwright green.
+  // 20d: enforced by `fromReps.length > 0 &&` in HomePageView — no heading, no
+  //      empty state. Covered by two of the specs above.
+  // 20g: `grep -riE "your city|voted on" src tests` finds nothing new in this
+  //      diff (the two pre-existing hits are Hero and AboutPage copy).
+  // 20h: the attribution is a role=link span that preventDefault/stopPropagation
+  //      and router.push()es, so no <a> is nested in the card's link — the e2e
+  //      click test would fail on the card link winning. Request count is
+  //      unchanged: the partition reuses cache.reps that YourRepsWidget already
+  //      fetched. 131/131 vitest, incl. 13 new repRelevance unit tests.
+  "20a": true,
+  "20b": true,
+  "20c": true,
+  "20d": true,
+  "20e": true,
+  "20f": true,
+  "20g": true,
+  "20h": true
 };
 // 9b needs a real inbox to confirm the Firebase email actually arrives.
 // 10d: e2e "skeleton-to-card swap does not shift layout" holds the bills

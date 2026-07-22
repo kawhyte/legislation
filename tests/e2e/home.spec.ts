@@ -131,11 +131,12 @@ test.describe('Homepage', () => {
 
     await selectTexas(page);
 
-    // Swapped: state feed in, national feed out.
-    await expect(page.getByRole('heading', { name: 'Latest Bills in Texas' })).toBeVisible({ timeout: 10_000 });
+    // Swapped: the state feed leads, and the national feed is demoted to the
+    // labelled backfill band below it (one mocked bill is a thin session).
+    await expect(page.getByRole('heading', { name: 'More in Texas' })).toBeVisible({ timeout: 10_000 });
     await expect(page.getByRole('heading', { name: 'Trending across the US' })).toHaveCount(0);
     await expect(page.getByText('A test bill about housing', { exact: true })).toBeVisible();
-    await expect(page.getByText('A national trending bill about health', { exact: true })).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Trending nationwide' })).toBeVisible();
 
     // The reps sidebar comes back with the state feed. A dropdown pick carries
     // no coords, so it is the "add your zip" prompt rather than rep cards —
@@ -177,7 +178,7 @@ test.describe('Homepage', () => {
 
     await page.goto('/?q=33028');
 
-    await expect(page.getByRole('heading', { name: 'Latest Bills in Texas' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: 'More in Texas' })).toBeVisible({ timeout: 15_000 });
     // Desktop sidebar copy — see the note above about the widget's two layouts.
     await expect(page.getByText('Dana Rivers').locator('visible=true')).toBeVisible();
     await expect(page.getByRole('link', { name: /see their votes/i }).locator('visible=true'))
@@ -315,7 +316,7 @@ test.describe('Homepage', () => {
 
     await page.goto('/');
 
-    await expect(page.getByRole('heading', { name: 'Latest Bills in Texas' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: 'More in Texas' })).toBeVisible({ timeout: 15_000 });
     await expect(page.getByRole('status')).toContainText('Showing Texas');
     // Never the national feed — the local state won before first paint of a feed.
     await expect(page.getByRole('heading', { name: 'Trending across the US' })).toHaveCount(0);
@@ -412,7 +413,7 @@ test.describe('Homepage — IP geo defaulting', () => {
       const chip = page.getByRole('status');
       await expect(chip).toContainText("Looks like you're in Florida");
       await expect(chip.getByRole('button', { name: /change your state/i })).toBeVisible();
-      await expect(page.getByRole('heading', { name: 'Latest Bills in Florida' })).toBeVisible({ timeout: 15_000 });
+      await expect(page.getByRole('heading', { name: 'More in Florida' })).toBeVisible({ timeout: 15_000 });
     });
 
     test('loses to a remembered jurisdiction — geo is the weakest signal', async ({ page }) => {
@@ -421,7 +422,7 @@ test.describe('Homepage — IP geo defaulting', () => {
       });
       await page.goto('/');
       await expect(page.getByRole('status')).toContainText('Showing Texas');
-      await expect(page.getByRole('heading', { name: 'Latest Bills in Texas' })).toBeVisible({ timeout: 15_000 });
+      await expect(page.getByRole('heading', { name: 'More in Texas' })).toBeVisible({ timeout: 15_000 });
     });
   });
 
@@ -436,5 +437,111 @@ test.describe('Homepage — IP geo defaulting', () => {
       await expect(page.getByText(/Looks like you're in/)).toHaveCount(0);
       await expect(page.getByRole('heading', { name: 'Trending across the US' })).toBeVisible();
     });
+  });
+});
+
+/**
+ * PLAN-20 — the top tier only exists when one of the viewer's own state
+ * legislators actually sponsored a bill in the feed. Everything here turns on
+ * the intersection between /people.geo and the sponsorships already in memory.
+ */
+test.describe('Homepage — from your reps', () => {
+  const REP_ID = 'ocd-person/test-rep-1';
+
+  const billSponsoredBy = (personId: string) => ({
+    results: [
+      {
+        ...MOCK_BILLS_RESPONSE.results[0],
+        sponsorships: [
+          { id: 's1', name: 'Rivers', primary: true, classification: 'primary', person: { id: personId, name: 'Dana Rivers' } },
+        ],
+      },
+    ],
+  });
+
+  const rep = (classification: string) => ({
+    results: [
+      {
+        id: REP_ID,
+        name: 'Dana Rivers',
+        party: 'Democratic',
+        current_role: { title: 'Senator', district: '12', org_classification: 'upper' },
+        jurisdiction: { id: 'ocd-jurisdiction/texas', name: 'Texas', classification },
+      },
+    ],
+  });
+
+  async function setup(page: Page, bills: object, reps: object) {
+    await page.route('**api.zippopotam.us/**', route =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ places: [{ 'state abbreviation': 'TX', latitude: '25.9', longitude: '-80.2' }] }),
+      })
+    );
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.route('**/api/openstates/bills**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(bills) })
+    );
+    await page.route('**/api/openstates/people.geo**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(reps) })
+    );
+  }
+
+  test('a bill your own senator filed leads the feed, attributed and linked', async ({ page }) => {
+    await setup(page, billSponsoredBy(REP_ID), rep('state'));
+    await page.goto('/?q=33028');
+
+    await expect(page.getByRole('heading', { name: 'From your reps' })).toBeVisible({ timeout: 15_000 });
+    const attribution = page.getByRole('link', { name: 'Dana Rivers sponsored this', exact: true });
+    await expect(attribution).toBeVisible();
+
+    // The disclosure is where "why am I seeing this" lives — state-level and
+    // honest about the zip being a centroid, never "your city" or "voted on".
+    await page.getByText('why these? ›').first().click();
+    await expect(page.getByText('Bills sponsored by the state legislators who represent ZIP 33028.')).toBeVisible();
+
+    // The attributed bill is not also repeated in the state tier below.
+    await expect(page.getByText('A test bill about housing', { exact: true })).toHaveCount(1);
+
+    // Nested-anchor trap: the attribution navigates to the rep, the card to the bill.
+    await attribution.click();
+    await expect(page).toHaveURL(/\/rep\/ocd-person/);
+  });
+
+  test('no matching sponsor means no "From your reps" heading at all', async ({ page }) => {
+    // An empty promise of relevance is worse than not making one.
+    await setup(page, billSponsoredBy('ocd-person/somebody-else'), rep('state'));
+    await page.goto('/?q=33028');
+
+    await expect(page.getByRole('heading', { name: 'More in Texas' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: 'From your reps' })).toHaveCount(0);
+  });
+
+  test('federal reps are filtered out — they cannot sponsor a state bill', async ({ page }) => {
+    // /people.geo returns congressional reps alongside state ones. Matching on
+    // them would be meaningless even when the ids happen to line up.
+    await setup(page, billSponsoredBy(REP_ID), rep('country'));
+    await page.goto('/?q=33028');
+
+    await expect(page.getByRole('heading', { name: 'More in Texas' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: 'From your reps' })).toHaveCount(0);
+  });
+
+  test('a dropdown pick never requests reps and never shows tier 1', async ({ page }) => {
+    const geoRequests: string[] = [];
+    page.on('request', req => {
+      if (req.url().includes('people.geo')) geoRequests.push(req.url());
+    });
+    await setup(page, billSponsoredBy(REP_ID), rep('state'));
+
+    await page.goto('/');
+    await selectTexas(page);
+
+    await expect(page.getByRole('heading', { name: 'More in Texas' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: 'From your reps' })).toHaveCount(0);
+    expect(geoRequests).toEqual([]);
   });
 });

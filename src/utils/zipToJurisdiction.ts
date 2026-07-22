@@ -28,6 +28,7 @@ export async function getJurisdictionFromZip(zip: string): Promise<States | null
   if (!match) return null;
   const result: States = {
     ...match,
+    zip,
     zipCoords: {
       lat: parseFloat(place.latitude),
       lng: parseFloat(place.longitude),

@@ -3,6 +3,7 @@
 // src/components/BillCard.tsx
 import { useMemo } from "react";
 import NextLink from "next/link";
+import { useRouter } from "next/navigation";
 import usStates from "../data/usStates";
 import {
 	Card,
@@ -45,7 +46,9 @@ const BillCard = ({
 	summary,
 	feedName = "unknown",
 	position = -1,
+	attribution,
 }: BillCardProps) => {
+	const router = useRouter();
 	const shouldShowProgressBar = viewMode === "detailed" && showProgressBar;
 	const shouldShowSource = viewMode === "detailed" && showSource;
 
@@ -69,6 +72,17 @@ const BillCard = ({
 		() => bill.sponsorships?.find((s) => s.primary),
 		[bill.sponsorships]
 	);
+
+	// The whole card is already a NextLink, and an <a> inside an <a> is invalid
+	// HTML that React warns about. So the attribution is a span with a link role
+	// that stops the click from reaching the card — the same escape BookmarkButton
+	// uses — and pushes the route itself.
+	const goToRep = (e: React.SyntheticEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
+		if (attribution) router.push(`/rep/${encodeURIComponent(attribution.repId)}`);
+	};
+
 	return (
 		<NextLink
 			href={`/bill/${encodeURIComponent(bill.id)}`}
@@ -77,7 +91,8 @@ const BillCard = ({
 			// uses sendBeacon internally, so the event survives the page transition.
 			onClick={() => track("bill_card_click", { feed: feedName, position, hasSummary: !!summary })}
 		>
-			<Card className='bg-card border-2 border-foreground rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))] flex flex-col h-full transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))]'>
+			<Card
+				className={`bg-card border-2 ${attribution ? "border-accent-yellow" : "border-foreground"} rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))] flex flex-col h-full transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))]`}>
 				<CardHeader className='p-4 space-y-3'>
 					{/* TOP ROW: flag + bill ID + bookmark */}
 					<div className='flex items-center justify-between'>
@@ -92,6 +107,20 @@ const BillCard = ({
 						</div>
 						<BookmarkButton bill={bill} />
 					</div>
+
+					{/* WHY THIS CARD IS UP HERE — "sponsored"/"co-sponsored" only.
+					    /bills cannot tell us how anyone voted, so never say so. */}
+					{attribution && (
+						<span
+							role='link'
+							tabIndex={0}
+							onClick={goToRep}
+							onKeyDown={(e) => { if (e.key === "Enter") goToRep(e); }}
+							className='flex w-fit items-center gap-1.5 text-xs font-semibold text-foreground underline underline-offset-2 rounded-sm cursor-pointer hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground'>
+							<User className='h-3 w-3 flex-shrink-0' aria-hidden='true' />
+							{attribution.sponsorName} {attribution.isPrimary ? "sponsored" : "co-sponsored"} this
+						</span>
+					)}
 
 					{/* HOOK (feed) or BILL TITLE — an h3 exists in every branch. */}
 					{isFeed ? (

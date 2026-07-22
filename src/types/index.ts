@@ -37,16 +37,21 @@ export interface Abstract {
 
 export interface Sponsorship {
     id: string;
+    /** Raw sponsor name — the only field guaranteed present. */
+    name?: string;
+    entity_type?: string;
+    /** null when OpenStates could not match the name to a person record. */
     person: {
         id: string;
         name: string;
-    };
-    organization: {
+    } | null;
+    organization?: {
         id: string;
         name: string;
     };
     primary: boolean;
-    type: string;
+    /** "primary" | "cosponsor". NOT `type` — that field does not exist in the API. */
+    classification: string;
 }
 
 export interface VoteCount {
@@ -134,6 +139,11 @@ export interface BillCardProps {
 	/** Analytics only — which feed rendered this card, and its 0-based slot in it. */
 	feedName?: string;
 	position?: number;
+	/**
+	 * Set when one of the viewer's own representatives sponsored this bill.
+	 * Adds an accent border and a line linking to that rep's scorecard.
+	 */
+	attribution?: { sponsorName: string; repId: string; isPrimary: boolean };
 }
 
 // From BillProgressStepper.tsx
