@@ -15,6 +15,21 @@ import { checkRateLimit, getClientIp, isSameOrigin } from '@/lib/rateLimit';
  */
 
 const ALLOWED_PATH_PREFIXES = ['bills', 'people', 'people.geo', 'jurisdictions'];
+
+/**
+ * Per-attempt upstream budget. OpenStates intermittently stops answering this
+ * query shape entirely: measured 60s+ hangs on Texas, California and Florida
+ * within the same minute, while the identical request returned 200 in 0.4s
+ * minutes later. Without a bound, each of those hangs burns the whole Vercel
+ * function budget and the platform — not this route — returns an opaque 504.
+ *
+ * Two attempts plus the backoff stay comfortably under Vercel Hobby's 60s cap.
+ */
+const UPSTREAM_TIMEOUT_MS = 20_000;
+const RETRY_BACKOFF_MS = 400;
+
+/** Upstream statuses worth one retry: all transient, none caused by our query. */
+const TRANSIENT_STATUSES = new Set([502, 503, 504]);
 const RATE_LIMIT_MAX_REQUESTS = 60; // per window, per IP — generous enough for normal browsing
 const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
 const MAX_QUERY_LENGTH = 2000;
@@ -50,6 +65,21 @@ function getRevalidateSeconds(pathStr: string): number {
   return REVALIDATE_SECONDS[firstSegment] ?? 600;
 }
 
+/**
+ * One bounded upstream attempt.
+ *
+ * The `signal` is safe to combine with `next.revalidate`: Next only strips it
+ * when serving a background revalidation, so the Data Cache — which is what
+ * lets one warm entry serve every visitor — still applies.
+ */
+function fetchUpstream(url: string, revalidateSeconds: number): Promise<Response> {
+  return fetch(url, {
+    headers: { 'X-API-KEY': process.env.OPENSTATES_API_KEY ?? '' },
+    next: { revalidate: revalidateSeconds },
+    signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+  });
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
@@ -79,18 +109,45 @@ export async function GET(
   const upstreamUrl = `https://v3.openstates.org/${pathStr}${search}`;
   const revalidateSeconds = getRevalidateSeconds(pathStr);
 
-  try {
-    const res = await fetch(upstreamUrl, {
-      headers: { 'X-API-KEY': process.env.OPENSTATES_API_KEY ?? '' },
-      next: { revalidate: revalidateSeconds },
-    });
+  // Two attempts, because the failure is transient by nature: the same query
+  // that times out will often answer in well under a second moments later.
+  let res: Response | null = null;
+  let lastError: unknown = null;
 
-    if (!res.ok) {
-      // Never cache error responses — always retry on the next request
-      const errorData = await res.json().catch(() => ({ error: 'Upstream error' }));
-      return NextResponse.json(errorData, { status: res.status });
+  for (let attempt = 0; attempt < 2; attempt++) {
+    if (attempt > 0) await new Promise(resolve => setTimeout(resolve, RETRY_BACKOFF_MS));
+
+    try {
+      res = await fetchUpstream(upstreamUrl, revalidateSeconds);
+      if (!TRANSIENT_STATUSES.has(res.status)) break;
+      lastError = `HTTP ${res.status}`;
+    } catch (err) {
+      // Timeout (AbortSignal.timeout) or a genuine network failure.
+      res = null;
+      lastError = err;
     }
+  }
 
+  if (!res) {
+    const timedOut = lastError instanceof Error && lastError.name === 'TimeoutError';
+    console.error(`[/api/openstates] ${pathStr} failed after 2 attempts:`, lastError);
+    // 504 when we ran out of patience, 502 when the connection itself failed —
+    // the client can tell "upstream is slow" from "upstream is unreachable".
+    return NextResponse.json(
+      { error: timedOut ? 'OpenStates took too long to respond.' : 'Failed to fetch from OpenStates' },
+      { status: timedOut ? 504 : 502 }
+    );
+  }
+
+  if (!res.ok) {
+    // Never cache error responses — always retry on the next request.
+    // A 5xx body is usually a gateway HTML page, not JSON, hence the fallback.
+    const errorData = await res.json().catch(() => ({ error: 'Upstream error' }));
+    if (res.status >= 500) console.error(`[/api/openstates] ${pathStr} upstream ${res.status}`);
+    return NextResponse.json(errorData, { status: res.status });
+  }
+
+  try {
     const data = await res.json();
     return NextResponse.json(data, {
       status: res.status,
@@ -99,7 +156,7 @@ export async function GET(
       },
     });
   } catch (err) {
-    console.error('[/api/openstates] Upstream error:', err);
+    console.error('[/api/openstates] Malformed upstream JSON:', err);
     return NextResponse.json({ error: 'Failed to fetch from OpenStates' }, { status: 502 });
   }
 }
