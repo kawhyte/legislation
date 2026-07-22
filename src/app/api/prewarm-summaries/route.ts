@@ -26,7 +26,7 @@ export const maxDuration = 60;
  * These constants are squeezed between two hard limits, both measured in
  * production rather than assumed:
  *
- *  - The Gemini free tier caps gemini-2.5-flash at **5 requests per minute**
+ *  - The Gemini free tier caps gemini-3.6-flash at **5 requests per minute**
  *    (quotaId GenerateRequestsPerMinutePerProjectPerModel-FreeTier), so the
  *    spacing cannot drop below 12s. A run at 4s spacing 429ed a bill every time.
  *  - Vercel Hobby kills the function at **60s** and does not honour a higher

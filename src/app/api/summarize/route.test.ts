@@ -148,7 +148,7 @@ describe('/api/summarize cache integrity', () => {
     expect(mockDocSet).toHaveBeenCalledTimes(1);
     const written = mockDocSet.mock.calls[0][0];
     expect(written.gist).toBe(SUMMARY.gist);
-    expect(written._meta.model).toBe('gemini-2.5-flash');
+    expect(written._meta.model).toBe('gemini-3.6-flash');
     expect(typeof written._meta.generatedAt).toBe('string');
     expect(typeof written._meta.promptVersion).toBe('number');
   });

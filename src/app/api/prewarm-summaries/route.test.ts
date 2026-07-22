@@ -120,7 +120,7 @@ describe('/api/prewarm-summaries', () => {
     });
     expect(mockDocSet).toHaveBeenCalledTimes(3);
     expect(mockDocSet.mock.calls[0][0]._meta).toMatchObject({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.6-flash',
       promptVersion: 0,
     });
   });
