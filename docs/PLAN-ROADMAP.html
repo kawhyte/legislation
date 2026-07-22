@@ -797,7 +797,103 @@ const AGENT_VERIFIED = {
   "15c": true,
   "15d": true,
   "15e": true,
-  "15g": true
+  "15g": true,
+  // PLAN-16 — homepage feed un-gate.
+  // 16a: browser at 1280x800 shows "Trending across the US" + card tops above
+  //      the fold, cards render on one scroll; e2e "cold load shows trending
+  //      bills with no interaction" passes.
+  // 16b: e2e "restoring ?q= does not flash the national feed" — proven
+  //      sensitive by removing the isRestoring guard and watching it fail.
+  // 16c: /?q=notarealplace redirected to / and rendered the trending feed.
+  // 16f: Chrome network panel on a cold / load: 1x /api/trending, 0x
+  //      /api/openstates/bills.
+  // 16g: the `q: 'artificial intelligence'` default is deleted. The one
+  //      remaining hit is trendingTopics.ts's topic-matching regex, which is
+  //      live code, not the dead default.
+  // 16d: e2e "picking a state swaps trending for state bills plus the reps
+  //      sidebar" — trending heading goes to count 0, "Latest Bills in Texas"
+  //      + the sidebar appear. A second spec drives the zip path and asserts
+  //      real rep cards with a /rep/ocd-person link.
+  // 16e: e2e "empty /api/trending renders the tumbleweed, not an error" —
+  //      {bills: []} yields the "No Trending Bills" state with zero cards and
+  //      no "Error Fetching Bills" alert.
+  // 16h: all 5 pre-existing homepage specs pass unmodified (15/15 e2e green).
+  "16a": true,
+  "16b": true,
+  "16c": true,
+  "16d": true,
+  "16e": true,
+  "16f": true,
+  "16g": true,
+  "16h": true,
+  // PLAN-17 — AI summary prewarm cron.
+  // 17b: booted `next start` twice against the real build. With
+  //      CRON_SECRET=localtest: POST with no Authorization header → 401, POST
+  //      with "Bearer nope" → 401. With CRON_SECRET unset: POST carrying the
+  //      correct-looking bearer → 404, so an unconfigured endpoint is
+  //      indistinguishable from a nonexistent one. Also covered by
+  //      src/app/api/prewarm-summaries/route.test.ts.
+  // 17g: the Step-1 extraction into src/lib/summaryGenerator.ts is
+  //      behaviour-neutral — all 7 pre-existing /api/summarize route tests pass
+  //      unmodified (cache-key collision, pre-Gemini Firestore read, dedupe
+  //      race, _meta provenance, fallback write-skip). clampBillInput now
+  //      returns a copy instead of mutating the caller's bill, which is the
+  //      only intentional difference and is asserted in summaryGenerator.test.ts.
+  // 17h: npm run lint (only pre-existing <img>/prefer-const warnings), npm run
+  //      build (15 routes, /api/prewarm-summaries registered dynamic), vitest
+  //      70/70, playwright 15/15. The 14 e2e failures on the first attempt were
+  //      Playwright reusing a stale dev server squatting on :3000; re-running
+  //      against a fresh `next start` on :3100 is green.
+  // 17a: live authed POST against real Gemini + real Firestore returned
+  //      {"considered":40,"skipped":1,"generated":8,"failed":1} in 40.4s.
+  // 17c: swept the bill_summaries collection afterwards — 16 new docs, every
+  //      one carrying _meta {generatedAt, model, promptVersion: 0} — model was
+  //      gemini-2.5-flash at the time, since migrated to gemini-3.6-flash. The 4 docs holding the FALLBACK gist are old
+  //      t8/t10/test9/test10 debris with no _meta, i.e. pre-existing, not
+  //      written by this route.
+  // 17d: an immediate second run returned skipped:9 (the 1 pre-existing doc
+  //      plus the 8 just generated) — the skip path spends no tokens.
+  // 17e: POST /api/summarize for a prewarmed bill on a server whose L1 cache
+  //      had never seen it returned the full summary in 0.137s with ZERO new
+  //      Gemini calls in the log — the L2 prewarm is what served it.
+  // 17f: GitHub Actions "Prewarm AI summaries" dispatched manually against
+  //      production returned status=200 in 36.3s with
+  //      {"considered":40,"skipped":26,"generated":3,"failed":0,
+  //       "stoppedEarly":false,"trendingMs":443,"scanMs":4061,
+  //       "elapsedMs":35451} — a full batch, no failures, no early stop, well
+  //      inside the 60s cap. CRON_SECRET is set in Vercel (Production+Preview)
+  //      and as a GitHub Actions secret; SITE_URL was already a repo variable.
+  //      Shipped as PRs #7-#13.
+  // Three defects were found by running this rather than reasoning about it,
+  // each invisible to the one before:
+  //  1. RATE LIMIT — the plan's BATCH_SIZE=8/DELAY_MS=4000 is 15 req/min
+  //     against a 5/min free-tier cap; every 8-batch run 429ed a bill.
+  //  2. RUNAWAY LOOP (the real cause of the production 504s) — the break was
+  //     `generated >= BATCH_SIZE`, but a failed bill increments `failed` and
+  //     continues, so with Gemini failing for EVERY bill nothing incremented
+  //     `generated` and the loop walked all 40 bills paying DELAY_MS each:
+  //     520s of work in a 60s function. Now bounded by generated + failed.
+  //     Two earlier fixes (batch size, then a wall-clock budget) treated
+  //     symptoms; only the instrumented report exposed the actual cause.
+  //  3. DEAD MODEL — gemini-2.5-flash now 404s with "no longer available to
+  //     new users". Old keys are grandfathered, which is why it worked from a
+  //     laptop and failed in production, and why it read as a key problem for
+  //     several cycles. Migrated to gemini-3.6-flash. Note ListModels still
+  //     advertises 2.5-flash even though generateContent rejects it, and model
+  //     availability is split across API versions (3.6-flash: v1beta only;
+  //     3.5-flash: v1 only), so neither source alone is evidence.
+  // This also fixed a PRE-EXISTING production outage the cron merely exposed:
+  //      /api/summarize had been returning "Summary unavailable at this time."
+  //      to every live user clicking "Translate to Plain English". Confirmed
+  //      fixed — an uncached bill now returns a real summary in 6.8s in prod.
+  "17a": true,
+  "17f": true,
+  "17b": true,
+  "17c": true,
+  "17d": true,
+  "17e": true,
+  "17g": true,
+  "17h": true
 };
 // 9b needs a real inbox to confirm the Firebase email actually arrives.
 // 10d: e2e "skeleton-to-card swap does not shift layout" holds the bills

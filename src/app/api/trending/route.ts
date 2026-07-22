@@ -45,9 +45,13 @@ async function fetchTopic(topic: string, updatedSince: string): Promise<Bill[]> 
     sort: 'updated_desc',
     classification: 'bill',
   });
-  // include is repeatable — actions powers the score, sources feeds the card
+  // include is repeatable — actions powers the score, sources feeds the card,
+  // sponsorships powers rep attribution (see PLAN-20). `votes` is deliberately
+  // absent: requesting it makes OpenStates time out at 60s on high-volume
+  // states (same warning as src/hooks/useBills.ts).
   params.append('include', 'actions');
   params.append('include', 'sources');
+  params.append('include', 'sponsorships');
 
   try {
     const res = await fetch(`https://v3.openstates.org/bills?${params.toString()}`, {

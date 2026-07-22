@@ -13,21 +13,31 @@ import { isBillTrending } from "../utils/isBillTrending";
 const MonthAgo = getPastDate(5, 'months');
 
 const DaysAgo = getPastDate(90, 'days');
-const RecentForTrending = getPastDate(30, 'days'); // New: Only for trending
 
-
-
+/**
+ * Bills for one state jurisdiction, enriched with momentum and filtered for
+ * relevance.
+ *
+ * There is deliberately no nationwide mode: the national feed is computed and
+ * ranked server-side by `/api/trending` (see `useTrendingBills`), so this hook
+ * requires a jurisdiction.
+ *
+ * @param selectedJurisdiction the state to query. Callers whose jurisdiction
+ *   arrives asynchronously may pass null; that is treated as "not ready yet"
+ *   and fires no request — it is not a nationwide query.
+ * @param selectedTopic optional full-text query, or null for all bills
+ * @param options.enabled pass false to suppress the request for a caller that
+ *   is not ready (e.g. the dashboard, waiting on Firestore preferences).
+ */
 const useBills = (
 	selectedJurisdiction: States | null,
 	selectedTopic: string | null,
-	// Callers whose jurisdiction arrives asynchronously (e.g. the dashboard,
-	// waiting on Firestore preferences) pass enabled: false until it lands.
-	// Without it, the null jurisdiction takes the nationwide-trending branch
-	// below and fires a query the caller never wanted.
 	options: { enabled?: boolean } = {}
 ) => {
 	const { enabled = true } = options;
 	const params = useMemo(() => {
+		if (!selectedJurisdiction) return null;
+
 		const baseParams: Record<string, string | number | string[]> = {
 			sort: 'updated_desc',
 			// NOTE: `votes` and `abstracts` are intentionally omitted. Requesting
@@ -38,33 +48,22 @@ const useBills = (
 			// `abstracts` is not consumed anywhere in the app.
 			include: ['actions', 'sources', 'sponsorships'],
 			classification: 'bill',
+			action_since: DaysAgo,
+			jurisdiction: selectedJurisdiction.name,
+			created_since: MonthAgo,
+			per_page: 20,
 		};
 
-		if (selectedJurisdiction) {
-			// UNCHANGED: Keep existing state-specific logic to avoid breaking BillCard
-			baseParams.action_since = DaysAgo;
-			baseParams.jurisdiction = selectedJurisdiction.name;
-			baseParams.created_since = MonthAgo;
-			baseParams.per_page = 20;
-			if (selectedTopic) {
-				baseParams.q = selectedTopic;
-			}
-		} else {
-			baseParams.per_page = 20;
-			baseParams.updated_since = RecentForTrending;
-			
-			// REQUIRED: Provide a simple, broad query that should return results
-			// Using OR syntax (most APIs support this)
-            baseParams.q = selectedTopic || 'artificial intelligence';
-			
+		if (selectedTopic) {
+			baseParams.q = selectedTopic;
 		}
-		
+
 		return baseParams;
 	}, [selectedJurisdiction, selectedTopic]);
 
 	const { data: rawData, error, isLoading } = useData<Bill>(
-		enabled ? "/bills" : null,
-		{ params },
+		enabled && params ? "/bills" : null,
+		{ params: params ?? {} },
 		[params]
 	);
 
@@ -74,44 +73,7 @@ const useBills = (
 			return [];
 		}
 
-		// NEW: Safe trending filtering only for nationwide view
-		let filteredBills = [...rawData]; // Safe copy to avoid mutations
-		
-		if (!selectedJurisdiction) {
-			// CRITICAL: Ensure we get bills from multiple states, not just Massachusetts
-			const massachusettsBills = filteredBills.filter(bill => 
-				bill.jurisdiction?.name?.toLowerCase() === 'massachusetts'
-			);
-			const otherStateBills = filteredBills.filter(bill => 
-				bill.jurisdiction?.name?.toLowerCase() !== 'massachusetts'
-			);
-			
-			// If we only have Massachusetts bills, that's the API limitation issue
-			if (otherStateBills.length === 0 && massachusettsBills.length > 0) {
-				console.warn('[useBills] WARNING: API only returned Massachusetts bills. This suggests a query limitation.');
-				console.warn('[useBills] Recommendation: Contact API provider or use different query strategy');
-			}
-			
-			// For now, limit Massachusetts bills to ensure variety if we have other states
-			if (otherStateBills.length > 0) {
-				const limitedMassBills = massachusettsBills.slice(0, Math.min(5, massachusettsBills.length));
-				filteredBills = [...limitedMassBills, ...otherStateBills];
-			}
-			
-			// Apply other trending filters
-			const recentActivityBills = filteredBills.filter(bill => {
-				if (!bill.latest_action_date) return true; // Keep bills without dates
-				const actionDate = new Date(bill.latest_action_date);
-				const cutoffDate = new Date(RecentForTrending);
-				return actionDate > cutoffDate;
-			});
-			
-			// Use recent activity if we have enough, otherwise keep all
-			if (recentActivityBills.length >= 10) {
-				filteredBills = recentActivityBills;
-			}
-			
-		}
+		const filteredBills = [...rawData]; // Safe copy to avoid mutations
 
 		const HIGH_IMPACT = /tax|fee|rent|housing|health|medical|weapon|gun|school|education|zoning|abortion|appropriation|budget/i;
 		const JUNK = /mourning|congratulating|designating|commending|renaming|honoring|recognizing|celebrating|memorializing|declaring/i;
@@ -144,11 +106,8 @@ const useBills = (
 			})
 			.sort((a, b) => b.relevanceScore - a.relevanceScore);
 
-		// Nationwide: cap after relevance sort
-		const finalBills = !selectedJurisdiction ? enrichedBills.slice(0, 20) : enrichedBills;
-
-		return finalBills;
-	}, [rawData, selectedJurisdiction]);
+		return enrichedBills;
+	}, [rawData]);
 
 	return { 
 		data: processedData, 
