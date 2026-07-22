@@ -211,18 +211,42 @@ test.describe('Homepage', () => {
     await expect(card).toBeVisible({ timeout: 10_000 });
     await expect(card).toHaveAttribute('href', /^\/bill\/ocd-bill/);
 
-    // Title is a real heading, not a styled div.
+    // No summary is cached for a mocked bill, so the feed card degrades to the
+    // title — still a real heading, not a styled div (PLAN-18).
     await expect(card.locator('h3')).toHaveText('A test bill about housing');
 
     // The flag stands alone — no redundant state abbreviation next to it.
     await expect(card.getByText('TX', { exact: true })).toHaveCount(0);
 
     // Index noise ("A", "…, see also") is filtered out and SHOUTY entries are
-    // title-cased, leaving at most 2 chips.
+    // title-cased. The feed variant renders 1 chip so the hook keeps the visual
+    // weight; the detailed variant's 2 chips are covered in BillCard.test.tsx.
     const chips = card.locator('span.rounded-full.border-border');
-    await expect(chips).toHaveCount(2);
+    await expect(chips).toHaveCount(1);
     await expect(chips.nth(0)).toHaveText('Housing');
-    await expect(chips.nth(1)).toHaveText('Public Health');
+  });
+
+  test('feed cards never request an AI summary', async ({ page }) => {
+    // The hook line is cache-only by design: a 20-card feed must cost zero
+    // Gemini tokens. A stray /api/summarize call here is a live billing leak.
+    const summarizeRequests: string[] = [];
+    page.on('request', req => {
+      if (req.url().includes('/api/summarize')) summarizeRequests.push(req.url());
+    });
+
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.route('**/api/openstates/bills**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_BILLS_RESPONSE) })
+    );
+
+    await page.goto('/');
+    await expect(page.locator('a[href^="/bill/"]').first()).toBeVisible({ timeout: 10_000 });
+    await selectTexas(page);
+    await expect(page.getByText('A test bill about housing', { exact: true })).toBeVisible({ timeout: 10_000 });
+
+    expect(summarizeRequests).toEqual([]);
   });
 
   test('bookmarking a card does not navigate away', async ({ page }) => {

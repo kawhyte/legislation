@@ -15,8 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, Link as LinkIcon, Zap, User, Calendar } from "lucide-react";
 import BillProgressStepper from "./BillProgressStepper";
 import BookmarkButton from "./BookmarkButton";
-import { toSentenceCase } from "../lib/utils";
+import { toSentenceCase, formatHook } from "../lib/utils";
 import MomentumBadge from "./MomentumBadge";
+import BillStatusPill from "./BillStatusPill";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -41,11 +42,19 @@ const BillCard = ({
 	showSource = false,
 	showTrendingReason = false,
 	viewMode = "detailed",
+	summary,
 	feedName = "unknown",
 	position = -1,
 }: BillCardProps) => {
 	const shouldShowProgressBar = viewMode === "detailed" && showProgressBar;
 	const shouldShowSource = viewMode === "detailed" && showSource;
+
+	// The feed variant leads with the plain-English impact instead of the legal
+	// title. `summary` arrives from the cache only — see useCachedSummaries — so
+	// a missing one is the common case, not an error, and falls back to the title.
+	const isFeed = viewMode === "feed";
+	const hook = summary ? formatHook(summary.whoItAffects) : null;
+	const subhook = summary ? summary.walletImpact : null;
 
 	const stateInfo = useMemo(
 		() => usStates.find(
@@ -66,8 +75,7 @@ const BillCard = ({
 			className='block h-full'
 			// Fires before navigation. `track` awaits nothing, and Vercel Analytics
 			// uses sendBeacon internally, so the event survives the page transition.
-			// `hasSummary` is hardcoded until summaries reach the card (PLAN-18).
-			onClick={() => track("bill_card_click", { feed: feedName, position, hasSummary: false })}
+			onClick={() => track("bill_card_click", { feed: feedName, position, hasSummary: !!summary })}
 		>
 			<Card className='bg-card border-2 border-foreground rounded-xl shadow-[4px_4px_0px_0px_hsl(var(--foreground))] flex flex-col h-full transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_hsl(var(--foreground))]'>
 				<CardHeader className='p-4 space-y-3'>
@@ -85,14 +93,32 @@ const BillCard = ({
 						<BookmarkButton bill={bill} />
 					</div>
 
-					{/* BILL TITLE */}
-					<h3 className='text-base font-semibold line-clamp-3 text-foreground leading-relaxed'>
-						{toSentenceCase(bill.title)}
-					</h3>
+					{/* HOOK (feed) or BILL TITLE — an h3 exists in every branch. */}
+					{isFeed ? (
+						<div>
+							{/* Clamped, not min-height: reserving two lines here would stagger
+							    the card ~26px past the skeleton, which cannot reserve a
+							    matching chip row (half of bills have no subjects). A one-line
+							    hook simply sits higher than a two-line neighbour. */}
+							<h3 className='text-base font-bold line-clamp-2 text-foreground leading-relaxed'>
+								{hook || toSentenceCase(bill.title)}
+							</h3>
+							{/* Reserved unconditionally: summaries resolve a beat after paint,
+							    so a container that only appears with one would reflow the
+							    whole grid the moment the cache read lands. */}
+							<p className='mt-1 min-h-[2.5rem] text-sm text-muted-foreground line-clamp-2'>
+								{subhook}
+							</p>
+						</div>
+					) : (
+						<h3 className='text-base font-semibold line-clamp-3 text-foreground leading-relaxed'>
+							{toSentenceCase(bill.title)}
+						</h3>
+					)}
 
 					{/* STATUS ROW: momentum + trending */}
 					<div className='flex gap-2 items-center flex-wrap'>
-						{bill.momentum && <MomentumBadge momentum={bill.momentum} />}
+						{isFeed ? <BillStatusPill bill={bill} /> : bill.momentum && <MomentumBadge momentum={bill.momentum} />}
 						{showTrendingReason && bill.trendingReason === "Trending" && (
 							<div className='flex items-center gap-1.5 text-xs font-bold bg-accent-yellow text-on-yellow px-2.5 py-1 rounded-full border-2 border-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))]'>
 								<Zap className='h-3 w-3' />
@@ -104,8 +130,8 @@ const BillCard = ({
 				</CardHeader>
 
 				<CardContent className='flex-grow flex flex-col justify-end space-y-3 p-4 pt-0'>
-					{/* PRIMARY SPONSOR */}
-					{primarySponsor?.person?.name && (
+					{/* PRIMARY SPONSOR — who filed it is a detail-view question, not a feed one */}
+					{!isFeed && primarySponsor?.person?.name && (
 						<div className='flex items-center gap-1.5'>
 							<User className='h-3 w-3 text-muted-foreground flex-shrink-0' />
 							<span className='text-xs text-muted-foreground'>
@@ -115,10 +141,11 @@ const BillCard = ({
 						</div>
 					)}
 
-					{/* TOPIC CHIPS (capped at 2 — OpenStates subjects can be a long list) */}
+					{/* TOPIC CHIPS (capped at 2 — OpenStates subjects can be a long list;
+					    the feed shows 1 so the hook keeps the visual weight) */}
 					{bill.subject && bill.subject.length > 0 && (
 						<div className='flex gap-1.5 flex-wrap'>
-							{bill.subject.slice(0, 2).map((subject) => (
+							{bill.subject.slice(0, isFeed ? 1 : 2).map((subject) => (
 								<span
 									key={subject}
 									className='text-xs font-medium bg-muted text-muted-foreground px-2 py-0.5 rounded-full border border-border'>

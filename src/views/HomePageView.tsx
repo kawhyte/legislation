@@ -8,6 +8,7 @@ import YourRepsWidget from '@/components/YourRepsWidget';
 import Hero from '@/components/Hero';
 import TrendingBillGrid from '@/components/TrendingBillGrid';
 import useBills from '@/hooks/useBills';
+import { useCachedSummaries } from '@/hooks/useCachedSummaries';
 import { useSearchCache } from '@/contexts/SearchCacheContext';
 import { parseLocationInput } from '@/utils/zipToJurisdiction';
 import type { States } from '@/components/JurisdictionSelector';
@@ -30,6 +31,10 @@ interface DisplayProps {
 }
 
 const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, isLoading, error, cachedReps }) => {
+  // Called before the early returns below — hooks cannot live behind a branch.
+  // Cache-only reads, so a state feed costs zero Gemini tokens.
+  const summaries = useCachedSummaries(bills ?? []);
+
   if (isLoading) {
     return (
       <section className="container-legislation py-12">
@@ -41,7 +46,7 @@ const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, is
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {Array.from({ length: 6 }).map((_, i) => <BillCardSkeleton key={i} />)}
+              {Array.from({ length: 6 }).map((_, i) => <BillCardSkeleton key={i} viewMode="feed" showSource={false} />)}
             </div>
           </div>
           <div className="lg:col-span-1 order-first lg:order-last">
@@ -104,7 +109,9 @@ const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, is
         <div className="lg:col-span-3">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {bills.map((bill, i) => (
-              <BillCard key={bill.id} bill={bill} showSource showProgressBar viewMode="detailed" feedName="state" position={i} />
+              // `showSource`/`showProgressBar` are deliberately absent: the feed
+              // variant ignores both, and passing them would imply otherwise.
+              <BillCard key={bill.id} bill={bill} viewMode="feed" summary={summaries.get(bill.id)} feedName="state" position={i} />
             ))}
           </div>
         </div>
@@ -212,7 +219,7 @@ function HomePageInner() {
             What state legislatures are actually moving on right now. Pick your state above to make
             this local.
           </p>
-          <TrendingBillGrid viewMode="detailed" skeletonCount={6} />
+          <TrendingBillGrid viewMode="feed" skeletonCount={6} />
         </section>
       )}
     </div>

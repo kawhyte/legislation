@@ -893,7 +893,15 @@ const AGENT_VERIFIED = {
   "17d": true,
   "17e": true,
   "17g": true,
-  "17h": true
+  "17h": true,
+  "18a": true,
+  "18b": true,
+  "18c": true,
+  "18d": true,
+  "18e": true,
+  "18f": true,
+  "18g": true,
+  "18h": true
 };
 // 9b needs a real inbox to confirm the Firebase email actually arrives.
 // 10d: e2e "skeleton-to-card swap does not shift layout" holds the bills
@@ -1005,6 +1013,32 @@ const AGENT_VERIFIED = {
 //      affects, wallet impact and debate all rendered, one POST /api/summarize.
 // 14h: lint + build + vitest (34) clean; test:e2e 9/9. The 6 failures seen on the
 //      first e2e attempt were a stale server squatting on :3000, not this change.
+// 18a: homepage loaded in Chrome against real Firestore summaries — every card
+//      leads with an "Affects …" hook ("Affects pet owners, animal welfare
+//      organizations…", "Affects tenants and landlords") over a wallet-impact
+//      line, no legal titles. formatHook() composes the fragment; covered by
+//      src/lib/formatHook.test.ts (7 cases) and BillCard.test.tsx.
+// 18b: e2e "bill card: h3 title…" asserts the h3 holds the bill title when no
+//      summary is cached; "skeleton-to-card swap does not shift layout" holds
+//      the ±24px/±4px bound against the new feed skeleton. A min-h on the hook
+//      was tried and REVERTED — it pushed the card 47px past the skeleton,
+//      which cannot reserve a chip row (half of bills have no subjects).
+// 18c: no stepper in the live screenshot; asserted in BillCard.test.tsx. The
+//      feed variant reaches the stepper through `viewMode === "detailed"`,
+//      so it is unreachable by construction, not by a flag.
+// 18d: BillStatusPill.test.tsx — "None" and a missing momentum object both
+//      render an empty DOM; the other 6 levels render their feed copy.
+// 18e: /trending screenshot after the change is byte-for-byte the old card —
+//      legal title, "Slow Momentum" badge, sponsor line, 4-stage stepper. It
+//      and the dashboard tabs pass viewMode="detailed" and were not edited;
+//      BillCard.test.tsx locks that variant's title/badge/2 chips/sponsor.
+// 18f: e2e "bookmarking a card does not navigate away" still passes — it now
+//      runs against the feed variant, since the state feed switched to it.
+// 18g: new e2e "feed cards never request an AI summary" fails the run on any
+//      /api/summarize request across a cold trending load and a state pick.
+//      useCachedSummaries only ever calls getCachedSummary (Firestore read).
+// 18h: full suite green — lint 0 errors, build compiled, vitest 95/95 (15
+//      files), playwright 16/16.
 const AGENT_IN_PROGRESS = {
   "9b": true
 };

@@ -121,7 +121,7 @@ export interface UseBillSummaryReturn {
 }
 
 // From BillCard.tsx
-export type BillViewMode = 'detailed' | 'quick';
+export type BillViewMode = 'detailed' | 'quick' | 'feed';
 
 export interface BillCardProps {
 	bill: Bill;
@@ -129,6 +129,8 @@ export interface BillCardProps {
 	showTrendingReason?: boolean;
 	showSource?: boolean;
 	viewMode?: BillViewMode;
+	/** Cached AI summary. When absent the card falls back to the bill title. */
+	summary?: BillSummaryData;
 	/** Analytics only — which feed rendered this card, and its 0-based slot in it. */
 	feedName?: string;
 	position?: number;

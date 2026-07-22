@@ -4,6 +4,7 @@ import React from "react";
 import useTrendingBills from "../hooks/useTrendingBills";
 import BillCard from "./BillCard";
 import BillCardSkeleton from "./BillCardSkeleton";
+import { useCachedSummaries } from "../hooks/useCachedSummaries";
 import animationData from "../assets/Tumbleweed Rolling.json";
 import type { BillViewMode } from "@/types";
 import { AlertCircle } from 'lucide-react';
@@ -26,9 +27,13 @@ const TrendingBillGrid = ({ viewMode = 'quick', skeletonCount = 20 }: Props) => 
     // useTrendingBills already ranks by topic-weighted activity score and drops
     // junk/stalled bills — render its output directly. The per-card "🔥 Trending"
     // badge still comes from each bill's `trendingReason` (set inside the hook).
-    const trendingBills = data ?? [];
+    const trendingBills = (data ?? []).slice(0, 20);
     const hasData = !isLoading && trendingBills.length > 0;
     const noData = !isLoading && trendingBills.length === 0;
+
+    // Only the feed variant renders summaries, so only it pays for the reads.
+    // Cache-only: no /api/summarize call, no Gemini tokens.
+    const summaries = useCachedSummaries(viewMode === 'feed' ? trendingBills : []);
 
     return (
         <>
@@ -63,15 +68,18 @@ const TrendingBillGrid = ({ viewMode = 'quick', skeletonCount = 20 }: Props) => 
             <div className="">
                 <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4'>
                     {isLoading &&
-                        skeletons.map((skeleton) => <BillCardSkeleton key={skeleton} showSource={false} />)}
+                        skeletons.map((skeleton) => <BillCardSkeleton key={skeleton} showSource={false} viewMode={viewMode} />)}
                     {hasData &&
-                        trendingBills.slice(0, 20).map((bill) => (
+                        trendingBills.map((bill, index) => (
                             <BillCard
                                 key={bill.id}
                                 bill={bill}
                                 showSource={false}
                                 showTrendingReason={true}
                                 viewMode={viewMode}
+                                summary={summaries.get(bill.id)}
+                                feedName='trending'
+                                position={index}
                             />
                         ))}
                 </div>
