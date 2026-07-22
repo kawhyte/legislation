@@ -149,15 +149,16 @@ describe('/api/prewarm-summaries', () => {
   });
 
   it('stops after BATCH_SIZE generations even when 40 bills are missing summaries', async () => {
-    // BATCH_SIZE is 4: the Gemini free tier allows only 5 requests/minute, and
-    // a larger batch cannot be spaced out inside the 60s function cap.
+    // BATCH_SIZE is 3: the Gemini free tier allows only 5 requests/minute, so
+    // calls are 13s apart, and a bigger batch overruns the 60s function cap
+    // (BATCH_SIZE=4 returned 504 in production).
     trendingReturns(bills(40));
     const POST = await loadRoute();
 
     const report = await (await POST(post(`Bearer ${SECRET}`))).json();
 
-    expect(report).toMatchObject({ considered: 40, generated: 4 });
-    expect(mockGenerateForBill).toHaveBeenCalledTimes(4);
+    expect(report).toMatchObject({ considered: 40, generated: 3 });
+    expect(mockGenerateForBill).toHaveBeenCalledTimes(3);
   });
 
   it('counts a fallback as failed and never writes it', async () => {
