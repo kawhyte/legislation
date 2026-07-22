@@ -49,8 +49,13 @@ const DELAY_MS = 13000;
  * exactly where this one stopped.
  */
 const TIME_BUDGET_MS = 45_000;
-/** A generation costs its own spacing delay plus a Gemini round trip. */
-const PER_BILL_COST_MS = DELAY_MS + 8_000;
+/**
+ * A generation costs its own spacing delay plus a Gemini round trip. The 5s
+ * allowance is measured: gemini-3.6-flash answers this prompt in ~5.1s. It was
+ * 8s, which was pessimistic enough that a run stopped after 2 generations at
+ * 26s with 19s of budget left, making BATCH_SIZE=3 unreachable dead config.
+ */
+const PER_BILL_COST_MS = DELAY_MS + 5_000;
 
 export async function POST(request: NextRequest) {
   const startedAt = Date.now();
