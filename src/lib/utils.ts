@@ -44,6 +44,26 @@ export const toSentenceCase = (text: string) => {
 
 
 /**
+ * Gemini's `whoItAffects` is a fragment, not a sentence ("homeowners", "small
+ * businesses in rural counties"). Rendered raw it reads as a label; composed
+ * with "Affects" it reads as the hook the feed card leads with.
+ *
+ * Deliberately does NOT editorialise beyond that prefix — the summary is
+ * bill-level, not user-level, so the copy must never claim to know what a bill
+ * does to *this* reader.
+ */
+export const formatHook = (whoItAffects: string | null | undefined): string => {
+	if (!whoItAffects) return "";
+	const trimmed = whoItAffects.trim().replace(/[.\s]+$/, "");
+	if (!trimmed) return "";
+	// Already a sentence about who it affects — don't stack a second "Affects".
+	if (/^affects\b/i.test(trimmed)) {
+		return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+	}
+	return `Affects ${trimmed.charAt(0).toLowerCase() + trimmed.slice(1)}`;
+};
+
+/**
  * OpenStates `subject` arrays are per-state and inconsistent. Some states return
  * clean topics ("Housing"), others dump their statute index verbatim — single
  * letters used as index headers (";", "A", "H"), "see also" cross-references,
