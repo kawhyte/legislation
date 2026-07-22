@@ -13,12 +13,15 @@ const Lottie = React.lazy(() => import("lottie-react"));
 
 interface Props {
     viewMode?: BillViewMode;
+    // 20 matches the rendered card count on /trending. The homepage passes a
+    // smaller number so the loading state is not a screen and a half of pulse.
+    skeletonCount?: number;
 }
 
-const TrendingBillGrid = ({ viewMode = 'quick' }: Props) => {
+const TrendingBillGrid = ({ viewMode = 'quick', skeletonCount = 20 }: Props) => {
     const { data, error, isLoading } = useTrendingBills();
 
-    const skeletons = Array.from({ length: 20 }, (_, i) => i);
+    const skeletons = Array.from({ length: skeletonCount }, (_, i) => i);
 
     // useTrendingBills already ranks by topic-weighted activity score and drops
     // junk/stalled bills — render its output directly. The per-card "🔥 Trending"

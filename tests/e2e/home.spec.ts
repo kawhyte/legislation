@@ -45,7 +45,145 @@ async function selectTexas(page: Page) {
   await expect(stateSelect).toContainText('Texas');
 }
 
+const MOCK_TRENDING_RESPONSE = {
+  bills: [
+    {
+      ...MOCK_BILLS_RESPONSE.results[0],
+      id: 'ocd-bill/trending-1',
+      identifier: 'SB 9',
+      title: 'A national trending bill about health',
+      trendingReason: 'Trending',
+    },
+  ],
+};
+
 test.describe('Homepage', () => {
+  test('cold load shows trending bills with no interaction', async ({ page }) => {
+    // The whole point of the un-gate: value on first paint, zero clicks.
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.goto('/');
+    await expect(page.locator('a[href^="/bill/"]').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText('A national trending bill about health', { exact: true })).toBeVisible();
+  });
+
+  test('restoring ?q= does not flash the national feed', async ({ page }) => {
+    // A zip, not a state name: `parseLocationInput('Texas')` resolves in a
+    // microtask, so it never opens a window in which the flash could happen.
+    // A zip awaits a real network lookup — that async gap is the actual bug.
+    await page.route('**api.zippopotam.us/**', async route => {
+      await new Promise(resolve => setTimeout(resolve, 1_500));
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ places: [{ 'state abbreviation': 'TX', latitude: '25.9', longitude: '-80.2' }] }),
+      });
+    });
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.route('**/api/openstates/bills**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_BILLS_RESPONSE) })
+    );
+
+    // Assert on the section heading, not a card: the heading paints immediately,
+    // so it catches a flash of trending *skeletons* too — which is what a
+    // visitor actually sees regress.
+    const trendingHeading = page.getByRole('heading', { name: 'Trending across the US' });
+    let sawTrending = false;
+    const poll = setInterval(() => {
+      trendingHeading.isVisible().then(v => { if (v) sawTrending = true; }).catch(() => {});
+    }, 50);
+
+    await page.goto('/?q=33028');
+    await expect(page.getByText('A test bill about housing', { exact: true })).toBeVisible({ timeout: 15_000 });
+    clearInterval(poll);
+
+    expect(sawTrending).toBe(false);
+  });
+
+  test('empty /api/trending renders the tumbleweed, not an error', async ({ page }) => {
+    // Every one of the 8 topic queries catches its own timeout and returns [],
+    // so an empty feed is a legitimate response, not a failure. It must never
+    // surface the destructive "Error Fetching Bills" alert.
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ bills: [] }) })
+    );
+    await page.goto('/');
+
+    await expect(page.getByRole('heading', { name: 'No Trending Bills' })).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText('Error Fetching Bills')).toHaveCount(0);
+    await expect(page.locator('a[href^="/bill/"]')).toHaveCount(0);
+  });
+
+  test('picking a state swaps trending for state bills plus the reps sidebar', async ({ page }) => {
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.route('**/api/openstates/bills**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_BILLS_RESPONSE) })
+    );
+
+    await page.goto('/');
+    // Trending is the pre-selection state.
+    await expect(page.getByRole('heading', { name: 'Trending across the US' })).toBeVisible({ timeout: 10_000 });
+
+    await selectTexas(page);
+
+    // Swapped: state feed in, national feed out.
+    await expect(page.getByRole('heading', { name: 'Latest Bills in Texas' })).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole('heading', { name: 'Trending across the US' })).toHaveCount(0);
+    await expect(page.getByText('A test bill about housing', { exact: true })).toBeVisible();
+    await expect(page.getByText('A national trending bill about health', { exact: true })).toHaveCount(0);
+
+    // The reps sidebar comes back with the state feed. A dropdown pick carries
+    // no coords, so it is the "add your zip" prompt rather than rep cards —
+    // that prompt is correct here and deliberately absent from trending.
+    // YourRepsWidget renders a mobile strip and a desktop sidebar as separate
+    // DOM, so filter to the copy actually shown at this viewport; `.first()`
+    // would pick the display:none mobile one.
+    await expect(page.getByRole('heading', { name: 'Your Representatives' }).locator('visible=true')).toBeVisible();
+    await expect(page.getByText('Want to see how your reps vote?').locator('visible=true')).toBeVisible();
+  });
+
+  test('a zip restore fills the reps sidebar with actual representatives', async ({ page }) => {
+    await page.route('**api.zippopotam.us/**', route =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ places: [{ 'state abbreviation': 'TX', latitude: '25.9', longitude: '-80.2' }] }),
+      })
+    );
+    await page.route('**/api/openstates/bills**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_BILLS_RESPONSE) })
+    );
+    await page.route('**/api/openstates/people.geo**', route =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          results: [
+            {
+              id: 'ocd-person/test-rep-1',
+              name: 'Dana Rivers',
+              party: 'Democratic',
+              current_role: { title: 'Senator', district: '12', org_classification: 'upper' },
+            },
+          ],
+        }),
+      })
+    );
+
+    await page.goto('/?q=33028');
+
+    await expect(page.getByRole('heading', { name: 'Latest Bills in Texas' })).toBeVisible({ timeout: 15_000 });
+    // Desktop sidebar copy — see the note above about the widget's two layouts.
+    await expect(page.getByText('Dana Rivers').locator('visible=true')).toBeVisible();
+    await expect(page.getByRole('link', { name: /see their votes/i }).locator('visible=true'))
+      .toHaveAttribute('href', /^\/rep\/ocd-person/);
+  });
+
   test('loads and renders the hero', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('body')).toBeVisible();

@@ -54,12 +54,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 	};
 
 	return (
-		<div className='min-h-[65vh] flex flex-col items-center justify-center px-4 py-16'>
+		<div className='min-h-[52vh] flex flex-col items-center justify-center px-4 py-10 sm:py-12'>
 			<div className='w-full max-w-2xl text-center space-y-6'>
 
 				{/* HEADLINE */}
 				<div className='space-y-3'>
-					<h1 className='text-5xl sm:text-6xl font-black text-foreground leading-tight tracking-tight'>
+					<h1 className='text-4xl sm:text-5xl font-black text-foreground leading-tight tracking-tight'>
 						US laws that affect you,<br />explained plainly.
 					</h1>
 					<p className='text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed'>
