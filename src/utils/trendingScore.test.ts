@@ -51,6 +51,30 @@ describe('topicRelevance', () => {
     const bill = makeBill({ title: 'HB 42', subject: ['Cannabis', 'Taxation'] });
     expect(topicRelevance(bill)).toBeGreaterThan(0);
   });
+
+  // PLAN-21 — the boost map is optional everywhere. These lock in that an
+  // omitted map is byte-for-byte the pre-PLAN-21 behaviour, which is what keeps
+  // /api/trending user-agnostic and CDN-cacheable.
+  it('scales only the boosted topic, leaving the rest of the sum alone', () => {
+    const housing = makeBill({ title: 'Rent stabilization and eviction protections' });
+    const base = topicRelevance(housing);
+    expect(topicRelevance(housing, { housing: 2 })).toBeCloseTo(base * 2);
+  });
+
+  it('leaves an unmatched topic untouched when another is boosted', () => {
+    const cannabis = makeBill({ title: 'Cannabis retail licensing act' });
+    expect(topicRelevance(cannabis, { housing: 2.5 })).toBe(topicRelevance(cannabis));
+  });
+
+  it('ignores an unknown topic id rather than throwing', () => {
+    const housing = makeBill({ title: 'Tenant eviction protections' });
+    expect(topicRelevance(housing, { 'not-a-topic': 9 })).toBe(topicRelevance(housing));
+  });
+
+  it('is identical to the one-argument call when boosts are empty', () => {
+    const bill = makeBill({ title: 'Minimum wage and paid leave standards' });
+    expect(topicRelevance(bill, {})).toBe(topicRelevance(bill));
+  });
 });
 
 describe('computeTrendingScore', () => {
@@ -96,5 +120,40 @@ describe('computeTrendingScore', () => {
     const hugeEngagement: BillEngagement = { views: 100000, saves: 9000, lastActivityAt: NOW.getTime() };
     expect(computeTrendingScore(moving, null, NOW))
       .toBeGreaterThan(computeTrendingScore(hyped, hugeEngagement, NOW));
+  });
+
+  it('scores identically with the boosts argument omitted or empty', () => {
+    const bill = makeBill({
+      title: 'Affordable housing and rent relief act',
+      actions: [action(daysBefore(2))],
+    });
+    expect(computeTrendingScore(bill, null, NOW, {})).toBe(computeTrendingScore(bill, null, NOW));
+    expect(computeTrendingScore(bill, null, NOW, undefined)).toBe(computeTrendingScore(bill, null, NOW));
+  });
+
+  it('lifts a boosted topic above an equally-active unboosted one', () => {
+    const acts = [action(daysBefore(2))];
+    const cannabis = makeBill({ title: 'Cannabis retail licensing act', actions: acts });
+    const housing = makeBill({ title: 'Tenant eviction protections act', actions: acts });
+
+    // Housing (40) already outweighs cannabis (28) unboosted — boosting cannabis
+    // hard is what has to flip the order.
+    expect(computeTrendingScore(housing, null, NOW)).toBeGreaterThan(computeTrendingScore(cannabis, null, NOW));
+    const boosted = { cannabis: 2.5 };
+    expect(computeTrendingScore(cannabis, null, NOW, boosted))
+      .toBeGreaterThan(computeTrendingScore(housing, null, NOW, boosted));
+  });
+
+  it('never lets a boosted topic bury a high-momentum bill', () => {
+    // The boost multiplies only the topic component. Activity and milestone are
+    // untouched, so a fast-moving off-topic bill survives an obsessed user.
+    const boosted = { cannabis: 2.5 };
+    const sleepyCannabis = makeBill({ title: 'Cannabis packaging labels', actions: [action(daysBefore(120))] });
+    const fastMoving = makeBill({
+      title: 'Tenant eviction protections and rent relief act',
+      actions: [action(daysBefore(1)), action(daysBefore(2)), action(daysBefore(3)), action(daysBefore(5)), action(daysBefore(8))],
+    });
+    expect(computeTrendingScore(fastMoving, null, NOW, boosted))
+      .toBeGreaterThan(computeTrendingScore(sleepyCannabis, null, NOW, boosted));
   });
 });

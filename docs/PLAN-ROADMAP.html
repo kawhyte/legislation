@@ -901,7 +901,103 @@ const AGENT_VERIFIED = {
   "18e": true,
   "18f": true,
   "18g": true,
-  "18h": true
+  "18h": true,
+  // PLAN-19 — location chip and geo defaulting.
+  // 19a: e2e "cold load with no stored location offers to set a state" — no
+  //      x-vercel-ip-* headers exist off Vercel, so this is the same code path
+  //      `next dev` takes. Zero console errors; the trending feed still paints.
+  // 19c: e2e "a remembered jurisdiction loads that state feed, once" counts
+  //      /api/openstates/bills requests over a 3s window and asserts exactly 1.
+  //      This is the regression test for the cache-thrash fetch loop.
+  // 19d: same spec — addInitScript seeds billhound:lastJurisdiction=TX and the
+  //      page comes up on Texas with the chip reading "Showing Texas". A
+  //      companion spec proves "florida" (garbage) is rejected, not looked up.
+  // 19e: e2e "the chip's action focuses the one existing state picker" — the
+  //      hero combobox ends up focused AND the page still has exactly 1
+  //      combobox, so the chip provably did not build a second picker.
+  // 19f: e2e "a non-US visitor is never guessed into a US state" drives a real
+  //      request carrying x-vercel-ip-country: CA / -region: ON and asserts the
+  //      national feed. Paired with a US/FL spec that DOES resolve to Florida,
+  //      so the guard is proven to discriminate rather than just always fail.
+  //      Verified post-hydration: SSR always emits the national chip.
+  // 19g: unit spec "throws the same message when the request aborts on timeout"
+  //      plus one asserting an AbortSignal is passed to fetch at all — the
+  //      5s cap is what stops "Find Bills" spinning forever.
+  // 19h: 24/24 e2e green; the pre-existing homepage specs are unmodified.
+  "19a": true,
+  "19c": true,
+  "19d": true,
+  "19e": true,
+  "19f": true,
+  "19g": true,
+  "19h": true,
+  // ── PLAN-20 ──────────────────────────────────────────────────────────────
+  // 20a: Sponsorship.type was a field OpenStates does not return; it is now
+  //      `classification`, and `person` is explicitly nullable. tsc clean, so
+  //      no call site was silently relying on either.
+  // 20b/20c/20e/20f: 4 new e2e specs in tests/e2e/home.spec.ts drive the real
+  //      page — a rep-sponsored bill lands under "From your reps" with
+  //      "Dana Rivers sponsored this", the attribution click navigates to
+  //      /rep/ocd-person/…, a non-matching sponsor and a federal-classified rep
+  //      each produce zero tier-1 headings, and a dropdown pick fires no
+  //      people.geo request at all. 28/28 playwright green.
+  // 20d: enforced by `fromReps.length > 0 &&` in HomePageView — no heading, no
+  //      empty state. Covered by two of the specs above.
+  // 20g: `grep -riE "your city|voted on" src tests` finds nothing new in this
+  //      diff (the two pre-existing hits are Hero and AboutPage copy).
+  // 20h: the attribution is a role=link span that preventDefault/stopPropagation
+  //      and router.push()es, so no <a> is nested in the card's link — the e2e
+  //      click test would fail on the card link winning. Request count is
+  //      unchanged: the partition reuses cache.reps that YourRepsWidget already
+  //      fetched. 131/131 vitest, incl. 13 new repRelevance unit tests.
+  "20a": true,
+  "20b": true,
+  "20c": true,
+  "20d": true,
+  "20e": true,
+  "20f": true,
+  "20g": true,
+  "20h": true,
+  // 21a: TopicChipRow is `flex overflow-x-auto` with `-mx-4 px-4` bleed. e2e at
+  //      375×812 measures documentElement.scrollWidth - clientWidth ≤ 1px with
+  //      the row rendered, so the row scrolls and the page does not.
+  // 21b: e2e counts every request whose URL contains /api/ , taps a chip, waits
+  //      1s and asserts the count is unchanged while the first card's title
+  //      changed. The sort runs on bills already in memory; /api/trending is
+  //      never sent boosts, so it stays user-agnostic and CDN-cacheable.
+  // 21c: boosts multiply ONLY the topic component — activity, milestone and
+  //      engagement are untouched. Unit test 'never lets a boosted topic bury a
+  //      high-momentum bill' pins that at the 2.5× ceiling, and tapsToBoosts is
+  //      asymptotic (1 tap 1.43×, 10 taps < MAX_BOOST), so repeated taps cannot
+  //      converge on a single-topic feed. The e2e tap test also asserts the
+  //      un-boosted housing bill is still visible — a re-sort, never a filter.
+  // 21d: e2e taps, reloads, and finds the boosted bill still leading with
+  //      aria-pressed still true; then "Clear" restores the original first card
+  //      and localStorage.getItem('billhound:topicAffinity') is null.
+  // 21e: localStorage is read in a useEffect, never during render, so the SSR
+  //      HTML and the first client paint are both the un-boosted order. The
+  //      reload leg of the e2e above exercises exactly the "existing affinity
+  //      data on a fresh load" path and renders clean.
+  // 21f: e2e focuses a chip with .focus(), asserts toBeFocused, drives it with
+  //      Enter alone, and asserts aria-pressed flips to true and the feed
+  //      reorders. Chips are real <button type="button">s with a
+  //      focus-visible outline.
+  // 21g: src/constants/trendingTopics.test.ts asserts every FEED_CHIP_TOPICS id
+  //      exists in TOPIC_WEIGHTS (plus no duplicate ids in either list) — the
+  //      only place a chip-id typo can be caught, since it would otherwise just
+  //      boost nothing forever.
+  // 21h: trendingScore.test.ts was extended, never rewritten: all 9 original
+  //      assertions pass unmodified, which is the backward-compatibility proof
+  //      for the optional 4th parameter. 154/154 vitest, 32/32 playwright,
+  //      lint and build clean.
+  "21a": true,
+  "21b": true,
+  "21c": true,
+  "21d": true,
+  "21e": true,
+  "21f": true,
+  "21g": true,
+  "21h": true
 };
 // 9b needs a real inbox to confirm the Firebase email actually arrives.
 // 10d: e2e "skeleton-to-card swap does not shift layout" holds the bills
@@ -1040,7 +1136,13 @@ const AGENT_VERIFIED = {
 // 18h: full suite green — lint 0 errors, build compiled, vitest 95/95 (15
 //      files), playwright 16/16.
 const AGENT_IN_PROGRESS = {
-  "9b": true
+  "9b": true,
+  // 19b: implemented (userPreferences.selectedState is priority 1 and outranks
+  // both localStorage and geo) but NOT verified — it needs a real signed-in
+  // Firebase account whose profile state is Florida, which the e2e suite has no
+  // way to stand up. Sign in as an FL user and confirm the homepage lands on
+  // Florida bills with the chip reading "Showing Florida · Change".
+  "19b": true
 };
 </script>
 <script>

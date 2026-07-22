@@ -7,6 +7,7 @@ import BillCardSkeleton from "./BillCardSkeleton";
 import { useCachedSummaries } from "../hooks/useCachedSummaries";
 import animationData from "../assets/Tumbleweed Rolling.json";
 import type { BillViewMode } from "@/types";
+import type { TopicBoosts } from "@/utils/trendingScore";
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
@@ -17,10 +18,20 @@ interface Props {
     // 20 matches the rendered card count on /trending. The homepage passes a
     // smaller number so the loading state is not a screen and a half of pulse.
     skeletonCount?: number;
+    /**
+     * Per-topic multipliers from the viewer's chip taps (PLAN-21). Re-sorts what
+     * is already in memory — never triggers a refetch. Must be memoised.
+     */
+    boosts?: TopicBoosts;
+    /**
+     * Optional topic-chip row, rendered above the grid and only once there are
+     * bills to sort — chips over an empty or errored feed steer nothing.
+     */
+    chips?: React.ReactNode;
 }
 
-const TrendingBillGrid = ({ viewMode = 'quick', skeletonCount = 20 }: Props) => {
-    const { data, error, isLoading } = useTrendingBills();
+const TrendingBillGrid = ({ viewMode = 'quick', skeletonCount = 20, boosts, chips }: Props) => {
+    const { data, error, isLoading } = useTrendingBills(boosts);
 
     const skeletons = Array.from({ length: skeletonCount }, (_, i) => i);
 
@@ -64,6 +75,8 @@ const TrendingBillGrid = ({ viewMode = 'quick', skeletonCount = 20 }: Props) => 
                     </p>
                 </div>
             )}
+
+            {hasData && chips}
 
             <div className="">
                 <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4'>

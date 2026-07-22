@@ -1,11 +1,17 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { Bill, BillSummaryData } from "@/types";
 
 // The card is only under test for its layout contract per variant. Bookmarking
 // pulls in Firebase auth + Firestore, which has its own coverage.
 vi.mock("./BookmarkButton", () => ({ default: () => <button>bookmark</button> }));
 vi.mock("@/lib/analytics", () => ({ track: vi.fn() }));
+
+// The attribution row navigates itself rather than nesting an <a> inside the
+// card's link, so the card now needs a router. jsdom has no App Router context.
+const push = vi.fn();
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 
 const BillCard = (await import("./BillCard")).default;
 
@@ -61,5 +67,44 @@ describe("BillCard — detailed variant is untouched", () => {
 		expect(screen.getByText("High Momentum")).toBeInTheDocument();
 		expect(container.querySelectorAll("span.rounded-full.border-border")).toHaveLength(2);
 		expect(screen.getByText("Dana Rivers")).toBeInTheDocument();
+	});
+});
+
+describe("BillCard — rep attribution (PLAN-20)", () => {
+	const attribution = { sponsorName: "Dana Rivers", repId: "ocd-person/abc", isPrimary: true };
+
+	it("names the sponsoring rep and accents the card", () => {
+		const { container } = render(
+			<BillCard bill={bill} viewMode='feed' summary={summary} attribution={attribution} />
+		);
+		expect(screen.getByRole("link", { name: "Dana Rivers sponsored this" })).toBeInTheDocument();
+		expect(container.querySelector(".border-accent-yellow")).toBeInTheDocument();
+	});
+
+	it("says co-sponsored for a non-primary sponsorship — never 'voted on'", () => {
+		render(<BillCard bill={bill} viewMode='feed' attribution={{ ...attribution, isPrimary: false }} />);
+		expect(screen.getByRole("link", { name: "Dana Rivers co-sponsored this" })).toBeInTheDocument();
+	});
+
+	it("routes to the rep without letting the click reach the card's link", async () => {
+		// An <a> inside an <a> is invalid HTML, so the row must be a role=link
+		// span that stops propagation and pushes the route itself.
+		const user = userEvent.setup();
+		const { container } = render(<BillCard bill={bill} viewMode='feed' attribution={attribution} />);
+		const row = screen.getByRole("link", { name: "Dana Rivers sponsored this" });
+		expect(container.querySelectorAll("a")).toHaveLength(1);
+
+		await user.click(row);
+		expect(push).toHaveBeenCalledWith("/rep/ocd-person%2Fabc");
+
+		push.mockClear();
+		row.focus();
+		await user.keyboard("{Enter}");
+		expect(push).toHaveBeenCalledWith("/rep/ocd-person%2Fabc");
+	});
+
+	it("renders no attribution row at all when the prop is absent", () => {
+		render(<BillCard bill={bill} viewMode='feed' summary={summary} />);
+		expect(screen.queryByText(/sponsored this/)).not.toBeInTheDocument();
 	});
 });

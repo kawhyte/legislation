@@ -10,9 +10,19 @@ import { Users } from "lucide-react";
 import JurisdictionSelector, { type States } from "./JurisdictionSelector";
 import { parseLocationInput } from "../utils/zipToJurisdiction";
 import { track } from "@/lib/analytics";
+import { writeLastJurisdiction } from "@/lib/lastJurisdiction";
+
+/** Focus target for LocationChip — there is only ever one state picker. */
+export const JURISDICTION_TRIGGER_ID = 'home-jurisdiction-trigger';
 
 interface HeroSectionProps {
 	onSelectState: (state: States) => void;
+	/**
+	 * Controlled: the jurisdiction the page is actually showing. Passed down so a
+	 * state resolved from a profile, localStorage, or geo appears in the picker
+	 * rather than leaving it on the placeholder while the feed says otherwise.
+	 */
+	selectedState: States | null;
 }
 
 // const FEATURE_PILLS = [
@@ -21,11 +31,10 @@ interface HeroSectionProps {
 // 	{ icon: Bookmark,   label: "Save  and track bills"        },
 // ] as const;
 
-const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
+const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState, selectedState }) => {
 	const [query, setQuery] = useState('');
 	const [isSearching, setIsSearching] = useState(false);
 	const [error, setError] = useState('');
-	const [selectedState, setSelectedState] = useState<States | null>(null);
 	const searchParams = useSearchParams();
 	void searchParams; // accessed by parent via URL; we only need the setter here
 	const router = useRouter();
@@ -44,6 +53,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 			const state = await parseLocationInput(query);
 			// Only after the lookup resolves — a rejected zip is not a location set.
 			track('location_set', { method: 'zip' });
+			writeLastJurisdiction(state.abbreviation);
 			onSelectState(state);
 			setSearchParams({ q: query.trim() }, { replace: true });
 		} catch (err) {
@@ -86,10 +96,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onSelectState }) => {
 				{/* PRIMARY: State flag dropdown — full width */}
 				<JurisdictionSelector
 					selectedJurisdiction={selectedState}
+					triggerId={JURISDICTION_TRIGGER_ID}
 					onSelectJurisdiction={(state) => {
 						if (state) {
 							track('location_set', { method: 'dropdown' });
-							setSelectedState(state);
+							// A homepage pick is for this session only — it never writes
+							// back to a signed-in user's Firestore profile.
+							writeLastJurisdiction(state.abbreviation);
 							setError('');
 							onSelectState(state);
 							setSearchParams({ q: state.name }, { replace: true });

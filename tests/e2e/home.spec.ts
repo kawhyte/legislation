@@ -131,11 +131,12 @@ test.describe('Homepage', () => {
 
     await selectTexas(page);
 
-    // Swapped: state feed in, national feed out.
-    await expect(page.getByRole('heading', { name: 'Latest Bills in Texas' })).toBeVisible({ timeout: 10_000 });
+    // Swapped: the state feed leads, and the national feed is demoted to the
+    // labelled backfill band below it (one mocked bill is a thin session).
+    await expect(page.getByRole('heading', { name: 'More in Texas' })).toBeVisible({ timeout: 10_000 });
     await expect(page.getByRole('heading', { name: 'Trending across the US' })).toHaveCount(0);
     await expect(page.getByText('A test bill about housing', { exact: true })).toBeVisible();
-    await expect(page.getByText('A national trending bill about health', { exact: true })).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: 'Trending nationwide' })).toBeVisible();
 
     // The reps sidebar comes back with the state feed. A dropdown pick carries
     // no coords, so it is the "add your zip" prompt rather than rep cards —
@@ -177,7 +178,7 @@ test.describe('Homepage', () => {
 
     await page.goto('/?q=33028');
 
-    await expect(page.getByRole('heading', { name: 'Latest Bills in Texas' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: 'More in Texas' })).toBeVisible({ timeout: 15_000 });
     // Desktop sidebar copy — see the note above about the widget's two layouts.
     await expect(page.getByText('Dana Rivers').locator('visible=true')).toBeVisible();
     await expect(page.getByRole('link', { name: /see their votes/i }).locator('visible=true'))
@@ -287,6 +288,81 @@ test.describe('Homepage', () => {
     expect(trackRequests).toEqual([]);
   });
 
+  test('cold load with no stored location offers to set a state', async ({ page }) => {
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.goto('/');
+    const chip = page.getByRole('status');
+    await expect(chip).toContainText('Showing trending US bills');
+    await expect(chip.getByRole('button', { name: /set your state/i })).toBeVisible();
+  });
+
+  test('a remembered jurisdiction loads that state feed, once', async ({ page }) => {
+    // Exactly one bills request: `setJurisdiction` clears the cache whenever the
+    // jurisdiction differs, so a resolution effect that re-fires would thrash it
+    // into a fetch loop. This is the regression test for that.
+    const billsRequests: string[] = [];
+    page.on('request', req => {
+      if (req.url().includes('/api/openstates/bills')) billsRequests.push(req.url());
+    });
+
+    await page.route('**/api/openstates/bills**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_BILLS_RESPONSE) })
+    );
+    await page.addInitScript(() => {
+      localStorage.setItem('billhound:lastJurisdiction', 'TX');
+    });
+
+    await page.goto('/');
+
+    await expect(page.getByRole('heading', { name: 'More in Texas' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('status')).toContainText('Showing Texas');
+    // Never the national feed — the local state won before first paint of a feed.
+    await expect(page.getByRole('heading', { name: 'Trending across the US' })).toHaveCount(0);
+
+    await page.waitForTimeout(3_000);
+    expect(billsRequests).toHaveLength(1);
+    expect(billsRequests[0]).toContain('Texas');
+  });
+
+  test('garbage in localStorage is ignored, not looked up', async ({ page }) => {
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.addInitScript(() => {
+      localStorage.setItem('billhound:lastJurisdiction', 'florida');
+    });
+    await page.goto('/');
+    await expect(page.getByRole('status')).toContainText('Showing trending US bills');
+  });
+
+  test("the chip's action focuses the one existing state picker", async ({ page }) => {
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.goto('/');
+    await page.getByRole('status').getByRole('button', { name: /set your state/i }).click();
+
+    // The chip must not build a second picker — it hands off to the hero's.
+    await expect(page.getByRole('combobox').first()).toBeFocused();
+    await expect(page.getByRole('combobox')).toHaveCount(1);
+  });
+
+  test('picking a state updates the chip and is remembered for next visit', async ({ page }) => {
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.route('**/api/openstates/bills**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_BILLS_RESPONSE) })
+    );
+    await page.goto('/');
+    await selectTexas(page);
+
+    await expect(page.getByRole('status')).toContainText('Showing Texas');
+    expect(await page.evaluate(() => localStorage.getItem('billhound:lastJurisdiction'))).toBe('TX');
+  });
+
   test('skeleton-to-card swap does not shift layout', async ({ page }) => {
     // Hold the bills response open long enough to measure the skeleton.
     await page.route('**/api/openstates/bills**', async route => {
@@ -310,5 +386,259 @@ test.describe('Homepage', () => {
     // Same shell, same rows: any residual difference is content-driven, not a jump.
     expect(Math.abs(skeletonBox!.height - cardBox!.height)).toBeLessThanOrEqual(24);
     expect(Math.abs(skeletonBox!.y - cardBox!.y)).toBeLessThanOrEqual(4);
+  });
+});
+
+/**
+ * PLAN-21 — the chips are a client-side re-sort of bills already in memory.
+ * Their whole value is that steering the feed costs zero requests and zero
+ * tokens, so the request count is as much the subject of these tests as the
+ * ordering is.
+ */
+test.describe('Homepage — topic chips', () => {
+  const CANNABIS_BILL = {
+    ...MOCK_BILLS_RESPONSE.results[0],
+    id: 'ocd-bill/test-cannabis',
+    identifier: 'HB 2',
+    title: 'Cannabis retail licensing act',
+    subject: ['Cannabis'],
+  };
+
+  // Housing (weight 40) outranks cannabis (28) by default, so the cannabis bill
+  // can only lead the feed if a chip tap actually moved it.
+  const TWO_BILLS = { results: [MOCK_BILLS_RESPONSE.results[0], CANNABIS_BILL] };
+
+  const firstCardTitle = (page: Page) => page.locator('a[href^="/bill/"] h3').first();
+
+  // Two taps, not one, and that is the point: a single tap is worth ~1.43×,
+  // which lifts cannabis (28) to 39.9 — still just under housing's 40. The curve
+  // is deliberately too gentle to hand the feed over on one tap.
+  const TAPS_TO_FLIP = 2;
+
+  async function loadTexasFeed(page: Page) {
+    await page.route('**/api/openstates/bills**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(TWO_BILLS) })
+    );
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.addInitScript(() => localStorage.setItem('billhound:lastJurisdiction', 'TX'));
+    await page.goto('/');
+    await expect(page.getByRole('heading', { name: 'More in Texas' })).toBeVisible({ timeout: 15_000 });
+  }
+
+  test('a chip tap re-sorts the feed without a single new request', async ({ page }) => {
+    const apiRequests: string[] = [];
+    page.on('request', req => {
+      if (req.url().includes('/api/')) apiRequests.push(req.url());
+    });
+
+    await loadTexasFeed(page);
+    await expect(firstCardTitle(page)).toHaveText('A test bill about housing');
+
+    const countBeforeTap = apiRequests.length;
+    const weed = page.getByRole('button', { name: 'Weed', exact: true });
+    for (let i = 0; i < TAPS_TO_FLIP; i++) await weed.click();
+
+    await expect(firstCardTitle(page)).toHaveText('Cannabis retail licensing act');
+    // Re-sorted, not filtered — the housing bill is still on the page.
+    await expect(page.getByText('A test bill about housing', { exact: true })).toBeVisible();
+    await page.waitForTimeout(1_000);
+    expect(apiRequests.length).toBe(countBeforeTap);
+  });
+
+  test('the tap is remembered, and Clear forgets it', async ({ page }) => {
+    await loadTexasFeed(page);
+    const weed = page.getByRole('button', { name: 'Weed', exact: true });
+    for (let i = 0; i < TAPS_TO_FLIP; i++) await weed.click();
+    await expect(weed).toHaveAttribute('aria-pressed', 'true');
+    await expect(firstCardTitle(page)).toHaveText('Cannabis retail licensing act');
+
+    // Survives a reload — affinity lives in localStorage, not component state.
+    await page.reload();
+    await expect(firstCardTitle(page)).toHaveText('Cannabis retail licensing act', { timeout: 15_000 });
+    await expect(page.getByRole('button', { name: 'Weed', exact: true })).toHaveAttribute('aria-pressed', 'true');
+
+    await page.getByRole('button', { name: 'Clear', exact: true }).click();
+    await expect(firstCardTitle(page)).toHaveText('A test bill about housing');
+    expect(await page.evaluate(() => localStorage.getItem('billhound:topicAffinity'))).toBeNull();
+  });
+
+  test('chips are operable by keyboard alone', async ({ page }) => {
+    await loadTexasFeed(page);
+    const weed = page.getByRole('button', { name: 'Weed', exact: true });
+    await weed.focus();
+    await expect(weed).toBeFocused();
+    for (let i = 0; i < TAPS_TO_FLIP; i++) await page.keyboard.press('Enter');
+    await expect(weed).toHaveAttribute('aria-pressed', 'true');
+    await expect(firstCardTitle(page)).toHaveText('Cannabis retail licensing act');
+  });
+
+  test('the chip row does not make the page scroll sideways on a phone', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await loadTexasFeed(page);
+    await expect(page.getByRole('group', { name: 'Sort the feed by topic' })).toBeVisible();
+
+    const overflow = await page.evaluate(() =>
+      document.documentElement.scrollWidth - document.documentElement.clientWidth
+    );
+    expect(overflow).toBeLessThanOrEqual(1);
+  });
+});
+
+/**
+ * Vercel injects `x-vercel-ip-*` on every production request. `next dev` and any
+ * non-Vercel host never send them, so the specs above cover the header-less path
+ * and these cover the production one. Resolution runs in a client effect, so the
+ * SSR HTML always carries the national chip — these must assert post-hydration.
+ */
+test.describe('Homepage — IP geo defaulting', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.route('**/api/openstates/bills**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_BILLS_RESPONSE) })
+    );
+  });
+
+  test.describe('a US visitor', () => {
+    test.use({ extraHTTPHeaders: { 'x-vercel-ip-country': 'US', 'x-vercel-ip-country-region': 'FL' } });
+
+    test('is offered their state as a guess, never as a fact', async ({ page }) => {
+      await page.goto('/');
+      const chip = page.getByRole('status');
+      await expect(chip).toContainText("Looks like you're in Florida");
+      await expect(chip.getByRole('button', { name: /change your state/i })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'More in Florida' })).toBeVisible({ timeout: 15_000 });
+    });
+
+    test('loses to a remembered jurisdiction — geo is the weakest signal', async ({ page }) => {
+      await page.addInitScript(() => {
+        localStorage.setItem('billhound:lastJurisdiction', 'TX');
+      });
+      await page.goto('/');
+      await expect(page.getByRole('status')).toContainText('Showing Texas');
+      await expect(page.getByRole('heading', { name: 'More in Texas' })).toBeVisible({ timeout: 15_000 });
+    });
+  });
+
+  test.describe('a non-US visitor', () => {
+    // Ontario's "ON" and Berlin's "BE" both arrive in the same header a US
+    // state would. Neither may be silently read as a US state.
+    test.use({ extraHTTPHeaders: { 'x-vercel-ip-country': 'CA', 'x-vercel-ip-country-region': 'ON' } });
+
+    test('is never guessed into a US state', async ({ page }) => {
+      await page.goto('/');
+      await expect(page.getByRole('status')).toContainText('Showing trending US bills');
+      await expect(page.getByText(/Looks like you're in/)).toHaveCount(0);
+      await expect(page.getByRole('heading', { name: 'Trending across the US' })).toBeVisible();
+    });
+  });
+});
+
+/**
+ * PLAN-20 — the top tier only exists when one of the viewer's own state
+ * legislators actually sponsored a bill in the feed. Everything here turns on
+ * the intersection between /people.geo and the sponsorships already in memory.
+ */
+test.describe('Homepage — from your reps', () => {
+  const REP_ID = 'ocd-person/test-rep-1';
+
+  const billSponsoredBy = (personId: string) => ({
+    results: [
+      {
+        ...MOCK_BILLS_RESPONSE.results[0],
+        sponsorships: [
+          { id: 's1', name: 'Rivers', primary: true, classification: 'primary', person: { id: personId, name: 'Dana Rivers' } },
+        ],
+      },
+    ],
+  });
+
+  const rep = (classification: string) => ({
+    results: [
+      {
+        id: REP_ID,
+        name: 'Dana Rivers',
+        party: 'Democratic',
+        current_role: { title: 'Senator', district: '12', org_classification: 'upper' },
+        jurisdiction: { id: 'ocd-jurisdiction/texas', name: 'Texas', classification },
+      },
+    ],
+  });
+
+  async function setup(page: Page, bills: object, reps: object) {
+    await page.route('**api.zippopotam.us/**', route =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ places: [{ 'state abbreviation': 'TX', latitude: '25.9', longitude: '-80.2' }] }),
+      })
+    );
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.route('**/api/openstates/bills**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(bills) })
+    );
+    await page.route('**/api/openstates/people.geo**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(reps) })
+    );
+  }
+
+  test('a bill your own senator filed leads the feed, attributed and linked', async ({ page }) => {
+    await setup(page, billSponsoredBy(REP_ID), rep('state'));
+    await page.goto('/?q=33028');
+
+    await expect(page.getByRole('heading', { name: 'From your reps' })).toBeVisible({ timeout: 15_000 });
+    const attribution = page.getByRole('link', { name: 'Dana Rivers sponsored this', exact: true });
+    await expect(attribution).toBeVisible();
+
+    // The disclosure is where "why am I seeing this" lives — state-level and
+    // honest about the zip being a centroid, never "your city" or "voted on".
+    await page.getByText('why these? ›').first().click();
+    await expect(page.getByText('Bills sponsored by the state legislators who represent ZIP 33028.')).toBeVisible();
+
+    // The attributed bill is not also repeated in the state tier below.
+    await expect(page.getByText('A test bill about housing', { exact: true })).toHaveCount(1);
+
+    // Nested-anchor trap: the attribution navigates to the rep, the card to the bill.
+    await attribution.click();
+    await expect(page).toHaveURL(/\/rep\/ocd-person/);
+  });
+
+  test('no matching sponsor means no "From your reps" heading at all', async ({ page }) => {
+    // An empty promise of relevance is worse than not making one.
+    await setup(page, billSponsoredBy('ocd-person/somebody-else'), rep('state'));
+    await page.goto('/?q=33028');
+
+    await expect(page.getByRole('heading', { name: 'More in Texas' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: 'From your reps' })).toHaveCount(0);
+  });
+
+  test('federal reps are filtered out — they cannot sponsor a state bill', async ({ page }) => {
+    // /people.geo returns congressional reps alongside state ones. Matching on
+    // them would be meaningless even when the ids happen to line up.
+    await setup(page, billSponsoredBy(REP_ID), rep('country'));
+    await page.goto('/?q=33028');
+
+    await expect(page.getByRole('heading', { name: 'More in Texas' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: 'From your reps' })).toHaveCount(0);
+  });
+
+  test('a dropdown pick never requests reps and never shows tier 1', async ({ page }) => {
+    const geoRequests: string[] = [];
+    page.on('request', req => {
+      if (req.url().includes('people.geo')) geoRequests.push(req.url());
+    });
+    await setup(page, billSponsoredBy(REP_ID), rep('state'));
+
+    await page.goto('/');
+    await selectTexas(page);
+
+    await expect(page.getByRole('heading', { name: 'More in Texas' })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: 'From your reps' })).toHaveCount(0);
+    expect(geoRequests).toEqual([]);
   });
 });

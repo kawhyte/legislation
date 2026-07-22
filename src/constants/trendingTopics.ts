@@ -43,27 +43,51 @@ export const TRENDING_QUERY_TOPICS: readonly string[] = [
  * match several patterns; contributions sum.
  */
 export interface TopicWeight {
+  /**
+   * Stable persistence key. `label` is display copy and will be reworded; this
+   * never changes. Topic affinity (src/lib/topicAffinity.ts) is stored against
+   * these ids, so keying it on `label` instead would silently wipe every user's
+   * preferences the day someone edits a chip.
+   */
+  id: string;
   label: string;
   pattern: RegExp;
   weight: number;
 }
 
 export const TOPIC_WEIGHTS: readonly TopicWeight[] = [
-  { label: 'Housing / rent',      pattern: /\b(housing|rent|eviction|tenant|landlord|mortgage|zoning|homeless)\w*/i, weight: 40 },
-  { label: 'Student debt / education', pattern: /\b(student loan|student debt|tuition|financial aid|college afford|scholarship)\w*/i, weight: 38 },
-  { label: 'Healthcare cost',     pattern: /\b(health care|healthcare|insulin|prescription|medicaid|medicare|mental health|insurance premium)\w*/i, weight: 36 },
-  { label: 'Climate / energy',    pattern: /\b(climate|clean energy|renewable|emission|solar|carbon|pollution)\w*/i, weight: 34 },
-  { label: 'Reproductive rights', pattern: /\b(abortion|reproductive|contracepti|pregnan)\w*/i, weight: 34 },
-  { label: 'Wages / labor',       pattern: /\b(minimum wage|wage|overtime|paid leave|gig worker|union|worker)\w*/i, weight: 32 },
-  { label: 'Cannabis',            pattern: /\b(cannabis|marijuana|psilocybin)\w*/i, weight: 28 },
-  { label: 'Privacy / tech',      pattern: /\b(privacy|data protection|social media|artificial intelligence|\bai\b|surveillance|biometric)\w*/i, weight: 26 },
-  { label: 'Guns',                pattern: /\b(firearm|gun|weapon|ammunition)\w*/i, weight: 26 },
-  { label: 'LGBTQ',               pattern: /\b(lgbtq|transgender|gender-affirming|same-sex)\w*/i, weight: 26 },
-  { label: 'Immigration',         pattern: /\b(immigrat|asylum|deportation|daca|undocumented)\w*/i, weight: 24 },
-  { label: 'Childcare',           pattern: /\b(child care|childcare|day care|pre-k)\w*/i, weight: 22 },
-  { label: 'Transit',             pattern: /\b(transit|public transportation|bike lane|pedestrian)\w*/i, weight: 20 },
-  { label: 'Voting / civil',      pattern: /\b(voting|election|civil right|police reform)\w*/i, weight: 20 },
+  { id: 'housing',      label: 'Housing / rent',      pattern: /\b(housing|rent|eviction|tenant|landlord|mortgage|zoning|homeless)\w*/i, weight: 40 },
+  { id: 'student-debt', label: 'Student debt / education', pattern: /\b(student loan|student debt|tuition|financial aid|college afford|scholarship)\w*/i, weight: 38 },
+  { id: 'healthcare',   label: 'Healthcare cost',     pattern: /\b(health care|healthcare|insulin|prescription|medicaid|medicare|mental health|insurance premium)\w*/i, weight: 36 },
+  { id: 'climate',      label: 'Climate / energy',    pattern: /\b(climate|clean energy|renewable|emission|solar|carbon|pollution)\w*/i, weight: 34 },
+  { id: 'reproductive', label: 'Reproductive rights', pattern: /\b(abortion|reproductive|contracepti|pregnan)\w*/i, weight: 34 },
+  { id: 'wages',        label: 'Wages / labor',       pattern: /\b(minimum wage|wage|overtime|paid leave|gig worker|union|worker)\w*/i, weight: 32 },
+  { id: 'cannabis',     label: 'Cannabis',            pattern: /\b(cannabis|marijuana|psilocybin)\w*/i, weight: 28 },
+  { id: 'privacy-tech', label: 'Privacy / tech',      pattern: /\b(privacy|data protection|social media|artificial intelligence|\bai\b|surveillance|biometric)\w*/i, weight: 26 },
+  { id: 'guns',         label: 'Guns',                pattern: /\b(firearm|gun|weapon|ammunition)\w*/i, weight: 26 },
+  { id: 'lgbtq',        label: 'LGBTQ',               pattern: /\b(lgbtq|transgender|gender-affirming|same-sex)\w*/i, weight: 26 },
+  { id: 'immigration',  label: 'Immigration',         pattern: /\b(immigrat|asylum|deportation|daca|undocumented)\w*/i, weight: 24 },
+  { id: 'childcare',    label: 'Childcare',           pattern: /\b(child care|childcare|day care|pre-k)\w*/i, weight: 22 },
+  { id: 'transit',      label: 'Transit',             pattern: /\b(transit|public transportation|bike lane|pedestrian)\w*/i, weight: 20 },
+  { id: 'voting',       label: 'Voting / civil',      pattern: /\b(voting|election|civil right|police reform)\w*/i, weight: 20 },
 ];
+
+/**
+ * The chips shown on the feed. A subset of TOPIC_WEIGHTS, in display order,
+ * with feed-voice labels. Ids must match TOPIC_WEIGHTS ids exactly — a typo
+ * would fail silently, since the chip would simply never match a bill.
+ * trendingTopics.test.ts asserts the correspondence.
+ */
+export const FEED_CHIP_TOPICS = [
+  { id: 'housing',      label: 'Rent' },
+  { id: 'student-debt', label: 'Loans' },
+  { id: 'wages',        label: 'Jobs' },
+  { id: 'healthcare',   label: 'Health' },
+  { id: 'cannabis',     label: 'Weed' },
+  { id: 'guns',         label: 'Guns' },
+  { id: 'climate',      label: 'Climate' },
+  { id: 'privacy-tech', label: 'Tech' },
+] as const;
 
 /** Ceremonial / non-substantive bills that should never trend. */
 export const JUNK_TITLE =

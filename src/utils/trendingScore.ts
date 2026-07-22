@@ -35,12 +35,24 @@ const ENGAGEMENT_UNIT = 2;          // points per (view + 3·save)
 const ENGAGEMENT_CAP = 20;          // hard ceiling so hype can't bury real movement
 const ENGAGEMENT_HALFLIFE_DAYS = 30;
 
-/** Topic-relevance component: sum of every TOPIC_WEIGHTS pattern that matches. */
-export function topicRelevance(bill: Bill): number {
+/**
+ * Per-topic multiplier keyed by TOPIC_WEIGHTS id. Absent ids default to 1, so a
+ * partial map — or a map holding an id that no longer exists — is harmless.
+ */
+export type TopicBoosts = Record<string, number>;
+
+/**
+ * Topic-relevance component: sum of every TOPIC_WEIGHTS pattern that matches.
+ *
+ * @param boosts optional per-topic multipliers (see src/lib/topicAffinity.ts).
+ *   Omitting them reproduces the un-personalised score exactly, which is what
+ *   keeps `/api/trending` user-agnostic and CDN-cacheable.
+ */
+export function topicRelevance(bill: Bill, boosts?: TopicBoosts): number {
   const haystack = `${bill.title || ''} ${(bill.subject || []).join(' ')}`;
   let score = 0;
-  for (const { pattern, weight } of TOPIC_WEIGHTS) {
-    if (pattern.test(haystack)) score += weight;
+  for (const { id, pattern, weight } of TOPIC_WEIGHTS) {
+    if (pattern.test(haystack)) score += weight * (boosts?.[id] ?? 1);
   }
   return score;
 }
@@ -93,14 +105,18 @@ function engagementScore(engagement: BillEngagement | null | undefined, now: Dat
  * network, no globals — so it's directly unit-testable.
  *
  * @param now injectable clock for tests; defaults to the real current time.
+ * @param boosts optional per-topic multipliers. Only the topic component is
+ *   scaled — activity, milestone and engagement are untouched, so a strongly
+ *   preferred topic is nudged up without ever burying a high-momentum bill.
  */
 export function computeTrendingScore(
   bill: Bill,
   engagement?: BillEngagement | null,
   now: Date = new Date(),
+  boosts?: TopicBoosts,
 ): number {
   const activity = activityScore(bill, now);
-  const topic = topicRelevance(bill);
+  const topic = topicRelevance(bill, boosts);
   const milestone = MILESTONE[analyzeBillMomentum(bill).level] ?? 0;
   const engage = engagementScore(engagement, now);
   return activity + topic + milestone + engage;

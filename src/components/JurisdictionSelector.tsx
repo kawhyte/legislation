@@ -21,14 +21,18 @@ export interface States {
     zoom?: number;
     // mapUrl: string;
     zipCoords?: { lat: number; lng: number };
+    /** The zip the coords came from. Present only on a zip search. */
+    zip?: string;
 }
 interface Props {
     onSelectJurisdiction: (jurisdiction: States | null) => void;
     selectedJurisdiction: States | null;
     triggerClassName?: string;
+    /** DOM id on the trigger, so LocationChip can focus the one existing picker. */
+    triggerId?: string;
 }
 
-const JurisdictionSelector = ({ onSelectJurisdiction, selectedJurisdiction, triggerClassName }: Props) => {
+const JurisdictionSelector = ({ onSelectJurisdiction, selectedJurisdiction, triggerClassName, triggerId }: Props) => {
     const data = usStates;
     const selectedValue = selectedJurisdiction?.name || "";
 
@@ -40,7 +44,7 @@ const JurisdictionSelector = ({ onSelectJurisdiction, selectedJurisdiction, trig
                     const selectedState = data.find((option) => option.name === value);
                     onSelectJurisdiction(selectedState || null);
                 }}>
-            <SelectTrigger className={cn('w-full text-base py-6 px-4 border-2 border-foreground rounded-xl shadow-[3px_3px_0px_0px_hsl(var(--foreground))]', triggerClassName)}>
+            <SelectTrigger id={triggerId} className={cn('w-full text-base py-6 px-4 border-2 border-foreground rounded-xl shadow-[3px_3px_0px_0px_hsl(var(--foreground))]', triggerClassName)}>
         <SelectValue placeholder='Select your state to see relevant bills...'>
             {selectedValue ? (
                 <div className='flex items-center gap-2'>
