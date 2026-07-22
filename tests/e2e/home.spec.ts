@@ -390,6 +390,103 @@ test.describe('Homepage', () => {
 });
 
 /**
+ * PLAN-21 — the chips are a client-side re-sort of bills already in memory.
+ * Their whole value is that steering the feed costs zero requests and zero
+ * tokens, so the request count is as much the subject of these tests as the
+ * ordering is.
+ */
+test.describe('Homepage — topic chips', () => {
+  const CANNABIS_BILL = {
+    ...MOCK_BILLS_RESPONSE.results[0],
+    id: 'ocd-bill/test-cannabis',
+    identifier: 'HB 2',
+    title: 'Cannabis retail licensing act',
+    subject: ['Cannabis'],
+  };
+
+  // Housing (weight 40) outranks cannabis (28) by default, so the cannabis bill
+  // can only lead the feed if a chip tap actually moved it.
+  const TWO_BILLS = { results: [MOCK_BILLS_RESPONSE.results[0], CANNABIS_BILL] };
+
+  const firstCardTitle = (page: Page) => page.locator('a[href^="/bill/"] h3').first();
+
+  // Two taps, not one, and that is the point: a single tap is worth ~1.43×,
+  // which lifts cannabis (28) to 39.9 — still just under housing's 40. The curve
+  // is deliberately too gentle to hand the feed over on one tap.
+  const TAPS_TO_FLIP = 2;
+
+  async function loadTexasFeed(page: Page) {
+    await page.route('**/api/openstates/bills**', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(TWO_BILLS) })
+    );
+    await page.route('**/api/trending', route =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_TRENDING_RESPONSE) })
+    );
+    await page.addInitScript(() => localStorage.setItem('billhound:lastJurisdiction', 'TX'));
+    await page.goto('/');
+    await expect(page.getByRole('heading', { name: 'More in Texas' })).toBeVisible({ timeout: 15_000 });
+  }
+
+  test('a chip tap re-sorts the feed without a single new request', async ({ page }) => {
+    const apiRequests: string[] = [];
+    page.on('request', req => {
+      if (req.url().includes('/api/')) apiRequests.push(req.url());
+    });
+
+    await loadTexasFeed(page);
+    await expect(firstCardTitle(page)).toHaveText('A test bill about housing');
+
+    const countBeforeTap = apiRequests.length;
+    const weed = page.getByRole('button', { name: 'Weed', exact: true });
+    for (let i = 0; i < TAPS_TO_FLIP; i++) await weed.click();
+
+    await expect(firstCardTitle(page)).toHaveText('Cannabis retail licensing act');
+    // Re-sorted, not filtered — the housing bill is still on the page.
+    await expect(page.getByText('A test bill about housing', { exact: true })).toBeVisible();
+    await page.waitForTimeout(1_000);
+    expect(apiRequests.length).toBe(countBeforeTap);
+  });
+
+  test('the tap is remembered, and Clear forgets it', async ({ page }) => {
+    await loadTexasFeed(page);
+    const weed = page.getByRole('button', { name: 'Weed', exact: true });
+    for (let i = 0; i < TAPS_TO_FLIP; i++) await weed.click();
+    await expect(weed).toHaveAttribute('aria-pressed', 'true');
+    await expect(firstCardTitle(page)).toHaveText('Cannabis retail licensing act');
+
+    // Survives a reload — affinity lives in localStorage, not component state.
+    await page.reload();
+    await expect(firstCardTitle(page)).toHaveText('Cannabis retail licensing act', { timeout: 15_000 });
+    await expect(page.getByRole('button', { name: 'Weed', exact: true })).toHaveAttribute('aria-pressed', 'true');
+
+    await page.getByRole('button', { name: 'Clear', exact: true }).click();
+    await expect(firstCardTitle(page)).toHaveText('A test bill about housing');
+    expect(await page.evaluate(() => localStorage.getItem('billhound:topicAffinity'))).toBeNull();
+  });
+
+  test('chips are operable by keyboard alone', async ({ page }) => {
+    await loadTexasFeed(page);
+    const weed = page.getByRole('button', { name: 'Weed', exact: true });
+    await weed.focus();
+    await expect(weed).toBeFocused();
+    for (let i = 0; i < TAPS_TO_FLIP; i++) await page.keyboard.press('Enter');
+    await expect(weed).toHaveAttribute('aria-pressed', 'true');
+    await expect(firstCardTitle(page)).toHaveText('Cannabis retail licensing act');
+  });
+
+  test('the chip row does not make the page scroll sideways on a phone', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await loadTexasFeed(page);
+    await expect(page.getByRole('group', { name: 'Sort the feed by topic' })).toBeVisible();
+
+    const overflow = await page.evaluate(() =>
+      document.documentElement.scrollWidth - document.documentElement.clientWidth
+    );
+    expect(overflow).toBeLessThanOrEqual(1);
+  });
+});
+
+/**
  * Vercel injects `x-vercel-ip-*` on every production request. `next dev` and any
  * non-Vercel host never send them, so the specs above cover the header-less path
  * and these cover the production one. Resolution runs in a client effect, so the

@@ -957,7 +957,47 @@ const AGENT_VERIFIED = {
   "20e": true,
   "20f": true,
   "20g": true,
-  "20h": true
+  "20h": true,
+  // 21a: TopicChipRow is `flex overflow-x-auto` with `-mx-4 px-4` bleed. e2e at
+  //      375×812 measures documentElement.scrollWidth - clientWidth ≤ 1px with
+  //      the row rendered, so the row scrolls and the page does not.
+  // 21b: e2e counts every request whose URL contains /api/ , taps a chip, waits
+  //      1s and asserts the count is unchanged while the first card's title
+  //      changed. The sort runs on bills already in memory; /api/trending is
+  //      never sent boosts, so it stays user-agnostic and CDN-cacheable.
+  // 21c: boosts multiply ONLY the topic component — activity, milestone and
+  //      engagement are untouched. Unit test 'never lets a boosted topic bury a
+  //      high-momentum bill' pins that at the 2.5× ceiling, and tapsToBoosts is
+  //      asymptotic (1 tap 1.43×, 10 taps < MAX_BOOST), so repeated taps cannot
+  //      converge on a single-topic feed. The e2e tap test also asserts the
+  //      un-boosted housing bill is still visible — a re-sort, never a filter.
+  // 21d: e2e taps, reloads, and finds the boosted bill still leading with
+  //      aria-pressed still true; then "Clear" restores the original first card
+  //      and localStorage.getItem('billhound:topicAffinity') is null.
+  // 21e: localStorage is read in a useEffect, never during render, so the SSR
+  //      HTML and the first client paint are both the un-boosted order. The
+  //      reload leg of the e2e above exercises exactly the "existing affinity
+  //      data on a fresh load" path and renders clean.
+  // 21f: e2e focuses a chip with .focus(), asserts toBeFocused, drives it with
+  //      Enter alone, and asserts aria-pressed flips to true and the feed
+  //      reorders. Chips are real <button type="button">s with a
+  //      focus-visible outline.
+  // 21g: src/constants/trendingTopics.test.ts asserts every FEED_CHIP_TOPICS id
+  //      exists in TOPIC_WEIGHTS (plus no duplicate ids in either list) — the
+  //      only place a chip-id typo can be caught, since it would otherwise just
+  //      boost nothing forever.
+  // 21h: trendingScore.test.ts was extended, never rewritten: all 9 original
+  //      assertions pass unmodified, which is the backward-compatibility proof
+  //      for the optional 4th parameter. 154/154 vitest, 32/32 playwright,
+  //      lint and build clean.
+  "21a": true,
+  "21b": true,
+  "21c": true,
+  "21d": true,
+  "21e": true,
+  "21f": true,
+  "21g": true,
+  "21h": true
 };
 // 9b needs a real inbox to confirm the Firebase email actually arrives.
 // 10d: e2e "skeleton-to-card swap does not shift layout" holds the bills

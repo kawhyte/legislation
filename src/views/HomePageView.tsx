@@ -8,6 +8,7 @@ import YourRepsWidget from '@/components/YourRepsWidget';
 import FeedSection from '@/components/FeedSection';
 import Hero, { JURISDICTION_TRIGGER_ID } from '@/components/Hero';
 import LocationChip, { type LocationSource } from '@/components/LocationChip';
+import TopicChipRow from '@/components/TopicChipRow';
 import TrendingBillGrid from '@/components/TrendingBillGrid';
 import useBills from '@/hooks/useBills';
 import { useCachedSummaries } from '@/hooks/useCachedSummaries';
@@ -19,6 +20,8 @@ import type { Bill } from '@/types';
 import type { Rep } from '@/hooks/useReps';
 import { track } from '@/lib/analytics';
 import { readLastJurisdiction } from '@/lib/lastJurisdiction';
+import { readTaps, recordTap, clearTaps, tapsToBoosts, type Taps } from '@/lib/topicAffinity';
+import { computeTrendingScore, type TopicBoosts } from '@/utils/trendingScore';
 import { useUserData } from '@/contexts/UserContext';
 import { useUser } from '@/hooks/useAuth';
 import usStates from '@/data/usStates';
@@ -35,20 +38,39 @@ interface DisplayProps {
   isLoading: boolean;
   error?: string;
   cachedReps?: Rep[];
+  /**
+   * Per-topic multipliers from the viewer's chip taps, or undefined when no
+   * topic is active. Undefined leaves the feed in its server order — the exact
+   * PLAN-19/20 ordering — so "Clear" is a true restore, not an approximation.
+   */
+  boosts?: TopicBoosts;
+  /** Topic chip row, rendered above the feed only when there are bills. */
+  chips?: React.ReactNode;
 }
 
 const FEED_GRID = 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6';
 
-const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, isLoading, error, cachedReps }) => {
+const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, isLoading, error, cachedReps, boosts, chips }) => {
   // Called before the early returns below — hooks cannot live behind a branch.
   // Cache-only reads, so a state feed costs zero Gemini tokens.
   const summaries = useCachedSummaries(bills ?? []);
+
+  // A chip tap re-sorts what is already in memory. No refetch, no request, no
+  // tokens — and the sort runs before partitionByRep so both tiers reorder.
+  const ordered = useMemo(() => {
+    if (!bills || !boosts) return bills ?? [];
+    return [...bills].sort(
+      (a, b) =>
+        computeTrendingScore(b, undefined, undefined, boosts) -
+        computeTrendingScore(a, undefined, undefined, boosts)
+    );
+  }, [bills, boosts]);
 
   // Reuse the reps YourRepsWidget already fetched — never a second /people.geo.
   const { cache } = useSearchCache();
   const reps = cachedReps ?? cache.reps;
   const repIds = useMemo(() => stateRepIds(reps), [reps]);
-  const { fromReps, rest } = useMemo(() => partitionByRep(bills ?? [], repIds), [bills, repIds]);
+  const { fromReps, rest } = useMemo(() => partitionByRep(ordered, repIds), [ordered, repIds]);
 
   // Reps land a beat after bills, and a card that jumps from "More in Texas" up
   // to "From your reps" mid-read is worse than a brief unsectioned feed. So the
@@ -66,9 +88,11 @@ const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, is
       <section className="container-legislation py-12">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">
-            {/* Same heading, same column, same offset as the loaded state — the
-                jurisdiction is known before the fetch resolves, so holding its
-                space keeps the grid from jumping. */}
+            {/* Same chips, same heading, same column, same offset as the loaded
+                state — the jurisdiction and the viewer's topics are both known
+                before the fetch resolves, so holding their space keeps the grid
+                from jumping. */}
+            {chips && <div className="mb-6">{chips}</div>}
             <h2 className="text-4xl font-black text-foreground mb-8 border-b-4 border-foreground pb-4">
               Latest Bills in {jurisdiction.name}
             </h2>
@@ -130,14 +154,19 @@ const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, is
   return (
     <section className="container-legislation py-12">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-3 space-y-12">
+        <div className="lg:col-span-3">
+          {/* Above every tier: the chips steer the whole feed, not one band.
+              Outside the `space-y-12` below so the gap under them matches the
+              loading state's exactly — this column must not shift on load. */}
+          {chips && <div className="mb-6">{chips}</div>}
+          <div className="space-y-12">
           {repsPending ? (
             <div>
               <h2 className="text-4xl font-black text-foreground mb-8 border-b-4 border-foreground pb-4">
                 Latest Bills in {jurisdiction.name}
               </h2>
               <div className={FEED_GRID}>
-                {bills.map((bill, i) => (
+                {ordered.map((bill, i) => (
                   // `showSource`/`showProgressBar` are deliberately absent: the feed
                   // variant ignores both, and passing them would imply otherwise.
                   <BillCard key={bill.id} bill={bill} viewMode="feed" summary={summaries.get(bill.id)} feedName="state" position={i} />
@@ -192,6 +221,7 @@ const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, is
               )}
             </>
           )}
+          </div>
         </div>
         <div className="lg:col-span-1 order-first lg:order-last lg:sticky lg:top-6 lg:self-start">
           <YourRepsWidget coords={jurisdiction.zipCoords} stateName={jurisdiction.name} cachedReps={cachedReps} />
@@ -203,7 +233,13 @@ const ZipBillResultsDisplay: React.FC<DisplayProps> = ({ jurisdiction, bills, is
 
 // ── Fetching layer ────────────────────────────────────────────────────────────
 
-const ZipBillResultsFetch: React.FC<{ jurisdiction: States }> = ({ jurisdiction }) => {
+interface FeedProps {
+  jurisdiction: States;
+  boosts?: TopicBoosts;
+  chips?: React.ReactNode;
+}
+
+const ZipBillResultsFetch: React.FC<FeedProps> = ({ jurisdiction, boosts, chips }) => {
   const { setJurisdiction, setBills } = useSearchCache();
   const { data: bills, isLoading, error } = useBills(jurisdiction, null);
 
@@ -216,12 +252,21 @@ const ZipBillResultsFetch: React.FC<{ jurisdiction: States }> = ({ jurisdiction 
     if (bills && bills.length > 0) setBills(bills);
   }, [bills, setBills]);
 
-  return <ZipBillResultsDisplay jurisdiction={jurisdiction} bills={bills} isLoading={isLoading} error={error} />;
+  return (
+    <ZipBillResultsDisplay
+      jurisdiction={jurisdiction}
+      bills={bills}
+      isLoading={isLoading}
+      error={error}
+      boosts={boosts}
+      chips={chips}
+    />
+  );
 };
 
 // ── Smart cache wrapper ───────────────────────────────────────────────────────
 
-const ZipBillResults: React.FC<{ jurisdiction: States }> = ({ jurisdiction }) => {
+const ZipBillResults: React.FC<FeedProps> = ({ jurisdiction, boosts, chips }) => {
   const { isMatch, cache } = useSearchCache();
   const cacheHit = isMatch(jurisdiction) && cache.bills.length > 0;
 
@@ -244,11 +289,13 @@ const ZipBillResults: React.FC<{ jurisdiction: States }> = ({ jurisdiction }) =>
         bills={cache.bills}
         isLoading={false}
         cachedReps={cache.reps.length > 0 ? cache.reps : undefined}
+        boosts={boosts}
+        chips={chips}
       />
     );
   }
 
-  return <ZipBillResultsFetch jurisdiction={jurisdiction} />;
+  return <ZipBillResultsFetch jurisdiction={jurisdiction} boosts={boosts} chips={chips} />;
 };
 
 // ── Inner page — uses useSearchParams ─────────────────────────────────────────
@@ -318,6 +365,36 @@ function HomePageInner({ geoStateAbbr }: { geoStateAbbr?: string | null }) {
     setJurisdiction(match as States);
   }, [isAuthLoaded, isSignedIn, userPreferences?.selectedState, geoStateAbbr, jurisdiction, searchParams]);
 
+  // ── Topic affinity (PLAN-21) ───────────────────────────────────────────────
+  // Read in an effect, never during render: localStorage does not exist on the
+  // server, so reading it inline would produce different server and client HTML
+  // and React would throw a hydration error. The first paint is therefore
+  // always the unboosted order.
+  const [taps, setTaps] = useState<Taps>({});
+  useEffect(() => { setTaps(readTaps()); }, []);
+
+  // Memoised — a fresh object identity every render would re-sort the feed on
+  // every unrelated state change. Undefined when nothing is active, which is
+  // what leaves the default ordering completely untouched.
+  const boosts = useMemo(() => {
+    const b = tapsToBoosts(taps);
+    return Object.keys(b).length > 0 ? b : undefined;
+  }, [taps]);
+
+  const chips = (
+    <TopicChipRow
+      taps={taps}
+      onTap={id => {
+        setTaps(recordTap(id));
+        track('topic_chip_tap', { topic: id });
+      }}
+      onClear={() => {
+        clearTaps();
+        setTaps({});
+      }}
+    />
+  );
+
   const handleExplicitSelect = (state: States) => {
     // Any explicit pick closes resolution for good — including a sign-out that
     // nulls preferences afterwards, which must not yank the feed away.
@@ -346,7 +423,7 @@ function HomePageInner({ geoStateAbbr }: { geoStateAbbr?: string | null }) {
         />
       )}
       {jurisdiction ? (
-        <ZipBillResults jurisdiction={jurisdiction} />
+        <ZipBillResults jurisdiction={jurisdiction} boosts={boosts} chips={chips} />
       ) : isRestoring ? (
         <div className="min-h-[40vh] flex items-center justify-center">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -360,7 +437,7 @@ function HomePageInner({ geoStateAbbr }: { geoStateAbbr?: string | null }) {
             What state legislatures are actually moving on right now. Pick your state above to make
             this local.
           </p>
-          <TrendingBillGrid viewMode="feed" skeletonCount={6} />
+          <TrendingBillGrid viewMode="feed" skeletonCount={6} boosts={boosts} chips={chips} />
         </section>
       )}
     </div>
